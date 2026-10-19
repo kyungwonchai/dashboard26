@@ -30,31 +30,37 @@ const CURRICULUM = [
     desc: "Flask 서버를 띄우고 좌측 메뉴바와 상단 4대 요약 카드(홈)의 뼈대를 잡습니다.",
     prompt: `GEMINI.md 규칙에 맞춰 Flask 서버와 대시보드 화면 틀을 만들어줘.\n- 가상환경(venv)을 만들고 필요한 패키지는 requirements.txt로 관리\n- app.py, templates/index.html, static/style.css, static/app.js 구조로\n- 왼쪽 메뉴: 홈, 팀 할 일, 업무일지, 팀 현황, 통계 (누르면 페이지 이동 없이 본문만 바뀌게)\n- 홈에는 요약 카드 4개: 팀 전체 할 일, 오늘 마감, 지연, 이번 주 완료 (지금은 예시 숫자)\n- 서버는 내 PC에서만 접속되게 127.0.0.1:5000으로 실행\n- 설치와 서버 실행을 직접 해주고, 내가 브라우저에 입력할 주소를 알려줘`,
     mission: "메뉴 아이콘과 테마 색상을 내 취향에 맞게 수정해보세요.",
-    render: () => `
-      <div>
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:20px;">
-          <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
-            <div style="font-size:12px; color:#888;">팀 전체 할 일</div>
-            <div style="font-size:24px; font-weight:700; margin-top:4px;">12</div>
+    render: () => {
+      const total = demoTasks.length;
+      const dueToday = demoTasks.filter(t => !t.done && !t.overdue).length;
+      const overdue = demoTasks.filter(t => t.overdue).length;
+      const done = demoTasks.filter(t => t.done).length;
+      return `
+        <div>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:20px;">
+            <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
+              <div style="font-size:12px; color:#888;">팀 전체 할 일</div>
+              <div style="font-size:24px; font-weight:700; margin-top:4px;">${total}</div>
+            </div>
+            <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
+              <div style="font-size:12px; color:#888;">오늘 마감</div>
+              <div style="font-size:24px; font-weight:700; color:#ef4444; margin-top:4px;">${dueToday}</div>
+            </div>
+            <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
+              <div style="font-size:12px; color:#888;">지연 건수</div>
+              <div style="font-size:24px; font-weight:700; color:#f59e0b; margin-top:4px;">${overdue}</div>
+            </div>
+            <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
+              <div style="font-size:12px; color:#888;">이번 주 완료</div>
+              <div style="font-size:24px; font-weight:700; color:#10b981; margin-top:4px;">${done}</div>
+            </div>
           </div>
-          <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
-            <div style="font-size:12px; color:#888;">오늘 마감</div>
-            <div style="font-size:24px; font-weight:700; color:#ef4444; margin-top:4px;">3</div>
-          </div>
-          <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
-            <div style="font-size:12px; color:#888;">지연 건수</div>
-            <div style="font-size:24px; font-weight:700; color:#f59e0b; margin-top:4px;">2</div>
-          </div>
-          <div style="background:#0e1017; padding:16px; border-radius:8px; border:1px solid #23283b;">
-            <div style="font-size:12px; color:#888;">이번 주 완료</div>
-            <div style="font-size:24px; font-weight:700; color:#10b981; margin-top:4px;">8</div>
-          </div>
+          <p style="color:#aaa; font-size:13px; text-align:center;">
+            📌 [STEP 02 상태] 우리 집 DB와 연동된 실제 실시간 지표(${total}건)가 표시됩니다.
+          </p>
         </div>
-        <p style="color:#aaa; font-size:13px; text-align:center;">
-          📌 [STEP 02 상태] UI 레이아웃 뼈대가 완성되었으며, 예시(Mock) 숫자가 표시되는 단계입니다.
-        </p>
-      </div>
-    `
+      `;
+    }
   },
   {
     step: "STEP 03",
@@ -68,11 +74,11 @@ const CURRICULUM = [
         <h4 style="color:#06b6d4; margin-bottom:10px;">💾 생성된 SQLite 테이블 구조 (dashboard.db)</h4>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div style="background:#0e1017; padding:12px; border-radius:8px; border:1px solid #222;">
-            <b>1. members (팀원 4명)</b>
+            <b>1. members (${(window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.members) ? window.DASH26_SYNC_DATA.members.length : 4}명 등록)</b>
             <p style="color:#888; font-size:11px; margin-top:4px;">채경원(파트장), 김민수(선임), 이지은(책임), 박준형(분석)</p>
           </div>
           <div style="background:#0e1017; padding:12px; border-radius:8px; border:1px solid #222;">
-            <b>2. tasks (할 일 8건)</b>
+            <b>2. tasks (${demoTasks.length}건 등록)</b>
             <p style="color:#888; font-size:11px; margin-top:4px;">우선순위, 마감일, 상태, 완료일 자동 기록</p>
           </div>
           <div style="background:#0e1017; padding:12px; border-radius:8px; border:1px solid #222;">
@@ -80,8 +86,8 @@ const CURRICULUM = [
             <p style="color:#888; font-size:11px; margin-top:4px;">날짜, 팀원, 구분(개발/기획/회의 등), 투입시간</p>
           </div>
           <div style="background:#0e1017; padding:12px; border-radius:8px; border:1px solid #222;">
-            <b>4. backup/ (자동 백업)</b>
-            <p style="color:#888; font-size:11px; margin-top:4px;">서버 시작 시 dashboard_YYYYMMDD_HHMMSS.db 자동 보관</p>
+            <b>4. lecturer_notes & qna</b>
+            <p style="color:#888; font-size:11px; margin-top:4px;">강사 특별 노트 및 실시간 Q&A 완벽 동기화</p>
           </div>
         </div>
       </div>
@@ -97,7 +103,7 @@ const CURRICULUM = [
     render: () => `
       <div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <span style="font-size:13px; font-weight:700;">📋 인터랙티브 가상 할 일 목록 (직접 체크해보세요)</span>
+          <span style="font-size:13px; font-weight:700;">📋 우리 집 DB 실제 할 일 목록 (${demoTasks.length}건)</span>
           <button class="btn btn-copy" style="font-size:11px; padding:4px 8px;" onclick="addSimTask()">+ 가상 할 일 추가</button>
         </div>
         <div id="sim-task-list" style="display:flex; flex-direction:column; gap:6px;"></div>
@@ -111,26 +117,36 @@ const CURRICULUM = [
     desc: "팀원별 진행률 막대그래프, 지연 발생 시 빨간색 테두리 강조, 30초 주기 자동 새로고침을 구현합니다.",
     prompt: `'팀 현황' 화면에 팀원별 현황판을 만들어줘.\n- 팀원마다 카드 하나: 진행 중, 이번 주 완료, 지연 건수\n- 카드 안에 완료율 진행 막대\n- 지연이 있는 팀원 카드는 테두리를 빨간색으로 강조\n- 카드를 누르면 그 팀원의 할 일 목록을 펼쳐 보기\n- 화면은 30초마다 자동으로 최신 데이터로 새로고침\n- 기존 기능과 데이터는 그대로 유지해줘`,
     mission: "사무실 대형 모니터용 'TV 모드' 버튼을 추가해보세요.",
-    render: () => `
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div style="background:#0e1017; padding:14px; border-radius:8px; border:1px solid #23283b;">
-          <div style="display:flex; justify-content:space-between;">
-            <b>채경원 (AI혁신파트)</b>
-            <span style="color:#10b981; font-size:11px;">순항중</span>
-          </div>
-          <div style="margin:8px 0; font-size:11px; color:#888;">완료율 100%</div>
-          <div style="width:100%; height:6px; background:#222; border-radius:3px;"><div style="width:100%; height:100%; background:#8b5cf6;"></div></div>
+    render: () => {
+      const members = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.members) ? window.DASH26_SYNC_DATA.members : [
+        { name: "채경원", part: "AI혁신파트" }, { name: "김민수", part: "AI혁신파트" }
+      ];
+      return `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          ${members.slice(0, 2).map(m => {
+            const mTasks = demoTasks.filter(t => t.assignee === m.name);
+            const mDone = mTasks.filter(t => t.done).length;
+            const mOverdue = mTasks.filter(t => t.overdue).length;
+            const rate = mTasks.length > 0 ? Math.round((mDone / mTasks.length) * 100) : 100;
+            const isRed = mOverdue > 0;
+            return `
+              <div style="background:#0e1017; padding:14px; border-radius:8px; border:1px solid ${isRed ? '#ef4444' : '#23283b'}; box-shadow: ${isRed ? '0 0 10px rgba(239,68,68,0.2)' : 'none'};">
+                <div style="display:flex; justify-content:space-between;">
+                  <b>${m.name} (${m.part})</b>
+                  <span style="color:${isRed ? '#ef4444' : '#10b981'}; font-size:11px; font-weight:${isRed ? '700' : '400'};">
+                    ${isRed ? '지연 발생🚨' : '순항중'}
+                  </span>
+                </div>
+                <div style="margin:8px 0; font-size:11px; color:#888;">완료율 ${rate}% (지연 ${mOverdue}건)</div>
+                <div style="width:100%; height:6px; background:#222; border-radius:3px;">
+                  <div style="width:${rate}%; height:100%; background:${isRed ? '#ef4444' : '#8b5cf6'};"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
         </div>
-        <div style="background:#0e1017; padding:14px; border-radius:8px; border:1px solid #ef4444; box-shadow:0 0 10px rgba(239,68,68,0.2);">
-          <div style="display:flex; justify-content:space-between;">
-            <b>김민수 (AI혁신파트)</b>
-            <span style="color:#ef4444; font-size:11px; font-weight:700;">지연 발생🚨</span>
-          </div>
-          <div style="margin:8px 0; font-size:11px; color:#888;">완료율 50% (지연 1건)</div>
-          <div style="width:100%; height:6px; background:#222; border-radius:3px;"><div style="width:50%; height:100%; background:#ef4444;"></div></div>
-        </div>
-      </div>
-    `
+      `;
+    }
   },
   {
     step: "STEP 06",
@@ -236,7 +252,14 @@ const CURRICULUM = [
 ];
 
 let currentIdx = 0;
-let demoTasks = [
+// 우리 집 SQLite DB에서 동기화된 실제 데이터 사용
+let demoTasks = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.tasks) ? window.DASH26_SYNC_DATA.tasks.map(t => ({
+  id: t.id,
+  title: t.title,
+  assignee: t.assignee,
+  done: t.status === '완료',
+  overdue: t.status !== '완료' && t.due_date < new Date().toISOString().split('T')[0]
+})) : [
   { id: 1, title: "대시보드 심화 템플릿 완성", assignee: "채경원", done: false, overdue: false },
   { id: 2, title: "사내망 0.0.0.0 포트 오픈 테스트", assignee: "김민수", done: false, overdue: true },
   { id: 3, title: "주간보고 엑셀 시트 파싱", assignee: "이지은", done: true, overdue: false }
@@ -377,7 +400,7 @@ function resetDemoData() {
 const HOME_SERVER_QNA_API = "https://kwopi.duckdns.org/dashboard26/api/qna";
 const HOME_SERVER_NOTE_API = "https://kwopi.duckdns.org/dashboard26/api/note";
 
-let currentLecturerNote = {
+let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.note) ? window.DASH26_SYNC_DATA.note : {
   title: "바이브코딩 대시보드 심화 실습 핵심 요약 & 강사 특별 노트",
   content: `반갑습니다 수강생 여러분! 강사 채경원입니다.
 
@@ -399,7 +422,7 @@ let currentLecturerNote = {
 
 궁금한 점은 언제든 상단 [문의 & 질문함] 버튼을 눌러 남겨주세요. 실시간으로 답변해 드립니다!
 화이팅입니다!`,
-  updated_at: "2026-10-19 17:50"
+  updated_at: "2026-10-19 17:52"
 };
 
 // 📜 강사 특별 노트 제어
@@ -413,13 +436,17 @@ function closeNoteModal() {
 }
 
 async function loadLecturerNoteOnline() {
+  if (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.note) {
+    currentLecturerNote = window.DASH26_SYNC_DATA.note;
+  }
+
   try {
     const res = await fetch(HOME_SERVER_NOTE_API, { mode: 'cors' });
     if (res.ok) {
       currentLecturerNote = await res.json();
     }
   } catch (err) {
-    console.log("홈 서버 노트 연동 캐시 사용:", err);
+    // 오프라인/외부 접속 시 window.DASH26_SYNC_DATA 사용
   }
 
   // 화면 반영
@@ -446,8 +473,8 @@ function copyNoteContent() {
   });
 }
 
-// Q&A 질문함 제어
-let localQnAList = JSON.parse(localStorage.getItem('dash26_qna') || 'null') || [
+// Q&A 질문함 제어 (우리 집 SQLite DB 동기화 데이터 연동)
+let localQnAList = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.qna) ? window.DASH26_SYNC_DATA.qna : (JSON.parse(localStorage.getItem('dash26_qna') || 'null') || [
   {
     id: 1,
     created_at: "2026-10-19 17:30",
@@ -455,16 +482,8 @@ let localQnAList = JSON.parse(localStorage.getItem('dash26_qna') || 'null') || [
     type: "강사메모",
     content: "반갑습니다 여러분! 대시보드26 실습 중 질문이나 막히는 점은 언제든 편하게 여기에 남겨주세요. 실시간으로 확인하고 답변해드립니다.",
     reply: "확인 완료 · 공지 고정"
-  },
-  {
-    id: 2,
-    created_at: "2026-10-19 17:32",
-    author: "김선임 (수강생)",
-    type: "질문",
-    content: "start_team.bat으로 사내망 공유할 때 팀원 PC에서 안 들어가지면 방화벽 인바운드에서 포트 10211만 열어주면 되나요?",
-    reply: "네 맞습니다! 윈도우 고급 방화벽에서 '인바운드 규칙 -> 새 규칙 -> 포트 -> TCP 10211 허용'을 등록하시면 옆자리 팀원도 바로 접속됩니다."
   }
-];
+]);
 
 function openQnAModal() {
   document.getElementById('qna-modal').classList.add('active');
