@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=20261019_222309">
+  <link rel="stylesheet" href="style.css?v=20261020_074400">
 </head>
 <body>
   <!-- 상단 네비게이션 헤더 -->
@@ -23,6 +23,12 @@
         </div>
       </div>
       <div class="header-actions">
+        <button class="btn btn-primary" onclick="openVisionModal()" style="margin-right:8px; background:linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
+          🚀 AI 비전 & 도구 로드맵
+        </button>
+        <button class="btn btn-secondary" onclick="openDeployModal()" style="margin-right:8px; border-color:rgba(16,185,129,0.4); color:#6ee7b7;">
+          🌐 초간단 무료 공유법
+        </button>
         <button class="btn btn-primary" onclick="openNoteModal()" style="margin-right:8px; background:var(--grad-brand);">
           📜 강사 특별 노트 (종이 한 장)
         </button>
@@ -42,7 +48,7 @@
     <!-- 좌측: STEP별 강의 목차 및 프롬프트 복사기 -->
     <aside class="sidebar-guide">
       <div class="guide-title">
-        <span>📖 실습 목차 (STEP 01 ~ 11)</span>
+        <span>📖 실습 목차 (STEP 01 ~ 12)</span>
         <span class="badge-step" id="current-step-badge">STEP 01</span>
       </div>
 
@@ -182,7 +188,147 @@
     </div>
   </div>
 
-  <script src="data.js?v=20261019_222309"></script>
-  <script src="demo.js?v=20261019_222309"></script>
+  <!-- 🚀 AI 비전 & 도구 로드맵 모달 (구글 기업철학 & AI 스튜디오/노트북LM & 지혜) -->
+  <div class="modal-overlay" id="vision-modal">
+    <div class="glass-card modal-card" style="width:92%; max-width:840px; padding:32px; max-height:90vh; overflow-y:auto; background: #0c0e14; border: 1px solid rgba(6, 182, 212, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.85);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:16px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:22px;">🚀</span>
+            <span style="font-size:11px; padding:3px 8px; border-radius:4px; background:linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color:#fff; font-weight:700;">시작이 반이다 · 바이브코딩 미래 비전</span>
+            <span style="font-size:11px; color:var(--text-dim);">채경원 강사의 AI 로드맵</span>
+          </div>
+          <h2 style="font-size:20px; font-weight:800; margin-top:8px;">작은 시작이 쌓여 만드는 독보적인 AI 역량 & 도구 활용법</h2>
+        </div>
+        <button class="btn btn-secondary" onclick="closeVisionModal()" style="padding:4px 10px;">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:20px; font-size:13px; line-height:1.7; color:var(--text);">
+        <!-- 섹션 1: 시작이 반이다 & 선순환 -->
+        <div style="background:var(--bg-soft); border-left:4px solid #06b6d4; padding:16px 20px; border-radius:8px;">
+          <h4 style="font-size:15px; color:#38bdf8; margin-bottom:8px; font-weight:700;">💡 1. 시작이 반(半)이다: '학습 ↔ 제작'의 무한 선순환</h4>
+          <p style="color:var(--text-muted);">
+            처음에는 프롬프트 한 줄, 작은 대시보드 화면 하나를 띄우는 것으로 시작합니다. 하지만 이 <b>[학습 ➔ 제작 ➔ 피드백 ➔ 효율화]</b>의 사이클을 몇 번만 반복해 보면, 코드를 몰라도 머릿속 아이디어를 즉시 작동하는 소프트웨어로 바꾸는 감각(바이브)이 체화됩니다. 
+            완벽한 상태에서 시작하려 하지 말고, <b>지금 당장 작동하는 작은 결과물을 만들어보는 경험</b> 자체가 미래의 가장 큰 자산입니다.
+          </p>
+        </div>
+
+        <!-- 섹션 2: 비용 곡선과 선점 효과 -->
+        <div style="background:var(--bg-soft); border-left:4px solid #f59e0b; padding:16px 20px; border-radius:8px;">
+          <h4 style="font-size:15px; color:#fbbf24; margin-bottom:8px; font-weight:700;">📉 2. AI 비용의 급락과 기회를 포착하는 '경험의 힘'</h4>
+          <p style="color:var(--text-muted);">
+            현재 고성능 LLM API나 GPU 인프라는 적지 않은 비용이 들지만, 반도체 혁신과 모델 경량화(소형화)로 인해 <b>수요 대비 공급이 폭발하면서 AI 추론 비용은 매년 1/10 수준으로 급락</b>하고 있습니다. 머지않아 누구나 거의 공짜에 준하는 비용으로 초고성능 AI를 물 쓰듯 쓸 수 있는 시대가 옵니다.<br>
+            그때가 되었을 때 기술을 처음 배우는 사람과, <b>지금 시간과 노력을 들여 직접 만들어보며 시행착오를 겪어본 사람</b>의 차이는 하늘과 땅 차이입니다. 직접 겪어본 경험이 있어야만 '무엇을 만들면 사업이 되고 업무가 혁신되는지'를 꿰뚫어 보는 <b>통찰과 기회의 눈(지혜)</b>을 가질 수 있습니다.
+          </p>
+        </div>
+
+        <!-- 섹션 3: 핵심 구글 도구 삼총사 -->
+        <div style="background:var(--bg-soft); border-left:4px solid #8b5cf6; padding:16px 20px; border-radius:8px;">
+          <h4 style="font-size:15px; color:#c084fc; margin-bottom:12px; font-weight:700;">🛠️ 3. 반드시 알아야 할 차세대 AI 제작 & 연구 도구</h4>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div style="background:#07080d; border:1px solid var(--border); padding:14px; border-radius:8px;">
+              <b style="color:#a78bfa; font-size:14px;">⚡ Google AI Studio (구글 스튜디오)</b>
+              <p style="color:var(--text-muted); font-size:12px; margin-top:6px;">
+                Gemini 최신 모델(Gemini 2.5/Flash/Pro)을 무료 API 키로 즉시 테스트하고 시스템 프롬프트, 튜닝, 멀티모달 프롬프트를 직관적인 UI에서 설계할 수 있는 최고의 엔지니어링 놀이터입니다.
+              </p>
+            </div>
+            <div style="background:#07080d; border:1px solid var(--border); padding:14px; border-radius:8px;">
+              <b style="color:#38bdf8; font-size:14px;">📚 NotebookLM (구글 노트북LM)</b>
+              <p style="color:var(--text-muted); font-size:12px; margin-top:6px;">
+                PDF, 업무 문서, 유튜브 영상, 웹페이지를 통째로 업로드하여 내 문서만을 근거로 완벽하게 질의응답(RAG)하고, 오디오 팟캐스트까지 생성해주는 최고의 개인 지식 비서 도구입니다.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 섹션 4: 구글의 핵심 기업 철학 -->
+        <div style="background:var(--bg-soft); border-left:4px solid #10b981; padding:16px 20px; border-radius:8px;">
+          <h4 style="font-size:15px; color:#34d399; margin-bottom:8px; font-weight:700;">🌐 4. 구글(Google)의 핵심 기업 철학과 우리가 배울 점</h4>
+          <ul style="color:var(--text-muted); padding-left:18px; margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+            <li><b>"사용자에 초점을 맞추면 나머지는 저절로 따라온다 (Focus on the user and all else will follow)"</b>: 기술 자체가 아니라, 사용하는 동료와 팀원의 실제 불편함을 해결해주는 대시보드를 만드는 것이 본질입니다.</li>
+            <li><b>"한 분야에서 최고가 되는 것이 가장 좋다 (It’s best to do one thing really, really well)"</b>: 모든 걸 다 하려 하지 말고, 오늘 실습한 '팀 할 일 관리'처럼 하나의 쓸모 있는 기능을 확실히 완성하는 습관이 중요합니다.</li>
+            <li><b>"완벽한 상태를 기다리지 말고 세상에 내놓아라 (Launch and Iterate)"</b>: 바이브코딩 역시 한 번에 완성하는 것이 아니라, 대화하며 점진적으로 기능을 키워나가는 과정입니다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; text-align:right;">
+        <button class="btn btn-secondary" onclick="closeVisionModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🌐 초간단 무료 웹앱 공유 가이드 모달 (보안 무위험 · 외부 공개 배포법) -->
+  <div class="modal-overlay" id="deploy-modal">
+    <div class="glass-card modal-card" style="width:92%; max-width:840px; padding:32px; max-height:90vh; overflow-y:auto; background: #0c0e14; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.85);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:16px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:22px;">🌐</span>
+            <span style="font-size:11px; padding:3px 8px; border-radius:4px; background:linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color:#fff; font-weight:700;">실습 공유 실전 가이드</span>
+            <span style="font-size:11px; color:var(--text-dim);">누구나 무료로 1분 만에 배포</span>
+          </div>
+          <h2 style="font-size:20px; font-weight:800; margin-top:8px;">내 PC·집 네트워크 침범 없이 안전하게 웹앱을 세상에 공유하는 3가지 방법</h2>
+        </div>
+        <button class="btn btn-secondary" onclick="closeDeployModal()" style="padding:4px 10px;">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:20px; font-size:13px; line-height:1.7; color:var(--text);">
+        <!-- 인트로 -->
+        <div style="background:rgba(239, 68, 68, 0.08); border-left:4px solid #ef4444; padding:14px 18px; border-radius:8px;">
+          <b style="color:#f87171;">⚠️ 왜 집/회사 서버를 외부로 직접 열면 안 될까요?</b>
+          <p style="color:var(--text-muted); font-size:12px; margin-top:4px;">
+            내 컴퓨터의 포트를 외부에 직접 열거나 포트포워딩을 하면 IP 노출, 해킹, 악성코드 침입 등 보안 위험이 큽니다. 따라서 <b>내 PC나 서버는 전혀 건드리지 않고, 검증된 글로벌 무료 클라우드를 활용해 정적 웹이나 안전한 샌드박스로 공유</b>하는 것이 현명합니다.
+          </p>
+        </div>
+
+        <!-- 3대 공유 방법 카드 -->
+        <div style="display:grid; grid-template-columns:1fr; gap:14px;">
+          <!-- 방법 1 -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); padding:18px; border-radius:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="font-size:15px; color:#34d399; font-weight:700;">🥇 1. GitHub Pages (가장 강력하고 100% 무료 · 현재 사이트 배포 방식)</h4>
+              <span style="font-size:11px; background:#10b98122; color:#34d399; padding:2px 8px; border-radius:4px; font-weight:600;">초보자 추천 1위</span>
+            </div>
+            <p style="color:var(--text-muted);">
+              내가 만든 HTML, CSS, JS 파일을 깃허브 저장소에 올리고 [Settings] ➔ [Pages] ➔ [main branch]를 선택하면 1초 만에 <code>https://내아이디.github.io/프로젝트명/</code> 주소가 무료로 생성됩니다.
+            </p>
+            <div style="background:#07080d; border-radius:6px; padding:10px 14px; margin-top:8px; font-size:12px; color:#a7f3d0;">
+              ✨ <b>백엔드 데이터가 필요할 땐?</b> 오늘 배운 <b>구글 스프레드시트 Web App(Apps Script)</b>을 연결하면, DB 서버 한 대 없이도 누구나 글을 쓰고 읽는 실시간 풀스택 웹앱이 완성됩니다!
+            </div>
+          </div>
+
+          <!-- 방법 2 -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); padding:18px; border-radius:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="font-size:15px; color:#38bdf8; font-weight:700;">🥈 2. Vercel 또는 Netlify (폴더 드래그앤드롭으로 30초 배포)</h4>
+              <span style="font-size:11px; background:#0284c722; color:#38bdf8; padding:2px 8px; border-radius:4px; font-weight:600;">클릭 몇 번으로 끝</span>
+            </div>
+            <p style="color:var(--text-muted);">
+              가입 후 웹 브라우저 화면에 내가 만든 웹앱 폴더(HTML 파일들)를 <b>마우스로 끌어다 놓기(Drag & Drop)</b>만 하면 즉시 전 세계 어디서든 접속 가능한 <code>https://내앱.vercel.app</code> 보안 HTTPS 링크가 만들어집니다.
+            </p>
+          </div>
+
+          <!-- 방법 3 -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); padding:18px; border-radius:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="font-size:15px; color:#f472b6; font-weight:700;">🥉 3. 구글 코랩(Colab) + ngrok 임시 터널링 (실습 중 5분 시연용)</h4>
+              <span style="font-size:11px; background:#db277722; color:#f472b6; padding:2px 8px; border-radius:4px; font-weight:600;">수업 시간 전용</span>
+            </div>
+            <p style="color:var(--text-muted);">
+              내 PC 대신 구글이 무료로 제공하는 웹 컴퓨터(Colab)에서 Python Flask 서버를 돌리고, ngrok 또는 localtunnel 명령 한 줄로 임시 퍼블릭 URL을 만들어 동료들에게 링크를 보내는 방식입니다. 수업이 끝나면 세션이 닫혀 완벽히 격리됩니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; text-align:right;">
+        <button class="btn btn-secondary" onclick="closeDeployModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js?v=20261020_074400"></script>
+  <script src="demo.js?v=20261020_074400"></script>
 </body>
 </html>

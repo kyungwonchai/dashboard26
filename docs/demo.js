@@ -248,6 +248,47 @@ const CURRICULUM = [
         </p>
       </div>
     `
+  },
+  {
+    step: "STEP 12",
+    part: "PART 5 · 미래 비전과 확장",
+    title: "AI 제작 도구 마스터 & 1분 무료 웹앱 공유",
+    desc: "학습과 제작의 선순환으로 경험의 지혜를 쌓고, Google AI Studio·NotebookLM 연계 및 GitHub Pages/Vercel/Colab으로 보안 위협 없이 세상에 내 앱을 공유하는 최고급 노하우입니다.",
+    prompt: `우리가 만든 대시보드 웹앱을 팀원이나 외부 사람들에게 안전하고 무료로 공유하는 방법과 AI 심화 도구 활용법을 가이드해줘.\n- 내 PC 포트나 집 네트워크를 외부에 열지 않고(보안 100% 안전) 누구나 접속할 수 있게 만들기\n- 방법 1: GitHub Pages로 정적 화면 배포 + 구글 스프레드시트 Apps Script로 실시간 DB 연동\n- 방법 2: Vercel / Netlify로 폴더 드래그앤드롭 30초 배포\n- 방법 3: 구글 코랩(Colab) + ngrok으로 수업 중 5분 만에 라이브 서버 공유\n- Google AI Studio를 활용한 시스템 프롬프트 및 API 튜닝 노하우\n- NotebookLM에 우리 프로젝트 코드와 문서를 넣어 나만의 전담 지식비서 만들기\n- 시작이 반(半)이며, AI 비용이 급락하는 미래에 오늘 쌓은 '제작 경험'이 왜 최고의 자산과 기회의 눈이 되는지 철학 정리`,
+    mission: "상단 '🚀 AI 비전 & 도구 로드맵'과 '🌐 초간단 무료 공유법' 모달을 열어 실무에 즉시 적용해보세요.",
+    render: () => `
+      <div style="display:flex; flex-direction:column; gap:12px; font-size:12px;">
+        <div style="background:#0e1017; border:1px solid #06b6d4; border-radius:8px; padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b style="color:#38bdf8; font-size:14px;">🚀 시작이 반이다: 학습과 제작의 선순환</b>
+            <span style="background:rgba(6,182,212,0.15); color:#38bdf8; padding:2px 8px; border-radius:4px; font-size:11px;">강사 핵심 철학</span>
+          </div>
+          <p style="color:#aaa; margin-top:6px; line-height:1.6;">
+            AI 추론 비용은 매년 1/10로 급락하고 공급은 폭발합니다. 비용이 거의 공짜가 되는 미래에 가장 큰 무기는 <b>'지금 시간과 노력을 들여 직접 만들어보고 겪어본 경험'</b>입니다. 경험이 있어야 무엇이 가치 있는지 꿰뚫어 보는 지혜(기회의 눈)가 생깁니다.
+          </p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div style="background:#0e1017; border:1px solid #10b981; border-radius:8px; padding:12px;">
+            <b style="color:#34d399;">🌐 보안 걱정 없는 무료 배포</b>
+            <p style="color:#888; font-size:11px; margin-top:4px;">집 PC 포트를 열 필요 없이 GitHub Pages, Vercel, Colab으로 1분 만에 전 세계 무료 공유</p>
+          </div>
+          <div style="background:#0e1017; border:1px solid #8b5cf6; border-radius:8px; padding:12px;">
+            <b style="color:#a78bfa;">🛠️ AI Studio & NotebookLM</b>
+            <p style="color:#888; font-size:11px; margin-top:4px;">최신 Gemini 무료 엔지니어링 샌드박스와 내 문서 기반 100% 팩트 기반 RAG 비서</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:4px;">
+          <button class="btn btn-primary" onclick="openVisionModal()" style="flex:1; justify-content:center; background:linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); font-size:12px;">
+            🚀 AI 비전 & 도구 로드맵 열기
+          </button>
+          <button class="btn btn-secondary" onclick="openDeployModal()" style="flex:1; justify-content:center; border-color:#10b981; color:#6ee7b7; font-size:12px;">
+            🌐 1분 무료 공유법 확인하기
+          </button>
+        </div>
+      </div>
+    `
   }
 ];
 
@@ -425,6 +466,22 @@ let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.no
 화이팅입니다!`,
   updated_at: "2026-10-19 17:52"
 };
+
+// 🚀 AI 비전 & 도구 로드맵 모달 제어
+function openVisionModal() {
+  document.getElementById('vision-modal').classList.add('active');
+}
+function closeVisionModal() {
+  document.getElementById('vision-modal').classList.remove('active');
+}
+
+// 🌐 초간단 무료 공유 가이드 모달 제어
+function openDeployModal() {
+  document.getElementById('deploy-modal').classList.add('active');
+}
+function closeDeployModal() {
+  document.getElementById('deploy-modal').classList.remove('active');
+}
 
 // 📜 강사 특별 노트 제어
 function openNoteModal() {
