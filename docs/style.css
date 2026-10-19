@@ -323,6 +323,24 @@ body {
   overflow-y: auto;
 }
 
+/* 모달 레이어 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-overlay.active {
+  display: flex;
+}
+
 @media (max-width: 1000px) {
   .main-container {
     flex-direction: column;

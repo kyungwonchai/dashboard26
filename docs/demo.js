@@ -369,3 +369,141 @@ function resetDemoData() {
   selectStep(currentIdx);
   alert('🔄 가상 데이터가 초기화되었습니다.');
 }
+
+// ========================================================
+// Q&A 및 강사 메모함 (구글 스프레드시트 API 연동 지원)
+// ========================================================
+// 구글 시트 배포 후 발급받은 Web App URL을 여기에 넣으면 즉시 전 세계 실시간 연동됩니다.
+// 빈 값일 때는 브라우저 LocalStorage를 활용한 초간편 데모 모드로 자동 작동합니다.
+const GOOGLE_SHEET_API_URL = ""; 
+
+let localQnAList = JSON.parse(localStorage.getItem('dash26_qna') || 'null') || [
+  {
+    id: 1,
+    createdAt: "2026-10-19 17:30",
+    author: "채경원 (강사)",
+    type: "강사메모",
+    content: "반갑습니다 여러분! 대시보드26 실습 중 질문이나 막히는 점은 언제든 편하게 여기에 남겨주세요. 실시간으로 확인하고 답변해드립니다.",
+    reply: "확인 완료 · 공지 고정"
+  },
+  {
+    id: 2,
+    createdAt: "2026-10-19 17:32",
+    author: "김선임 (수강생)",
+    type: "질문",
+    content: "start_team.bat으로 사내망 공유할 때 팀원 PC에서 안 들어가지면 방화벽 인바운드에서 포트 10211만 열어주면 되나요?",
+    reply: "네 맞습니다! 윈도우 고급 방화벽에서 '인바운드 규칙 -> 새 규칙 -> 포트 -> TCP 10211 허용'을 등록하시면 옆자리 팀원도 바로 접속됩니다."
+  }
+];
+
+function openQnAModal() {
+  document.getElementById('qna-modal').classList.add('active');
+  loadQnAList();
+}
+
+function closeQnAModal() {
+  document.getElementById('qna-modal').classList.remove('active');
+}
+
+async function loadQnAList() {
+  const container = document.getElementById('qna-list');
+  if (!container) return;
+
+  if (GOOGLE_SHEET_API_URL) {
+    try {
+      const res = await fetch(GOOGLE_SHEET_API_URL);
+      const data = await res.json();
+      renderQnAItems(data);
+      return;
+    } catch (e) {
+      console.warn("구글 시트 연동 대기중 (로컬 모드로 폴백):", e);
+    }
+  }
+
+  renderQnAItems(localQnAList);
+}
+
+function renderQnAItems(items) {
+  const container = document.getElementById('qna-list');
+  if (!container) return;
+
+  if (!items || items.length === 0) {
+    container.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text-dim); font-size:12px;">등록된 문의나 메모가 없습니다.</p>`;
+    return;
+  }
+
+  container.innerHTML = items.map(item => {
+    const isMemo = item.type === "강사메모";
+    return `
+      <div style="background:#0e1017; border:1px solid ${isMemo ? 'var(--accent)' : 'var(--border)'}; border-radius:8px; padding:12px 14px; font-size:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:700; background:${isMemo ? 'rgba(139,92,246,0.2)' : 'rgba(6,182,212,0.2)'}; color:${isMemo ? '#a78bfa' : '#38bdf8'};">
+              ${item.type}
+            </span>
+            <b style="color:var(--text);">${escapeHtml(item.author)}</b>
+          </div>
+          <span style="color:var(--text-dim); font-size:11px;">${item.createdAt}</span>
+        </div>
+        <p style="color:var(--text-muted); line-height:1.5; margin:6px 0;">${escapeHtml(item.content)}</p>
+        ${item.reply ? `
+          <div style="margin-top:8px; padding:8px 10px; background:rgba(16,185,129,0.08); border-left:3px solid #10b981; border-radius:4px; font-size:11px; color:#a7f3d0;">
+            <b>답변:</b> ${escapeHtml(item.reply)}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+async function submitQnA(e) {
+  e.preventDefault();
+  const author = document.getElementById('qna-author').value.trim();
+  const type = document.getElementById('qna-type').value;
+  const content = document.getElementById('qna-content').value.trim();
+
+  if (!author || !content) return;
+
+  const newItem = {
+    id: Date.now(),
+    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    author: author,
+    type: type,
+    content: content,
+    reply: ""
+  };
+
+  if (GOOGLE_SHEET_API_URL) {
+    try {
+      await fetch(GOOGLE_SHEET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(newItem)
+      });
+      alert('구글 스프레드시트에 실시간으로 등록되었습니다!');
+      document.getElementById('qna-content').value = '';
+      loadQnAList();
+      return;
+    } catch (err) {
+      console.warn("구글 시트 전송 실패, 로컬에 저장합니다:", err);
+    }
+  }
+
+  localQnAList.unshift(newItem);
+  localStorage.setItem('dash26_qna', JSON.stringify(localQnAList));
+  document.getElementById('qna-content').value = '';
+  loadQnAList();
+  alert('게시글이 성공적으로 등록되었습니다!');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[m]);
+}
+
