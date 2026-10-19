@@ -395,8 +395,9 @@ function resetDemoData() {
 }
 
 // ========================================================
-// Q&A 및 강사 특별 노트 (우리 집 서버 실시간 연동)
+// Q&A 및 강사 특별 노트 (구글 스프레드시트 실시간 NoSQL 연동)
 // ========================================================
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzj7R66hw1P6suB-emsCr52oIPEjDlOK2I2ho9TZ9f0KjgT2CT3MV9OMiw2xTVGjTSX/exec";
 const HOME_SERVER_QNA_API = "https://kwopi.duckdns.org/dashboard26/api/qna";
 const HOME_SERVER_NOTE_API = "https://kwopi.duckdns.org/dashboard26/api/note";
 
@@ -498,7 +499,23 @@ async function loadQnAList() {
   const container = document.getElementById('qna-list');
   if (!container) return;
 
-  // 1. 우리 집 서버에서 실시간 Q&A 가져오기 시도
+  // 1. 구글 스프레드시트 실시간 NoSQL DB에서 가져오기
+  if (GOOGLE_SHEET_API_URL) {
+    try {
+      const res = await fetch(GOOGLE_SHEET_API_URL);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          renderQnAItems(data);
+          return;
+        }
+      }
+    } catch (e) {
+      console.log("구글 시트 연동 로딩 폴백:", e);
+    }
+  }
+
+  // 2. 홈 서버 직접 통신 시도 (집 내부 또는 인증서 환경)
   try {
     const res = await fetch(HOME_SERVER_QNA_API, { mode: 'cors' });
     if (res.ok) {
@@ -507,8 +524,7 @@ async function loadQnAList() {
       return;
     }
   } catch (e) {
-    // 외부망 직접 호출 제한 시 로컬 스토리지 데이터로 부드럽게 폴백
-    console.log("홈 서버 연동 폴백(브라우저 캐시 모드):", e);
+    // 외부망 직접 호출 제한 시 마스터 데이터로 폴백
   }
 
   renderQnAItems(localQnAList);
@@ -525,6 +541,7 @@ function renderQnAItems(items) {
 
   container.innerHTML = items.map(item => {
     const isMemo = item.type === "강사메모";
+    const dateStr = item.createdAt || item.created_at || "";
     return `
       <div style="background:#0e1017; border:1px solid ${isMemo ? 'var(--accent)' : 'var(--border)'}; border-radius:8px; padding:12px 14px; font-size:12px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -534,7 +551,7 @@ function renderQnAItems(items) {
             </span>
             <b style="color:var(--text);">${escapeHtml(item.author)}</b>
           </div>
-          <span style="color:var(--text-dim); font-size:11px;">${item.createdAt}</span>
+          <span style="color:var(--text-dim); font-size:11px;">${dateStr}</span>
         </div>
         <p style="color:var(--text-muted); line-height:1.5; margin:6px 0;">${escapeHtml(item.content)}</p>
         ${item.reply ? `
@@ -557,13 +574,32 @@ async function submitQnA(e) {
 
   const newItem = {
     id: Date.now(),
-    created_at: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
     author: author,
     type: type,
     content: content,
     reply: ""
   };
 
+  // 1. 구글 스프레드시트로 실시간 전송
+  if (GOOGLE_SHEET_API_URL) {
+    try {
+      await fetch(GOOGLE_SHEET_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author, type, content })
+      });
+      alert('🎉 구글 스프레드시트에 질문이 실시간으로 등록되었습니다!\n강사님이 확인 후 답변을 작성하면 화면에 자동 표시됩니다.');
+      document.getElementById('qna-content').value = '';
+      setTimeout(loadQnAList, 1500);
+      return;
+    } catch (err) {
+      console.log("구글 시트 전송 오류:", err);
+    }
+  }
+
+  // 2. 홈 서버 전송 시도
   try {
     const res = await fetch(HOME_SERVER_QNA_API, {
       method: 'POST',
@@ -572,7 +608,7 @@ async function submitQnA(e) {
       mode: 'cors'
     });
     if (res.ok) {
-      alert('우리 집 DB에 질문이 실시간으로 등록되었습니다! 강사님이 확인 후 곧 답변을 달아드립니다.');
+      alert('우리 집 DB에 질문이 등록되었습니다!');
       document.getElementById('qna-content').value = '';
       loadQnAList();
       return;
@@ -586,7 +622,7 @@ async function submitQnA(e) {
   localStorage.setItem('dash26_qna', JSON.stringify(localQnAList));
   document.getElementById('qna-content').value = '';
   loadQnAList();
-  alert('질문이 등록되었습니다! (강사님 승인 후 답변이 업데이트됩니다)');
+  alert('질문이 등록되었습니다!');
 }
 
 function escapeHtml(str) {
