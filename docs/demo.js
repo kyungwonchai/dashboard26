@@ -436,11 +436,9 @@ function resetDemoData() {
 }
 
 // ========================================================
-// Q&A 및 강사 특별 노트 (구글 스프레드시트 실시간 NoSQL 연동)
+// Q&A 및 강사 특별 노트 (100% 구글 스프레드시트 실시간 NoSQL 연동 · 외부 서버 통신 일절 없음)
 // ========================================================
 const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzj7R66hw1P6suB-emsCr52oIPEjDlOK2I2ho9TZ9f0KjgT2CT3MV9OMiw2xTVGjTSX/exec";
-const HOME_SERVER_QNA_API = "https://kwopi.duckdns.org/dashboard26/api/qna";
-const HOME_SERVER_NOTE_API = "https://kwopi.duckdns.org/dashboard26/api/note";
 
 let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.note) ? window.DASH26_SYNC_DATA.note : {
   title: "바이브코딩 대시보드 심화 실습 핵심 요약 & 강사 특별 노트",
@@ -504,15 +502,6 @@ function closeNoteModal() {
 async function loadLecturerNoteOnline() {
   if (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.note) {
     currentLecturerNote = window.DASH26_SYNC_DATA.note;
-  }
-
-  try {
-    const res = await fetch(HOME_SERVER_NOTE_API, { mode: 'cors' });
-    if (res.ok) {
-      currentLecturerNote = await res.json();
-    }
-  } catch (err) {
-    // 오프라인/외부 접속 시 window.DASH26_SYNC_DATA 사용
   }
 
   // 화면 반영
@@ -580,18 +569,7 @@ async function loadQnAList() {
     }
   }
 
-  // 2. 홈 서버 직접 통신 시도 (집 내부 또는 인증서 환경)
-  try {
-    const res = await fetch(HOME_SERVER_QNA_API, { mode: 'cors' });
-    if (res.ok) {
-      const data = await res.json();
-      renderQnAItems(data);
-      return;
-    }
-  } catch (e) {
-    // 외부망 직접 호출 제한 시 마스터 데이터로 폴백
-  }
-
+  // 2. 오프라인 또는 초기 마스터 데이터로 표시
   renderQnAItems(localQnAList);
 }
 
@@ -646,7 +624,7 @@ async function submitQnA(e) {
     reply: ""
   };
 
-  // 1. 구글 스프레드시트로 실시간 전송
+  // 1. 구글 스프레드시트로 실시간 전송 (완전 무료 NoSQL API)
   if (GOOGLE_SHEET_API_URL) {
     try {
       await fetch(GOOGLE_SHEET_API_URL, {
@@ -664,25 +642,7 @@ async function submitQnA(e) {
     }
   }
 
-  // 2. 홈 서버 전송 시도
-  try {
-    const res = await fetch(HOME_SERVER_QNA_API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ author, type, content }),
-      mode: 'cors'
-    });
-    if (res.ok) {
-      alert('우리 집 DB에 질문이 등록되었습니다!');
-      document.getElementById('qna-content').value = '';
-      loadQnAList();
-      return;
-    }
-  } catch (err) {
-    console.log("홈 서버 직접 통신 폴백:", err);
-  }
-
-  // 폴백 로컬 저장
+  // 2. 브라우저 로컬 저장 폴백
   localQnAList.unshift(newItem);
   localStorage.setItem('dash26_qna', JSON.stringify(localQnAList));
   document.getElementById('qna-content').value = '';
