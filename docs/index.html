@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=20261020_074400">
+  <link rel="stylesheet" href="style.css?v=20261020_074743">
 </head>
 <body>
   <!-- 상단 네비게이션 헤더 -->
@@ -23,6 +23,9 @@
         </div>
       </div>
       <div class="header-actions">
+        <button class="btn btn-primary" onclick="openTimetableModal()" style="margin-right:8px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+          🎯 4시간 강의 로드맵 & 학습목표
+        </button>
         <button class="btn btn-primary" onclick="openVisionModal()" style="margin-right:8px; background:linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
           🚀 AI 비전 & 도구 로드맵
         </button>
@@ -59,6 +62,44 @@
 
     <!-- 우측: 해당 단계의 동작 시뮬레이션 및 프롬프트 설명창 -->
     <main class="content-simulator">
+      <!-- 🎯 [4줄 핵심 학습목표] & LLM의 본질 배너 -->
+      <section class="glass-card" style="padding: 20px 24px; border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">🎯</span>
+            <h3 style="font-size:16px; font-weight:800; color:#fbbf24;">오늘의 바이브코딩 대시보드 심화 4대 핵심 목표</h3>
+            <span style="font-size:11px; padding:2px 8px; border-radius:4px; background:rgba(245,158,11,0.2); color:#fbbf24; font-weight:700;">강의 핵심</span>
+          </div>
+          <button class="btn btn-secondary" onclick="openTimetableModal()" style="font-size:11px; padding:4px 10px;">
+            4시간 수업시간표 보기 ↗
+          </button>
+        </div>
+        <!-- 4줄 목표 -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:10px; margin-bottom:14px;">
+          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
+            <b style="color:#38bdf8;">1. [의도와 맥락의 주입]</b>
+            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">왜(Why), 무엇을(What), 어떻게(How)의 명확한 의도를 제시해 AI가 스스로 고품질 코드를 생성하도록 조율한다.</p>
+          </div>
+          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
+            <b style="color:#a78bfa;">2. [실전 풀스택 대시보드 완성]</b>
+            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">Flask + SQLite + Chart.js + 엑셀(openpyxl) 자동화로 100% 동작하는 업무 포털을 내 손으로 구축한다.</p>
+          </div>
+          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
+            <b style="color:#34d399;">3. [규칙 기반 자동 안전망]</b>
+            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">GEMINI.md 규칙과 7회 자동 회전 백업으로 코드와 데이터를 절대 날리지 않는 엔터프라이즈 안전성을 확보한다.</p>
+          </div>
+          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
+            <b style="color:#fbbf24;">4. [경험의 선점과 안전한 공유]</b>
+            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">사내망 0.0.0.0 및 GitHub Pages·구글시트 NoSQL로 보안 위협 없이 세상에 내 앱을 배포하고 AI 미래를 선점한다.</p>
+          </div>
+        </div>
+        <!-- LLM의 본질 한 줄 -->
+        <div style="background:rgba(139,92,246,0.1); border-radius:6px; padding:8px 12px; font-size:12px; color:#c084fc; display:flex; align-items:center; gap:8px;">
+          <span>💡</span>
+          <span><b>LLM(거대언어모델)의 본질:</b> 문맥(Context)과 의도가 모호하면 그럴듯한 거짓말을 하지만, <b>'왜(Why) · 무엇을(What) · 어떻게(How)'</b>가 명확하고 파일 규칙이 제공되면 스스로 완벽한 정답을 찾아냅니다.</span>
+        </div>
+      </section>
+
       <!-- 📜 상단 종이 한 장: 강사 특별 노트 배너 -->
       <section class="glass-card" style="padding: 20px 24px; border-left: 4px solid var(--accent); background: rgba(139, 92, 246, 0.05); display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -328,7 +369,103 @@
     </div>
   </div>
 
-  <script src="data.js?v=20261020_074400"></script>
-  <script src="demo.js?v=20261020_074400"></script>
+  <!-- 🎯 4시간 강의 로드맵 & LLM 원리 모달 -->
+  <div class="modal-overlay" id="timetable-modal">
+    <div class="glass-card modal-card" style="width:92%; max-width:860px; padding:32px; max-height:90vh; overflow-y:auto; background: #0c0e14; border: 1px solid rgba(245, 158, 11, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.85);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:16px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:22px;">🎯</span>
+            <span style="font-size:11px; padding:3px 8px; border-radius:4px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; font-weight:700;">강의 커리큘럼 편성표</span>
+            <span style="font-size:11px; color:var(--text-dim);">총 4교시 (교시당 45~50분)</span>
+          </div>
+          <h2 style="font-size:20px; font-weight:800; margin-top:8px;">4시간 만에 끝내는 Gemini CLI 대시보드 심화 & 실전 배포 로드맵</h2>
+        </div>
+        <button class="btn btn-secondary" onclick="closeTimetableModal()" style="padding:4px 10px;">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:20px; font-size:13px; line-height:1.7; color:var(--text);">
+        <!-- LLM의 특성과 의도의 중요성 설명 카드 -->
+        <div style="background:rgba(139, 92, 246, 0.08); border-left:4px solid #8b5cf6; padding:16px 20px; border-radius:8px;">
+          <h4 style="font-size:15px; color:#c084fc; font-weight:700; margin-bottom:6px;">🧠 강사 특강: LLM의 작동 원리와 '의도(Intent)'의 절대적 중요성</h4>
+          <p style="color:var(--text-muted); font-size:12px; line-height:1.6;">
+            거대언어모델(LLM)은 코드를 외워서 타이핑하는 번역기가 아닙니다. <b>다음에 올 가장 그럴듯한 단어와 논리 구조를 확률적으로 추론하는 인공지능</b>입니다.<br>
+            따라서 지시가 모호하면 엉뚱한 가짜 코드를 만들어내지만, <b>'왜(Why: 배경 목적) · 무엇을(What: 기능 범위) · 어떻게(How: 디자인/라이브러리/예외처리)'</b>라는 3대 축이 명확하고, <code>GEMINI.md</code>처럼 미리 약속된 규칙 문서가 프로젝트에 존재하면 <b>인간 시니어 개발자보다 더 정확하고 안전하게 코드를 스스로 완성</b>합니다.
+          </p>
+        </div>
+
+        <!-- 4교시 시간표 카드 그리드 -->
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <!-- 1교시 -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); border-radius:10px; padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:rgba(56, 189, 248, 0.15); color:#38bdf8; font-weight:800; font-size:12px; padding:3px 8px; border-radius:4px;">1교시 (50분)</span>
+                <b style="font-size:15px; color:#f1f3f9;">[이론 & 뼈대] 바이브코딩 철학, 규칙 주입 & 웹 서버 뼈대 구축</b>
+              </div>
+              <span style="font-size:12px; color:var(--text-dim);">STEP 01 ~ 02</span>
+            </div>
+            <p style="color:var(--text-muted); font-size:12px; margin-bottom:6px;">
+              - <b>이론 (20분):</b> 왜 바이브코딩인가? LLM의 원리와 '왜·무엇을·어떻게' 3대 원칙. 프롬프트 실패를 막는 <code>GEMINI.md</code> 규칙 파일 설계법.<br>
+              - <b>실습 (30분):</b> Gemini CLI로 Flask 가상환경 생성, 상단 4대 지표 카드와 반응형 좌측 메뉴 틀 구현.
+            </p>
+          </div>
+
+          <!-- 2교시 -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); border-radius:10px; padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:rgba(168, 85, 247, 0.15); color:#c084fc; font-weight:800; font-size:12px; padding:3px 8px; border-radius:4px;">2교시 (50분)</span>
+                <b style="font-size:15px; color:#f1f3f9;">[데이터 & 인터랙션] 영구 보존 SQLite DB 연동과 개인화 필터</b>
+              </div>
+              <span style="font-size:12px; color:var(--text-dim);">STEP 03 ~ 05</span>
+            </div>
+            <p style="color:var(--text-muted); font-size:12px; margin-bottom:6px;">
+              - <b>실습 (40분):</b> 단일 파일형 DB(dashboard.db) 설계, 할 일 CRUD 및 '지연 경고' 로직, '나는 누구?' 내 업무 필터, 30초 실시간 팀 현황판 완성.<br>
+              - <b>점검 & 질의응답 (10분):</b> DB 파일 락(Lock) 이슈 방지 원리와 SQL 쿼리를 AI에게 안전하게 시키는 꿀팁.
+            </p>
+          </div>
+
+          <!-- 3교시 -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); border-radius:10px; padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:rgba(16, 185, 129, 0.15); color:#34d399; font-weight:800; font-size:12px; padding:3px 8px; border-radius:4px;">3교시 (50분)</span>
+                <b style="font-size:15px; color:#f1f3f9;">[업무 자동화 & 시각화] 엑셀 파싱(openpyxl) & Chart.js 보고서</b>
+              </div>
+              <span style="font-size:12px; color:var(--text-dim);">STEP 06 ~ 08</span>
+            </div>
+            <p style="color:var(--text-muted); font-size:12px; margin-bottom:6px;">
+              - <b>실습 (40분):</b> 엑셀 양식 다운로드 및 일괄 업로드(오류 행 사전검증), Chart.js 3종 차트(완료건수/소요시간/주간추이), 원클릭 주간보고 텍스트 및 엑셀 다운로드.<br>
+              - <b>실무 꿀팁 (10분):</b> 엑셀 서식 깨짐 방지와 사내 보고용 표준 템플릿 연동 노하우.
+            </p>
+          </div>
+
+          <!-- 4교시 -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); border-radius:10px; padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:rgba(245, 158, 11, 0.15); color:#fbbf24; font-weight:800; font-size:12px; padding:3px 8px; border-radius:4px;">4교시 (50분)</span>
+                <b style="font-size:15px; color:#f1f3f9;">[팀 배포 & 미래 비전] 원클릭 배포, 구글 도구 마스터 & 종합 Q&A</b>
+              </div>
+              <span style="font-size:12px; color:var(--text-dim);">STEP 09 ~ 12</span>
+            </div>
+            <p style="color:var(--text-muted); font-size:12px; margin-bottom:6px;">
+              - <b>실습 (25분):</b> 사내망 0.0.0.0 팀 공유 모드, start.bat 원클릭 기동 및 자동 7회 회전 백업 체계.<br>
+              - <b>특강 & 공유 (15분):</b> 보안 위협 없이 GitHub Pages + 구글 스프레드시트 Web App으로 1분 만에 무료 배포하기, Google AI Studio 및 NotebookLM RAG 연동.<br>
+              - <b>피날레 & 종합 질의응답 (10분):</b> 강사 특별 노트 공유 및 학습 후 지속적 셀프 성장 로드맵 가이드.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; text-align:right;">
+        <button class="btn btn-secondary" onclick="closeTimetableModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js?v=20261020_074743"></script>
+  <script src="demo.js?v=20261020_074743"></script>
 </body>
 </html>

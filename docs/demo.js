@@ -467,6 +467,14 @@ let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.no
   updated_at: "2026-10-19 17:52"
 };
 
+// 🎯 4시간 강의 로드맵 & LLM 원리 모달 제어
+function openTimetableModal() {
+  document.getElementById('timetable-modal').classList.add('active');
+}
+function closeTimetableModal() {
+  document.getElementById('timetable-modal').classList.remove('active');
+}
+
 // 🚀 AI 비전 & 도구 로드맵 모달 제어
 function openVisionModal() {
   document.getElementById('vision-modal').classList.add('active');
