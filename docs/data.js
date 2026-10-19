@@ -1,6 +1,6 @@
 // data.js - 우리 집 SQLite DB와 100% 완전 동기화된 마스터 데이터셋
 window.DASH26_SYNC_DATA = {
-  "updatedAt": "2026-10-19 18:31:56",
+  "updatedAt": "2026-10-19 18:41:35",
   "note": {
     "id": 1,
     "title": "바이브코딩 대시보드 심화 실습 핵심 요약 & 강사 특별 노트",
@@ -158,6 +158,17 @@ window.DASH26_SYNC_DATA = {
       "color": "#8b5cf6",
       "memo": "온/오프라인 동시 진행",
       "created_at": "2026-10-19 08:06:44"
+    },
+    {
+      "id": 4,
+      "title": "📋 [특강] 구글 스프레드시트 실시간 DB 연동 가이드",
+      "start_date": "2026-10-19",
+      "end_date": "2026-10-22",
+      "member_name": "채경원",
+      "category": "특강/가이드",
+      "color": "#10b981",
+      "memo": "가입/포트개방 없는 실시간 NoSQL 연동 (1단계 시트생성: id, createdAt, author, type, content, reply / 2단계 Apps Script 복사 / 3단계 웹앱 배포)",
+      "created_at": "2026-10-19 18:41:30"
     },
     {
       "id": 2,
