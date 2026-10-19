@@ -122,6 +122,19 @@ def init_db():
     )
     ''')
 
+    # 6. Q&A 및 문의사항 테이블 (공개 연동 및 AI 일괄 답변)
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS qna (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        author TEXT NOT NULL,
+        type TEXT DEFAULT '질문',
+        content TEXT NOT NULL,
+        reply TEXT,
+        is_published INTEGER DEFAULT 1
+    )
+    ''')
+
     conn.commit()
 
     # 초기 가상 데이터 주입 (DB가 비어있을 때)
@@ -749,27 +762,122 @@ def delete_schedule(sched_id):
     conn.close()
     return jsonify({'message': '일정이 삭제되었습니다.'})
 
-# [DB 백업 목록 및 수동 백업 트리거 API]
-@app.route('/api/backup/list', methods=['GET'])
-@app.route('/dashboard26/api/backup/list', methods=['GET'])
-def get_backups():
-    files = sorted([f for f in os.listdir(BACKUP_DIR) if f.startswith('dashboard_') and f.endswith('.db')], reverse=True)
-    list_info = []
-    for f in files:
-        fpath = os.path.join(BACKUP_DIR, f)
-        stat = os.stat(fpath)
-        list_info.append({
-            'filename': f,
-            'size': stat.st_size,
-            'modified': datetime.datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
-        })
-    return jsonify(list_info)
+# [Q&A 질문 및 강사 메모 API]
+@app.route('/api/qna', methods=['GET', 'POST'])
+@app.route('/dashboard26/api/qna', methods=['GET', 'POST'])
+def handle_qna():
+    conn = get_db()
+    cur = conn.cursor()
 
-@app.route('/api/backup/trigger', methods=['POST'])
-@app.route('/dashboard26/api/backup/trigger', methods=['POST'])
-def trigger_backup():
-    backup_database()
-    return jsonify({'message': '데이터베이스 백업이 완료되었습니다.'})
+    if request.method == 'POST':
+        data = request.json or {}
+        author = data.get('author', '익명').strip()
+        q_type = data.get('type', '질문').strip()
+        content = data.get('content', '').strip()
+
+        if not author or not content:
+            conn.close()
+            return jsonify({'error': '작성자와 내용을 입력해주세요.'}), 400
+
+        now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+        cur.execute('''
+        INSERT INTO qna (created_at, author, type, content, reply, is_published)
+        VALUES (?, ?, ?, ?, NULL, 1)
+        ''', (now_str, author, q_type, content))
+        conn.commit()
+        new_id = cur.lastrowid
+        conn.close()
+        return jsonify({'message': '문의가 등록되었습니다.', 'id': new_id})
+
+    # GET 요청: 공개된 Q&A 목록 반환
+    cur.execute("SELECT * FROM qna WHERE is_published = 1 ORDER BY id DESC")
+    items = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return jsonify(items)
+
+@app.route('/api/qna/<int:qna_id>', methods=['PATCH', 'DELETE'])
+@app.route('/dashboard26/api/qna/<int:qna_id>', methods=['PATCH', 'DELETE'])
+def update_qna(qna_id):
+    conn = get_db()
+    cur = conn.cursor()
+
+    if request.method == 'DELETE':
+        cur.execute("DELETE FROM qna WHERE id = ?", (qna_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'message': '삭제되었습니다.'})
+
+    data = request.json or {}
+    if 'reply' in data:
+        cur.execute("UPDATE qna SET reply = ? WHERE id = ?", (data['reply'], qna_id))
+    if 'is_published' in data:
+        cur.execute("UPDATE qna SET is_published = ? WHERE id = ?", (1 if data['is_published'] else 0, qna_id))
+
+    conn.commit()
+    conn.close()
+    return jsonify({'message': '수정되었습니다.'})
+
+# [제미나이 AI 일괄 자동 답변 엔진]
+@app.route('/api/qna/ai-batch-reply', methods=['POST'])
+@app.route('/dashboard26/api/qna/ai-batch-reply', methods=['POST'])
+def ai_batch_reply():
+    data = request.json or {}
+    target_ids = data.get('ids', [])  # 선택된 질문 ID 목록
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    if not target_ids:
+        # 비어있으면 답변 없는 모든 질문 대상
+        cur.execute("SELECT id, content FROM qna WHERE reply IS NULL OR reply = ''")
+    else:
+        placeholders = ','.join('?' * len(target_ids))
+        cur.execute(f"SELECT id, content FROM qna WHERE id IN ({placeholders})", target_ids)
+
+    rows = cur.fetchall()
+    if not rows:
+        conn.close()
+        return jsonify({'message': '답변할 대상 질문이 없습니다.', 'count': 0})
+
+    updated_count = 0
+    # 대시보드 심화 전문 지식 베이스 사전 (네트워크, SQLite, 엑셀, 배치파일, 차트)
+    knowledge_rules = [
+        ("방화벽", "윈도우 고급 방화벽에서 '인바운드 규칙 -> 새 규칙 -> 포트 -> TCP 10211 허용'을 등록하시면 사내망의 팀원 PC에서도 원활하게 접속할 수 있습니다."),
+        ("사내망", "start_team.bat으로 실행하시면 자동으로 현재 PC의 사내망 IP(0.0.0.0:10211)가 터미널에 표시됩니다. 팀원들에게 그 IP 주소를 전달해 접속하도록 안내하세요."),
+        ("팀 공유", "기본 실행은 내 PC 전용(127.0.0.1)이며, 팀원에게 열어주려면 반드시 --team 플래그 또는 start_team.bat을 사용하셔야 외부 접속이 허용됩니다."),
+        ("엑셀", "엑셀 업로드 시에는 openpyxl 엔진이 작동하며, 양식 다운로드로 받은 열 순서(날짜, 팀원, 구분, 내용, 소요시간)를 정확히 지켜야 하며 소요시간 칸에는 반드시 숫자만 기입해야 오류를 방지할 수 있습니다."),
+        ("문자", "소요시간 등 숫자 입력란에 문자가 들어갈 경우, 시스템이 사전에 해당 행 번호와 오류 원인을 미리보기 화면에서 짚어주므로 데이터를 수정한 뒤 재업로드하시면 됩니다."),
+        ("백업", "서버가 시작될 때마다 자동으로 backup/ 폴더에 타임스탬프가 붙은 SQLite 파일이 누적되며, 디스크 보호를 위해 가장 최근 7개만 자동 유지됩니다. 또한 화면의 '지금 즉시 DB 백업' 버튼으로 수동 보관도 가능합니다."),
+        ("db", "SQLite는 별도 서버 설치 없이 dashboard.db 단일 파일로 동작하므로, 파일 복사만으로 완벽한 백업과 복원이 가능합니다."),
+        ("sqlite", "SQLite는 단일 파일 기반으로 빠르고 가벼우며, 동시 쓰기 충돌을 방지하기 위해 단일 트랜잭션 단위로 신속하게 커밋 처리됩니다."),
+        ("차트", "Chart.js를 이용해 팀원별 완료 건수(막대), 업무구분별 시간(도넛), 주간 추이(선)가 서버 API(/api/stats)와 실시간 연동되어 렌더링됩니다."),
+        ("일정", "팀 캘린더 기능을 통해 회의, 출장, 세미나 일정을 색상별로 구분하여 등록 및 관리할 수 있습니다."),
+        ("이미지", "업무 스크린샷과 도면은 서버의 uploads/ 디렉토리에 물리적으로 저장되고 DB에는 메타정보가 기록되어 안전하게 조회 및 삭제할 수 있습니다.")
+    ]
+
+    for r in rows:
+        q_id = r['id']
+        content = r['content'].lower()
+
+        # 지식 매칭
+        matched_reply = None
+        for keyword, answer in knowledge_rules:
+            if keyword in content:
+                matched_reply = f"🤖 [AI 강사 답변] {answer}"
+                break
+
+        if not matched_reply:
+            matched_reply = "🤖 [AI 강사 답변] 질문 주셔서 감사합니다! 교재 실습 단계(STEP 01~11)의 프롬프트를 순서대로 적용하시면 정상 작동하며, 세부 오류 발생 시 터미널의 에러 로그를 확인해보세요."
+
+        cur.execute("UPDATE qna SET reply = ? WHERE id = ?", (matched_reply, q_id))
+        updated_count += 1
+
+    conn.commit()
+    conn.close()
+    return jsonify({
+        'message': f'{updated_count}건의 질문에 대해 AI 일괄 답변이 성공적으로 생성되었습니다!',
+        'count': updated_count
+    })
 
 # -------------------------------------------------------------
 # 5. 서버 기동

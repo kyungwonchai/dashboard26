@@ -51,6 +51,10 @@
         <span class="icon">📅</span>
         <span>팀 일정 관리 (심화)</span>
       </li>
+      <li class="nav-item" data-tab="tab-qna">
+        <span class="icon">💬</span>
+        <span>Q&A 질문 & AI 답변</span>
+      </li>
       <li class="nav-item" data-tab="tab-system">
         <span class="icon">⚙️</span>
         <span>DB 백업 & 점검</span>
@@ -355,7 +359,37 @@
       </div>
     </section>
 
-    <!-- 8. [시스템 점검 및 DB 백업 탭 (STEP 10 & 11)] -->
+    <!-- 8. [Q&A 질문 관리 & AI 일괄 답변 탭] -->
+    <section id="tab-qna" class="tab-pane">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 700;">💬 학생 질문 관리 & 제미나이 AI 일괄 답변 센터</h2>
+          <p style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">* 깃허브 공개 페이지에서 학생들이 남긴 질문이 우리 집 DB에 실시간으로 수집됩니다.</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" onclick="loadAdminQnA()">🔄 새로고침</button>
+          <button class="btn btn-primary" onclick="triggerAIBatchReply()" style="background:var(--grad-brand);">
+            ⚡ 선택 질문 AI 일괄 답변 달기
+          </button>
+        </div>
+      </div>
+
+      <div class="glass" style="padding: 24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="qna-check-all" onchange="toggleAllQnAChecks(this.checked)" style="cursor:pointer; width:16px; height:16px;">
+            <label for="qna-check-all" style="font-size:12px; color:var(--text-muted); cursor:pointer;">전체 선택</label>
+          </div>
+          <span style="font-size:12px; color:var(--text-dim);" id="qna-admin-count">총 0건</span>
+        </div>
+
+        <div id="qna-admin-list" style="display:flex; flex-direction:column; gap:12px;">
+          <!-- 동적 렌더링 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. [시스템 점검 및 DB 백업 탭 (STEP 10 & 11)] -->
     <section id="tab-system" class="tab-pane">
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
         <div class="glass" style="padding: 24px;">

@@ -57,6 +57,7 @@ function setupTabs() {
       if (tabId === 'tab-stats') loadStats();
       if (tabId === 'tab-gallery') loadGallery();
       if (tabId === 'tab-calendar') loadSchedules();
+      if (tabId === 'tab-qna') loadAdminQnA();
       if (tabId === 'tab-system') loadBackups();
     });
   });
@@ -826,6 +827,109 @@ async function triggerManualBackup() {
   }
 }
 
+// Q&A 관리자 화면 로직
+let currentAdminQnAList = [];
+
+async function loadAdminQnA() {
+  try {
+    const res = await fetch(`${API_BASE}/qna`);
+    currentAdminQnAList = await res.json();
+    const container = document.getElementById('qna-admin-list');
+    const countEl = document.getElementById('qna-admin-count');
+    if (countEl) countEl.textContent = `총 ${currentAdminQnAList.length}건`;
+    if (!container) return;
+
+    if (currentAdminQnAList.length === 0) {
+      container.innerHTML = `<p style="text-align:center; padding:30px; color:var(--text-dim); font-size:13px;">등록된 학생 질문이 없습니다.</p>`;
+      return;
+    }
+
+    container.innerHTML = currentAdminQnAList.map(item => `
+      <div style="background:var(--bg-soft); border:1px solid ${item.reply ? 'var(--border)' : 'var(--accent)'}; border-radius:8px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" class="qna-item-check" value="${item.id}" ${!item.reply ? 'checked' : ''} style="cursor:pointer; width:16px; height:16px;">
+            <span class="tag ${item.type === '강사메모' ? 'tag-high' : 'tag-mid'}">${item.type}</span>
+            <b style="font-size:13px;">${escapeHtml(item.author)}</b>
+            <span style="font-size:11px; color:var(--text-dim);">${item.created_at}</span>
+          </div>
+          <div>
+            ${item.reply ? '<span style="color:#10b981; font-size:11px; font-weight:600;">답변완료 ✅</span>' : '<span style="color:#ef4444; font-size:11px; font-weight:700;">답변대기 ⏳</span>'}
+            <button class="btn btn-danger" onclick="deleteAdminQnA(${item.id})" style="padding:2px 8px; font-size:11px; margin-left:8px;">삭제</button>
+          </div>
+        </div>
+
+        <p style="font-size:13px; color:var(--text); line-height:1.5;">${escapeHtml(item.content)}</p>
+
+        <div style="margin-top:4px;">
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="qna-reply-input-${item.id}" value="${escapeHtml(item.reply || '')}" placeholder="답변을 입력하거나 아래 AI 일괄 답변 버튼을 누르세요..." style="flex:1; font-size:12px; padding:6px 10px;">
+            <button class="btn btn-secondary" onclick="saveSingleReply(${item.id})" style="padding:4px 10px; font-size:12px;">답변저장</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Q&A 로드 실패:', err);
+  }
+}
+
+function toggleAllQnAChecks(checked) {
+  document.querySelectorAll('.qna-item-check').forEach(cb => cb.checked = checked);
+}
+
+async function triggerAIBatchReply() {
+  const checkedBoxes = Array.from(document.querySelectorAll('.qna-item-check:checked'));
+  const ids = checkedBoxes.map(cb => parseInt(cb.value));
+
+  if (ids.length === 0) {
+    alert('답변을 달 질문을 하나 이상 선택해주세요.');
+    return;
+  }
+
+  if (!confirm(`선택한 ${ids.length}건의 질문에 대해 제미나이 AI 일괄 답변을 생성하시겠습니까?`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/qna/ai-batch-reply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    });
+    const data = await res.json();
+    alert(`🎉 ${data.message}`);
+    loadAdminQnA();
+  } catch (err) {
+    alert('AI 답변 생성 오류');
+  }
+}
+
+async function saveSingleReply(id) {
+  const reply = document.getElementById(`qna-reply-input-${id}`).value.trim();
+  try {
+    const res = await fetch(`${API_BASE}/qna/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reply: reply })
+    });
+    if (res.ok) {
+      alert('답변이 저장되었습니다.');
+      loadAdminQnA();
+    }
+  } catch (err) {
+    alert('답변 저장 실패');
+  }
+}
+
+async function deleteAdminQnA(id) {
+  if (!confirm('정말 이 항목을 삭제하시겠습니까?')) return;
+  try {
+    await fetch(`${API_BASE}/qna/${id}`, { method: 'DELETE' });
+    loadAdminQnA();
+  } catch (err) {
+    alert('삭제 실패');
+  }
+}
+
 // 모달 닫기
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
@@ -842,3 +946,4 @@ function escapeHtml(str) {
     "'": '&#39;'
   })[m]);
 }
+

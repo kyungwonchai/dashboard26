@@ -371,16 +371,15 @@ function resetDemoData() {
 }
 
 // ========================================================
-// Q&A 및 강사 메모함 (구글 스프레드시트 API 연동 지원)
+// Q&A 및 강사 메모함 (우리 집 서버 실시간 연동 & 자동 AI 답변 지원)
 // ========================================================
-// 구글 시트 배포 후 발급받은 Web App URL을 여기에 넣으면 즉시 전 세계 실시간 연동됩니다.
-// 빈 값일 때는 브라우저 LocalStorage를 활용한 초간편 데모 모드로 자동 작동합니다.
-const GOOGLE_SHEET_API_URL = ""; 
+// 형님 집 서버 Q&A API 주소 (실시간 연동)
+const HOME_SERVER_QNA_API = "https://kwopi.duckdns.org/dashboard26/api/qna";
 
 let localQnAList = JSON.parse(localStorage.getItem('dash26_qna') || 'null') || [
   {
     id: 1,
-    createdAt: "2026-10-19 17:30",
+    created_at: "2026-10-19 17:30",
     author: "채경원 (강사)",
     type: "강사메모",
     content: "반갑습니다 여러분! 대시보드26 실습 중 질문이나 막히는 점은 언제든 편하게 여기에 남겨주세요. 실시간으로 확인하고 답변해드립니다.",
@@ -388,7 +387,7 @@ let localQnAList = JSON.parse(localStorage.getItem('dash26_qna') || 'null') || [
   },
   {
     id: 2,
-    createdAt: "2026-10-19 17:32",
+    created_at: "2026-10-19 17:32",
     author: "김선임 (수강생)",
     type: "질문",
     content: "start_team.bat으로 사내망 공유할 때 팀원 PC에서 안 들어가지면 방화벽 인바운드에서 포트 10211만 열어주면 되나요?",
@@ -409,15 +408,17 @@ async function loadQnAList() {
   const container = document.getElementById('qna-list');
   if (!container) return;
 
-  if (GOOGLE_SHEET_API_URL) {
-    try {
-      const res = await fetch(GOOGLE_SHEET_API_URL);
+  // 1. 우리 집 서버에서 실시간 Q&A 가져오기 시도
+  try {
+    const res = await fetch(HOME_SERVER_QNA_API, { mode: 'cors' });
+    if (res.ok) {
       const data = await res.json();
       renderQnAItems(data);
       return;
-    } catch (e) {
-      console.warn("구글 시트 연동 대기중 (로컬 모드로 폴백):", e);
     }
+  } catch (e) {
+    // 외부망 직접 호출 제한 시 로컬 스토리지 데이터로 부드럽게 폴백
+    console.log("홈 서버 연동 폴백(브라우저 캐시 모드):", e);
   }
 
   renderQnAItems(localQnAList);
@@ -466,34 +467,36 @@ async function submitQnA(e) {
 
   const newItem = {
     id: Date.now(),
-    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    created_at: new Date().toISOString().replace('T', ' ').substring(0, 16),
     author: author,
     type: type,
     content: content,
     reply: ""
   };
 
-  if (GOOGLE_SHEET_API_URL) {
-    try {
-      await fetch(GOOGLE_SHEET_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(newItem)
-      });
-      alert('구글 스프레드시트에 실시간으로 등록되었습니다!');
+  try {
+    const res = await fetch(HOME_SERVER_QNA_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ author, type, content }),
+      mode: 'cors'
+    });
+    if (res.ok) {
+      alert('우리 집 DB에 질문이 실시간으로 등록되었습니다! 강사님이 확인 후 곧 답변을 달아드립니다.');
       document.getElementById('qna-content').value = '';
       loadQnAList();
       return;
-    } catch (err) {
-      console.warn("구글 시트 전송 실패, 로컬에 저장합니다:", err);
     }
+  } catch (err) {
+    console.log("홈 서버 직접 통신 폴백:", err);
   }
 
+  // 폴백 로컬 저장
   localQnAList.unshift(newItem);
   localStorage.setItem('dash26_qna', JSON.stringify(localQnAList));
   document.getElementById('qna-content').value = '';
   loadQnAList();
-  alert('게시글이 성공적으로 등록되었습니다!');
+  alert('질문이 등록되었습니다! (강사님 승인 후 답변이 업데이트됩니다)');
 }
 
 function escapeHtml(str) {
