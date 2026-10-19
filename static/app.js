@@ -58,6 +58,7 @@ function setupTabs() {
       if (tabId === 'tab-gallery') loadGallery();
       if (tabId === 'tab-calendar') loadSchedules();
       if (tabId === 'tab-qna') loadAdminQnA();
+      if (tabId === 'tab-note') loadLecturerNote();
       if (tabId === 'tab-system') loadBackups();
     });
   });
@@ -930,6 +931,49 @@ async function deleteAdminQnA(id) {
   }
 }
 
+// 강사 특별 노트 (종이 한 장 메모) 관리
+async function loadLecturerNote() {
+  try {
+    const res = await fetch(`${API_BASE}/note`);
+    const data = await res.json();
+    const titleInput = document.getElementById('admin-note-title');
+    const contentText = document.getElementById('admin-note-content');
+    const updatedEl = document.getElementById('note-last-updated');
+
+    if (titleInput) titleInput.value = data.title || '';
+    if (contentText) contentText.value = data.content || '';
+    if (updatedEl) updatedEl.textContent = `최근 저장: ${data.updated_at || '-'}`;
+  } catch (err) {
+    console.error('노트 로드 실패:', err);
+  }
+}
+
+async function saveLecturerNote() {
+  const title = document.getElementById('admin-note-title').value.trim();
+  const content = document.getElementById('admin-note-content').value.trim();
+
+  if (!title || !content) {
+    alert('노트 제목과 내용을 모두 입력해주세요.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/note`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, content })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('📜 강사 특별 노트가 저장되었습니다!\n깃허브 공개 페이지 상단에 실시간으로 즉시 반영됩니다.');
+      const updatedEl = document.getElementById('note-last-updated');
+      if (updatedEl) updatedEl.textContent = `최근 저장: ${data.updated_at}`;
+    }
+  } catch (err) {
+    alert('노트 저장 오류');
+  }
+}
+
 // 모달 닫기
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
@@ -946,4 +990,5 @@ function escapeHtml(str) {
     "'": '&#39;'
   })[m]);
 }
+
 

@@ -245,6 +245,7 @@ let demoTasks = [
 document.addEventListener('DOMContentLoaded', () => {
   renderSidebar();
   selectStep(0);
+  loadLecturerNoteOnline();
 });
 
 function renderSidebar() {
@@ -371,11 +372,81 @@ function resetDemoData() {
 }
 
 // ========================================================
-// Q&A 및 강사 메모함 (우리 집 서버 실시간 연동 & 자동 AI 답변 지원)
+// Q&A 및 강사 특별 노트 (우리 집 서버 실시간 연동)
 // ========================================================
-// 형님 집 서버 Q&A API 주소 (실시간 연동)
 const HOME_SERVER_QNA_API = "https://kwopi.duckdns.org/dashboard26/api/qna";
+const HOME_SERVER_NOTE_API = "https://kwopi.duckdns.org/dashboard26/api/note";
 
+let currentLecturerNote = {
+  title: "바이브코딩 대시보드 심화 실습 핵심 요약 & 강사 특별 노트",
+  content: `반갑습니다 수강생 여러분! 강사 채경원입니다.
+
+오늘 실습하는 [Gemini CLI 대시보드 심화 26] 과정의 핵심 철학과 꼭 기억해야 할 3가지를 정리해 드립니다.
+
+1. 프롬프트의 4대 핵심 구조:
+   - 어디에 (@app.py 등 대상 파일 명시)
+   - 무엇을 (추가하거나 수정할 기능)
+   - 어떻게 (디자인, 에러 처리, 조건)
+   - 유지할 것 (기존 DB와 데이터는 지우지 말 것)
+
+2. 사내망 배포 시 주의사항:
+   - start_team.bat으로 실행하면 내 PC의 사내망 IP로 0.0.0.0 바인딩됩니다.
+   - 팀원이 접속하지 못할 때는 윈도우 고급 방화벽 인바운드에서 TCP 10211 포트를 열어주세요.
+
+3. 데이터 안전의 제1원칙:
+   - 모든 수정 전에는 backup/ 폴더의 백업 상태를 확인하세요.
+   - 서버를 재시작할 때마다 최근 7개의 SQLite 파일이 자동으로 보존됩니다.
+
+궁금한 점은 언제든 상단 [문의 & 질문함] 버튼을 눌러 남겨주세요. 실시간으로 답변해 드립니다!
+화이팅입니다!`,
+  updated_at: "2026-10-19 17:50"
+};
+
+// 📜 강사 특별 노트 제어
+function openNoteModal() {
+  document.getElementById('note-modal').classList.add('active');
+  loadLecturerNoteOnline();
+}
+
+function closeNoteModal() {
+  document.getElementById('note-modal').classList.remove('active');
+}
+
+async function loadLecturerNoteOnline() {
+  try {
+    const res = await fetch(HOME_SERVER_NOTE_API, { mode: 'cors' });
+    if (res.ok) {
+      currentLecturerNote = await res.json();
+    }
+  } catch (err) {
+    console.log("홈 서버 노트 연동 캐시 사용:", err);
+  }
+
+  // 화면 반영
+  const bannerTitle = document.getElementById('banner-note-title');
+  const bannerSnippet = document.getElementById('banner-note-snippet');
+  const modalTitle = document.getElementById('modal-note-title');
+  const modalBody = document.getElementById('modal-note-body');
+  const modalUpdated = document.getElementById('modal-note-updated');
+
+  if (bannerTitle) bannerTitle.textContent = currentLecturerNote.title;
+  if (bannerSnippet) {
+    const firstLine = currentLecturerNote.content.split('\n')[0] || '';
+    bannerSnippet.textContent = firstLine.substring(0, 70) + '...';
+  }
+  if (modalTitle) modalTitle.textContent = currentLecturerNote.title;
+  if (modalBody) modalBody.textContent = currentLecturerNote.content;
+  if (modalUpdated) modalUpdated.textContent = `최근 갱신: ${currentLecturerNote.updated_at}`;
+}
+
+function copyNoteContent() {
+  const content = `${currentLecturerNote.title}\n\n${currentLecturerNote.content}`;
+  navigator.clipboard.writeText(content).then(() => {
+    alert('📋 강사 특별 노트 내용이 클립보드에 복사되었습니다!');
+  });
+}
+
+// Q&A 질문함 제어
 let localQnAList = JSON.parse(localStorage.getItem('dash26_qna') || 'null') || [
   {
     id: 1,

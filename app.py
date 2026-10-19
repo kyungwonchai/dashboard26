@@ -879,6 +879,40 @@ def ai_batch_reply():
         'count': updated_count
     })
 
+# [강사 특별 노트 (종이 한 장 메모) API]
+@app.route('/api/note', methods=['GET', 'POST'])
+@app.route('/dashboard26/api/note', methods=['GET', 'POST'])
+def handle_lecturer_note():
+    conn = get_db()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        data = request.json or {}
+        title = data.get('title', '강사 특별 노트').strip()
+        content = data.get('content', '').strip()
+        now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+
+        cur.execute("SELECT id FROM lecturer_notes WHERE id = 1")
+        if cur.fetchone():
+            cur.execute("UPDATE lecturer_notes SET title = ?, content = ?, updated_at = ? WHERE id = 1", (title, content, now_str))
+        else:
+            cur.execute("INSERT INTO lecturer_notes (id, title, content, updated_at) VALUES (1, ?, ?, ?)", (title, content, now_str))
+
+        conn.commit()
+        conn.close()
+        return jsonify({'message': '강사 노트가 저장되었습니다.', 'updated_at': now_str})
+
+    cur.execute("SELECT * FROM lecturer_notes WHERE id = 1")
+    row = cur.fetchone()
+    conn.close()
+    if row:
+        return jsonify(dict(row))
+    return jsonify({
+        'title': '강사 특별 노트',
+        'content': '등록된 노트 내용이 없습니다.',
+        'updated_at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    })
+
 # -------------------------------------------------------------
 # 5. 서버 기동
 # -------------------------------------------------------------

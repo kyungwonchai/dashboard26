@@ -55,6 +55,10 @@
         <span class="icon">💬</span>
         <span>Q&A 질문 & AI 답변</span>
       </li>
+      <li class="nav-item" data-tab="tab-note">
+        <span class="icon">📜</span>
+        <span>강사 특별 노트 (종이 한 장)</span>
+      </li>
       <li class="nav-item" data-tab="tab-system">
         <span class="icon">⚙️</span>
         <span>DB 백업 & 점검</span>
@@ -389,7 +393,32 @@
       </div>
     </section>
 
-    <!-- 9. [시스템 점검 및 DB 백업 탭 (STEP 10 & 11)] -->
+    <!-- 9. [강사 특별 노트 (종이 한 장 메모) 탭] -->
+    <section id="tab-note" class="tab-pane">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 700;">📜 강사 특별 노트 (종이 한 장 메모장)</h2>
+          <p style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">* 형님이 여기서 작성하고 [저장]을 누르면, 깃허브 공개 페이지 상단 종이 노트 화면에 실시간으로 즉시 공개됩니다!</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <span style="font-size:12px; color:var(--text-dim); align-self:center;" id="note-last-updated">최근 저장: -</span>
+          <button class="btn btn-primary" onclick="saveLecturerNote()" style="background:var(--grad-brand);">💾 종이 노트 저장 및 즉시 배포</button>
+        </div>
+      </div>
+
+      <div class="glass" style="padding: 28px; max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-bright); box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 12px; color: var(--text-dim); display:block; margin-bottom:6px;">노트 제목</label>
+          <input type="text" id="admin-note-title" style="width: 100%; font-size: 16px; font-weight: 700; padding: 10px 14px;" placeholder="노트 제목을 입력하세요...">
+        </div>
+        <div>
+          <label style="font-size: 12px; color: var(--text-dim); display:block; margin-bottom:6px;">종이 한 장 메모 내용 (줄바꿈 및 긴 글 지원)</label>
+          <textarea id="admin-note-content" rows="14" style="width: 100%; font-size: 14px; line-height: 1.7; padding: 14px; font-family: 'Pretendard', sans-serif;" placeholder="수강생들에게 전달할 오늘의 핵심 요약이나 노하우, 공지사항을 자유롭게 작성하세요..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. [시스템 점검 및 DB 백업 탭 (STEP 10 & 11)] -->
     <section id="tab-system" class="tab-pane">
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
         <div class="glass" style="padding: 24px;">
