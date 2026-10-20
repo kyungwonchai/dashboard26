@@ -497,8 +497,8 @@ async function loadLiveBoard(isManual = false) {
     if (res.ok) {
       const data = await res.json();
       // data: [{ id, createdAt, author, type, content, reply }]
-      // '칠판' 또는 '판서' 타입의 가장 최신 항목 찾기
-      const boardItem = Array.isArray(data) ? data.find(item => item.type === '칠판' || item.type === '판서' || item.content?.startsWith('data:image')) : null;
+      // '메모보드', '칠판', '판서' 타입의 가장 최신 항목 찾기
+      const boardItem = Array.isArray(data) ? data.find(item => item.type === '메모보드' || item.type === '칠판' || item.type === '판서' || item.content?.startsWith('data:image')) : null;
 
       if (loading) loading.style.display = 'none';
 
