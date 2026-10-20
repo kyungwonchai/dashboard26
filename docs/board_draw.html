@@ -211,7 +211,11 @@
 
       <div style="height:18px; width:1px; background:var(--border); margin:0 4px;"></div>
 
-      <!-- 취소 / 전체 비우기 -->
+      <!-- 취소 / 전체 비우기 / 사진 불러오기 -->
+      <label class="btn-tool" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+        📷 사진 첨부
+        <input type="file" id="imageUploader" accept="image/*" onchange="uploadImageToCanvas(event)" style="display:none;">
+      </label>
       <button class="btn-tool" onclick="undo()">↩️ 되돌리기</button>
       <button class="btn-tool" onclick="clearCanvas()">🗑️ 비우기</button>
     </div>
@@ -572,7 +576,41 @@
       context.stroke();
     }
 
-    // 🚀 학생 화면으로 전송 (인증된 상태에서만 동작)
+    // 📷 스마트폰 앨범/카메라에서 사진 불러와 칠판에 붙이기
+    function uploadImageToCanvas(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          // 칠판 중앙에 적절한 크기로 배치 (최대 너비 1200px 기준 리사이징)
+          const maxDim = 1200;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = (h / w) * maxDim;
+              w = maxDim;
+            } else {
+              w = (w / h) * maxDim;
+              h = maxDim;
+            }
+          }
+          const posX = (VIRTUAL_WIDTH - w) / 2;
+          const posY = (VIRTUAL_HEIGHT - h) / 2;
+          ctx.drawImage(img, posX, posY, w, h);
+          saveState();
+          alert('📷 사진이 메모보드에 추가되었습니다! 사진 위에 자유롭게 펜으로 필기하거나 도형을 그릴 수 있습니다.');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      event.target.value = ''; // 재선택 가능하게 리셋
+    }
+
+    // 🚀 학생 화면으로 전송 (고해상도 다운샘플링 전송)
     async function sendToStudents() {
       const token = localStorage.getItem('kw_lecturer_token');
       if (token !== AUTH_HASH) {
@@ -595,10 +633,9 @@
       const dataUrl = exportCanvas.toDataURL('image/jpeg', 0.82);
 
       const payload = {
-        author: '채경원 (강사)',
+        author: '채경원',
         type: '메모보드',
-        content: dataUrl,
-        pin: savedPin
+        content: dataUrl
       };
 
       try {
