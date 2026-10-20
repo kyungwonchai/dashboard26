@@ -2,181 +2,539 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>강사 전용 모바일 칠판 (판서 도구)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>강사 전용 모바일 칠판 스튜디오 (Whiteboard Studio Pro)</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
+    :root {
+      --bg: #07080d;
+      --bg-panel: rgba(14, 16, 23, 0.95);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #8b5cf6;
+      --accent-pink: #ec4899;
+    }
     * { box-sizing: border-box; margin:0; padding:0; user-select:none; -webkit-user-select:none; }
-    body { background: #07080d; color: #f1f3f9; font-family: 'Pretendard', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-    header { background: #0e1017; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
-    h1 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-    .status-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(16,185,129,0.2); color: #10b981; font-weight: 600; }
+    body { background: var(--bg); color: #f1f3f9; font-family: 'Pretendard', system-ui, sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
     
-    /* 도구 툴바 */
-    .toolbar { background: #131722; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); }
-    .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
-    .color-dot.active { border-color: #fff; transform: scale(1.15); box-shadow: 0 0 8px rgba(255,255,255,0.5); }
-    .btn-tool { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .btn-tool.active { background: #8b5cf6; border-color: #a78bfa; }
-    .btn-send { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border: none; color: #fff; font-weight: 700; padding: 6px 16px; border-radius: 6px; font-size: 13px; margin-left: auto; cursor: pointer; box-shadow: 0 0 12px rgba(236,72,153,0.4); }
+    /* 상단 프로페셔널 헤더 */
+    header {
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
+    .brand span { font-size: 18px; }
+    .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #34d399; font-weight: 600; }
 
-    /* 캔버스 칠판 영역 */
-    .canvas-container { flex: 1; position: relative; background: #07080d; touch-action: none; overflow: hidden; }
-    canvas { width: 100%; height: 100%; display: block; background: #07080d; }
+    /* 고기능 모바일 최적화 툴바 */
+    .toolbar-container {
+      background: #0e1017;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 12px;
+      z-index: 90;
+    }
+    .tool-row { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+    .tool-row::-webkit-scrollbar { display: none; }
 
-    /* 하단 알림 바 */
-    .notice-bar { background: #0e1017; padding: 8px 16px; font-size: 11px; color: #9ba1b6; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
+    /* 도구 탭 / 버튼 */
+    .btn-tool {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #9ba1b6;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .btn-tool:active, .btn-tool.active {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: #8b5cf6;
+      color: #fff;
+    }
+
+    /* 컬러 팔레트 도트 */
+    .color-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+    .color-dot.active {
+      border-color: #ffffff;
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(255,255,255,0.6);
+    }
+
+    /* 줌 / 패닝 컨트롤 */
+    .zoom-indicator {
+      font-size: 11px;
+      font-family: monospace;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* 전송 버튼 (네온 그라데이션) */
+    .btn-send {
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-left: auto;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(236,72,153,0.4);
+    }
+
+    /* 뷰포트 & 캔버스 랩 */
+    .canvas-viewport {
+      flex: 1;
+      position: relative;
+      background: #07080d;
+      overflow: hidden;
+      touch-action: none;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* 그리드 배경 오버레이 */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-size: 30px 30px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      pointer-events: none;
+    }
+
+    /* 하단 상태바 */
+    footer {
+      background: #0e1017;
+      padding: 6px 14px;
+      font-size: 11px;
+      color: #656b82;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1><span>✏️</span> 강사 모바일 전용 칠판 (채경원 강사님)</h1>
-    <span class="status-badge" id="sync-status">전송 대기중</span>
+    <div class="brand">
+      <span>🎨</span>
+      <div>강사 모바일 판서 스튜디오 Pro</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="status-badge" id="sync-status">실시간 대기중</span>
+      <button class="btn-send" onclick="sendToStudents()">🚀 칠판 전송</button>
+    </div>
   </header>
 
-  <div class="toolbar">
-    <!-- 컬러 팔레트 -->
-    <div class="color-dot active" style="background: #ffffff;" onclick="selectColor('#ffffff', this)"></div>
-    <div class="color-dot" style="background: #ef4444;" onclick="selectColor('#ef4444', this)"></div>
-    <div class="color-dot" style="background: #f59e0b;" onclick="selectColor('#f59e0b', this)"></div>
-    <div class="color-dot" style="background: #10b981;" onclick="selectColor('#10b981', this)"></div>
-    <div class="color-dot" style="background: #38bdf8;" onclick="selectColor('#38bdf8', this)"></div>
-    <div class="color-dot" style="background: #a78bfa;" onclick="selectColor('#a78bfa', this)"></div>
+  <!-- 프로급 도구함 -->
+  <div class="toolbar-container">
+    <!-- 1행: 색상 및 그리기 모드 -->
+    <div class="tool-row">
+      <!-- 펜 / 형광펜 / 도형 / 텍스트 / 손가락이동 -->
+      <button class="btn-tool active" id="tool-pen" onclick="setMode('pen')">✏️ 펜</button>
+      <button class="btn-tool" id="tool-highlighter" onclick="setMode('highlighter')">🖍️ 형광펜</button>
+      <button class="btn-tool" id="tool-rect" onclick="setMode('rect')">◻️ 사각</button>
+      <button class="btn-tool" id="tool-circle" onclick="setMode('circle')">⭕ 원</button>
+      <button class="btn-tool" id="tool-arrow" onclick="setMode('arrow')">➔ 화살표</button>
+      <button class="btn-tool" id="tool-text" onclick="setMode('text')">🔤 글자</button>
+      <button class="btn-tool" id="tool-eraser" onclick="setMode('eraser')">🧹 지우개</button>
+      <button class="btn-tool" id="tool-pan" onclick="setMode('pan')">✋ 화면이동</button>
+    </div>
 
-    <!-- 굵기 -->
-    <button class="btn-tool" onclick="selectWidth(3, this)">얇게</button>
-    <button class="btn-tool active" onclick="selectWidth(6, this)">보통</button>
-    <button class="btn-tool" onclick="selectWidth(12, this)">두껍게</button>
+    <!-- 2행: 컬러 팔레트 & 줌 컨트롤 -->
+    <div class="tool-row">
+      <div class="color-dot active" style="background:#ffffff;" onclick="setColor('#ffffff', this)"></div>
+      <div class="color-dot" style="background:#ef4444;" onclick="setColor('#ef4444', this)"></div>
+      <div class="color-dot" style="background:#f59e0b;" onclick="setColor('#f59e0b', this)"></div>
+      <div class="color-dot" style="background:#10b981;" onclick="setColor('#10b981', this)"></div>
+      <div class="color-dot" style="background:#38bdf8;" onclick="setColor('#38bdf8', this)"></div>
+      <div class="color-dot" style="background:#a78bfa;" onclick="setColor('#a78bfa', this)"></div>
+      <div class="color-dot" style="background:#ec4899;" onclick="setColor('#ec4899', this)"></div>
 
-    <!-- 지우개 / 초기화 -->
-    <button class="btn-tool" onclick="setEraser(this)">지우개</button>
-    <button class="btn-tool" onclick="clearBoard()">전체 비우기</button>
+      <div style="height:18px; width:1px; background:var(--border); margin:0 4px;"></div>
 
-    <!-- 학생 화면으로 즉시 전송 -->
-    <button class="btn-send" onclick="sendToStudents()">🚀 칠판 화면 전송하기</button>
+      <!-- 확대/축소 버튼 -->
+      <button class="btn-tool" onclick="zoomChange(-0.2)">🔍-</button>
+      <span class="zoom-indicator" id="zoom-text">100%</span>
+      <button class="btn-tool" onclick="zoomChange(0.2)">🔍+</button>
+      <button class="btn-tool" onclick="zoomReset()">리셋</button>
+
+      <div style="height:18px; width:1px; background:var(--border); margin:0 4px;"></div>
+
+      <!-- 취소 / 전체 비우기 -->
+      <button class="btn-tool" onclick="undo()">↩️ 되돌리기</button>
+      <button class="btn-tool" onclick="clearCanvas()">🗑️ 비우기</button>
+    </div>
   </div>
 
-  <div class="canvas-container" id="container">
-    <canvas id="paintCanvas"></canvas>
+  <!-- 칠판 캔버스 영역 -->
+  <div class="canvas-viewport" id="viewport">
+    <div class="grid-bg"></div>
+    <canvas id="mainCanvas"></canvas>
   </div>
 
-  <div class="notice-bar">
-    <span>💡 스마트폰 터치/S펜으로 자유롭게 그리고 [칠판 화면 전송하기]를 누르면 수강생 화면에 즉시 뜹니다!</span>
-    <span id="last-sent-time">최근 전송: 없음</span>
-  </div>
+  <footer>
+    <span>💡 <b>팁:</b> 두 손가락 핀치 줌으로 확대/축소 가능 · ✋화면이동 모드로 넓은 칠판 탐색</span>
+    <span id="last-time">전송 기록 없음</span>
+  </footer>
 
   <script>
     const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzj7R66hw1P6suB-emsCr52oIPEjDlOK2I2ho9TZ9f0KjgT2CT3MV9OMiw2xTVGjTSX/exec";
 
-    const canvas = document.getElementById('paintCanvas');
+    const viewport = document.getElementById('viewport');
+    const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
-    const container = document.getElementById('container');
+
+    // 캔버스 가상 크기 (무한 칠판 느낌의 넓은 해상도: 3000 x 2000)
+    const VIRTUAL_WIDTH = 3200;
+    const VIRTUAL_HEIGHT = 2000;
+    canvas.width = VIRTUAL_WIDTH;
+    canvas.height = VIRTUAL_HEIGHT;
+
+    // 상태 관리
+    let scale = 1.0;
+    let panX = 0;
+    let panY = 0;
+
+    let currentMode = 'pen'; // 'pen', 'highlighter', 'rect', 'circle', 'arrow', 'text', 'eraser', 'pan'
+    let currentColor = '#ffffff';
+    let currentLineWidth = 5;
 
     let isDrawing = false;
-    let currentColor = '#ffffff';
-    let currentWidth = 6;
-    let isEraser = false;
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+    let lastY = 0;
 
-    // 반응형 캔버스 크기 맞춤
-    function resizeCanvas() {
-      const rect = container.getBoundingClientRect();
-      const tempImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      canvas.width = rect.width;
-      canvas.height = rect.height;
+    // 되돌리기(Undo) 히스토리
+    let history = [];
+    const MAX_HISTORY = 15;
+
+    // 초기 배경 채우기
+    function initCanvasBackground() {
       ctx.fillStyle = '#07080d';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+      saveState();
     }
-    window.addEventListener('resize', resizeCanvas);
-    setTimeout(resizeCanvas, 100);
+    initCanvasBackground();
 
-    // 좌표 추출 (터치 & 마우스 완벽 지원)
-    function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    // 뷰포트 트랜스폼 렌더링 (CSS 하드웨어 가속)
+    function applyTransform() {
+      canvas.style.transformOrigin = '0 0';
+      canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      document.getElementById('zoom-text').textContent = Math.round(scale * 100) + '%';
+    }
+
+    // 초기 화면 중앙 맞춤
+    function centerView() {
+      const vRect = viewport.getBoundingClientRect();
+      scale = 0.5; // 모바일 화면에 맞게 기본 50% 뷰
+      panX = (vRect.width - VIRTUAL_WIDTH * scale) / 2;
+      panY = (vRect.height - VIRTUAL_HEIGHT * scale) / 2;
+      applyTransform();
+    }
+    window.addEventListener('resize', centerView);
+    setTimeout(centerView, 100);
+
+    // 좌표 변환 (스크린 좌표 ➔ 가상 캔버스 좌표)
+    function screenToCanvas(screenX, screenY) {
+      const rect = viewport.getBoundingClientRect();
+      const clientX = screenX - rect.left;
+      const clientY = screenY - rect.top;
       return {
-        x: clientX - rect.left,
-        y: clientY - rect.top
+        x: (clientX - panX) / scale,
+        y: (clientY - panY) / scale
       };
     }
 
-    function startDraw(e) {
-      e.preventDefault();
-      isDrawing = true;
-      const pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    }
-
-    function draw(e) {
-      if (!isDrawing) return;
-      e.preventDefault();
-      const pos = getPos(e);
-      ctx.strokeStyle = isEraser ? '#07080d' : currentColor;
-      ctx.lineWidth = isEraser ? currentWidth * 3 : currentWidth;
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-    }
-
-    function stopDraw(e) {
-      if (!isDrawing) return;
-      isDrawing = false;
-      ctx.closePath();
-    }
-
-    // 터치 이벤트
-    canvas.addEventListener('touchstart', startDraw, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', stopDraw);
-    canvas.addEventListener('touchcancel', stopDraw);
-
-    // 마우스 이벤트
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDraw);
-    canvas.addEventListener('mouseleave', stopDraw);
-
-    // 도구 선택
-    function selectColor(color, el) {
-      currentColor = color;
-      isEraser = false;
-      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-      el.classList.add('active');
-    }
-
-    function selectWidth(width, el) {
-      currentWidth = width;
+    // 모드 설정
+    function setMode(mode) {
+      currentMode = mode;
       document.querySelectorAll('.btn-tool').forEach(b => {
-        if (b.textContent.includes('얇게') || b.textContent.includes('보통') || b.textContent.includes('두껍게')) {
-          b.classList.remove('active');
-        }
+        if (b.id && b.id.startsWith('tool-')) b.classList.remove('active');
       });
+      const activeBtn = document.getElementById('tool-' + mode);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function setColor(color, el) {
+      currentColor = color;
+      if (currentMode === 'eraser' || currentMode === 'pan') {
+        setMode('pen');
+      }
+      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
       el.classList.add('active');
     }
 
-    function setEraser(el) {
-      isEraser = true;
-      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    // 줌 조절
+    function zoomChange(delta) {
+      const newScale = Math.min(Math.max(0.2, scale + delta), 2.5);
+      const vRect = viewport.getBoundingClientRect();
+      const cx = vRect.width / 2;
+      const cy = vRect.height / 2;
+
+      panX = cx - (cx - panX) * (newScale / scale);
+      panY = cy - (cy - panY) * (newScale / scale);
+      scale = newScale;
+      applyTransform();
     }
 
-    function clearBoard() {
-      if (confirm('칠판을 모두 지우시겠습니까?')) {
-        ctx.fillStyle = '#07080d';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    function zoomReset() {
+      centerView();
+    }
+
+    // Undo 관리
+    function saveState() {
+      if (history.length >= MAX_HISTORY) history.shift();
+      history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    }
+
+    function undo() {
+      if (history.length > 1) {
+        history.pop(); // 현재 상태 제거
+        const prevState = history[history.length - 1];
+        ctx.putImageData(prevState, 0, 0);
       }
     }
 
-    // 학생 화면으로 전송 (Google Apps Script POST)
+    function clearCanvas() {
+      if (confirm('칠판 전체를 깨끗하게 비우시겠습니까?')) {
+        ctx.fillStyle = '#07080d';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        saveState();
+      }
+    }
+
+    // 멀티터치 핀치 줌 & 드로잉 엔진
+    let initialPinchDist = null;
+    let initialScale = 1;
+
+    viewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        // 2개 손가락 = 핀치 줌
+        isDrawing = false;
+        isPanning = false;
+        initialPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialScale = scale;
+        return;
+      }
+
+      if (e.touches.length === 1) {
+        handlePointerDown(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+
+    viewport.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+
+      if (e.touches.length === 2 && initialPinchDist) {
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const factor = currentDist / initialPinchDist;
+        scale = Math.min(Math.max(0.2, initialScale * factor), 2.5);
+        applyTransform();
+        return;
+      }
+
+      if (e.touches.length === 1) {
+        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+
+    viewport.addEventListener('touchend', (e) => {
+      initialPinchDist = null;
+      handlePointerUp();
+    });
+
+    // 마우스 이벤트
+    viewport.addEventListener('mousedown', (e) => {
+      handlePointerDown(e.clientX, e.clientY);
+    });
+    window.addEventListener('mousemove', (e) => {
+      handlePointerMove(e.clientX, e.clientY);
+    });
+    window.addEventListener('mouseup', () => {
+      handlePointerUp();
+    });
+
+    // 공통 포인터 다운
+    let snapshotBeforeShape = null;
+
+    function handlePointerDown(clientX, clientY) {
+      if (currentMode === 'pan') {
+        isPanning = true;
+        lastX = clientX;
+        lastY = clientY;
+        return;
+      }
+
+      isDrawing = true;
+      const cPos = screenToCanvas(clientX, clientY);
+      startX = cPos.x;
+      startY = cPos.y;
+      lastX = cPos.x;
+      lastY = cPos.y;
+
+      if (['rect', 'circle', 'arrow'].includes(currentMode)) {
+        snapshotBeforeShape = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      }
+
+      if (currentMode === 'text') {
+        isDrawing = false;
+        const text = prompt('칠판에 입력할 글자를 입력하세요:', '');
+        if (text) {
+          ctx.font = 'bold 36px "Pretendard", sans-serif';
+          ctx.fillStyle = currentColor;
+          ctx.fillText(text, startX, startY);
+          saveState();
+        }
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+
+    // 공통 포인터 무브
+    function handlePointerMove(clientX, clientY) {
+      if (isPanning) {
+        panX += clientX - lastX;
+        panY += clientY - lastY;
+        lastX = clientX;
+        lastY = clientY;
+        applyTransform();
+        return;
+      }
+
+      if (!isDrawing) return;
+
+      const cPos = screenToCanvas(clientX, clientY);
+
+      if (currentMode === 'pen') {
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = currentLineWidth;
+        ctx.lineTo(cPos.x, cPos.y);
+        ctx.stroke();
+      } else if (currentMode === 'highlighter') {
+        ctx.strokeStyle = currentColor + '55'; // 반투명
+        ctx.lineWidth = currentLineWidth * 4;
+        ctx.lineTo(cPos.x, cPos.y);
+        ctx.stroke();
+      } else if (currentMode === 'eraser') {
+        ctx.strokeStyle = '#07080d';
+        ctx.lineWidth = currentLineWidth * 5;
+        ctx.lineTo(cPos.x, cPos.y);
+        ctx.stroke();
+      } else if (['rect', 'circle', 'arrow'].includes(currentMode)) {
+        // 도형 실시간 가이드 미리보기
+        if (snapshotBeforeShape) {
+          ctx.putImageData(snapshotBeforeShape, 0, 0);
+        }
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = currentLineWidth;
+
+        if (currentMode === 'rect') {
+          ctx.strokeRect(startX, startY, cPos.x - startX, cPos.y - startY);
+        } else if (currentMode === 'circle') {
+          const radius = Math.hypot(cPos.x - startX, cPos.y - startY);
+          ctx.beginPath();
+          ctx.arc(startX, startY, radius, 0, Math.PI * 2);
+          ctx.stroke();
+        } else if (currentMode === 'arrow') {
+          drawArrow(ctx, startX, startY, cPos.x, cPos.y, currentLineWidth);
+        }
+      }
+    }
+
+    // 공통 포인터 업
+    function handlePointerUp() {
+      if (isPanning) {
+        isPanning = false;
+        return;
+      }
+      if (isDrawing) {
+        isDrawing = false;
+        ctx.closePath();
+        snapshotBeforeShape = null;
+        saveState();
+      }
+    }
+
+    // 화살표 그리기 함수
+    function drawArrow(context, fromx, fromy, tox, toy, width) {
+      const headlen = 24;
+      const angle = Math.atan2(toy - fromy, tox - fromx);
+      context.beginPath();
+      context.moveTo(fromx, fromy);
+      context.lineTo(tox, toy);
+      context.stroke();
+
+      context.beginPath();
+      context.moveTo(tox, toy);
+      context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+      context.moveTo(tox, toy);
+      context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+      context.stroke();
+    }
+
+    // 🚀 학생 화면으로 전송 (고해상도 다운샘플링 전송)
     async function sendToStudents() {
       const statusEl = document.getElementById('sync-status');
       statusEl.textContent = '전송 중...';
       statusEl.style.background = 'rgba(245,158,11,0.2)';
       statusEl.style.color = '#f59e0b';
 
-      // 캔버스 이미지를 적당한 크기의 JPEG/PNG Base64로 압축
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      // 전송용 임시 캔버스 (전송 효율과 화질 밸런스: 1600 x 1000)
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = 1600;
+      exportCanvas.height = 1000;
+      const expCtx = exportCanvas.getContext('2d');
+      expCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+
+      const dataUrl = exportCanvas.toDataURL('image/jpeg', 0.82);
 
       const payload = {
         author: '채경원 (강사)',
@@ -195,16 +553,16 @@
         const now = new Date();
         const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ':' + now.getSeconds().toString().padStart(2,'0');
 
-        statusEl.textContent = '전송 완료! (' + timeStr + ')';
+        statusEl.textContent = '전송 완료 (' + timeStr + ')';
         statusEl.style.background = 'rgba(16,185,129,0.2)';
         statusEl.style.color = '#10b981';
-        document.getElementById('last-sent-time').textContent = '최근 전송: ' + timeStr;
-        alert('🎉 수강생 칠판으로 성공적으로 전송되었습니다!\n학생 화면에서 4초 이내에 자동 최신화됩니다.');
+        document.getElementById('last-time').textContent = '최근 전송: ' + timeStr;
+        alert('🎉 수강생 칠판으로 성공적으로 전송되었습니다!\n학생 화면에 4초 이내로 자동 최신화됩니다.');
       } catch (err) {
         statusEl.textContent = '전송 실패';
         statusEl.style.background = 'rgba(239,68,68,0.2)';
         statusEl.style.color = '#ef4444';
-        alert('전송 중 오류가 발생했습니다: ' + err);
+        alert('전송 중 오류 발생: ' + err);
       }
     }
   </script>
