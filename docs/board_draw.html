@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>강사 전용 모바일 칠판 (판서 도구)</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; user-select:none; -webkit-user-select:none; }
+    body { background: #07080d; color: #f1f3f9; font-family: 'Pretendard', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    header { background: #0e1017; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .status-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(16,185,129,0.2); color: #10b981; font-weight: 600; }
+    
+    /* 도구 툴바 */
+    .toolbar { background: #131722; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+    .color-dot.active { border-color: #fff; transform: scale(1.15); box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+    .btn-tool { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-tool.active { background: #8b5cf6; border-color: #a78bfa; }
+    .btn-send { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border: none; color: #fff; font-weight: 700; padding: 6px 16px; border-radius: 6px; font-size: 13px; margin-left: auto; cursor: pointer; box-shadow: 0 0 12px rgba(236,72,153,0.4); }
+
+    /* 캔버스 칠판 영역 */
+    .canvas-container { flex: 1; position: relative; background: #07080d; touch-action: none; overflow: hidden; }
+    canvas { width: 100%; height: 100%; display: block; background: #07080d; }
+
+    /* 하단 알림 바 */
+    .notice-bar { background: #0e1017; padding: 8px 16px; font-size: 11px; color: #9ba1b6; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><span>✏️</span> 강사 모바일 전용 칠판 (채경원 강사님)</h1>
+    <span class="status-badge" id="sync-status">전송 대기중</span>
+  </header>
+
+  <div class="toolbar">
+    <!-- 컬러 팔레트 -->
+    <div class="color-dot active" style="background: #ffffff;" onclick="selectColor('#ffffff', this)"></div>
+    <div class="color-dot" style="background: #ef4444;" onclick="selectColor('#ef4444', this)"></div>
+    <div class="color-dot" style="background: #f59e0b;" onclick="selectColor('#f59e0b', this)"></div>
+    <div class="color-dot" style="background: #10b981;" onclick="selectColor('#10b981', this)"></div>
+    <div class="color-dot" style="background: #38bdf8;" onclick="selectColor('#38bdf8', this)"></div>
+    <div class="color-dot" style="background: #a78bfa;" onclick="selectColor('#a78bfa', this)"></div>
+
+    <!-- 굵기 -->
+    <button class="btn-tool" onclick="selectWidth(3, this)">얇게</button>
+    <button class="btn-tool active" onclick="selectWidth(6, this)">보통</button>
+    <button class="btn-tool" onclick="selectWidth(12, this)">두껍게</button>
+
+    <!-- 지우개 / 초기화 -->
+    <button class="btn-tool" onclick="setEraser(this)">지우개</button>
+    <button class="btn-tool" onclick="clearBoard()">전체 비우기</button>
+
+    <!-- 학생 화면으로 즉시 전송 -->
+    <button class="btn-send" onclick="sendToStudents()">🚀 칠판 화면 전송하기</button>
+  </div>
+
+  <div class="canvas-container" id="container">
+    <canvas id="paintCanvas"></canvas>
+  </div>
+
+  <div class="notice-bar">
+    <span>💡 스마트폰 터치/S펜으로 자유롭게 그리고 [칠판 화면 전송하기]를 누르면 수강생 화면에 즉시 뜹니다!</span>
+    <span id="last-sent-time">최근 전송: 없음</span>
+  </div>
+
+  <script>
+    const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzj7R66hw1P6suB-emsCr52oIPEjDlOK2I2ho9TZ9f0KjgT2CT3MV9OMiw2xTVGjTSX/exec";
+
+    const canvas = document.getElementById('paintCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('container');
+
+    let isDrawing = false;
+    let currentColor = '#ffffff';
+    let currentWidth = 6;
+    let isEraser = false;
+
+    // 반응형 캔버스 크기 맞춤
+    function resizeCanvas() {
+      const rect = container.getBoundingClientRect();
+      const tempImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      ctx.fillStyle = '#07080d';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 100);
+
+    // 좌표 추출 (터치 & 마우스 완벽 지원)
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDraw(e) {
+      e.preventDefault();
+      isDrawing = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      ctx.strokeStyle = isEraser ? '#07080d' : currentColor;
+      ctx.lineWidth = isEraser ? currentWidth * 3 : currentWidth;
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDraw(e) {
+      if (!isDrawing) return;
+      isDrawing = false;
+      ctx.closePath();
+    }
+
+    // 터치 이벤트
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDraw);
+    canvas.addEventListener('touchcancel', stopDraw);
+
+    // 마우스 이벤트
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+
+    // 도구 선택
+    function selectColor(color, el) {
+      currentColor = color;
+      isEraser = false;
+      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function selectWidth(width, el) {
+      currentWidth = width;
+      document.querySelectorAll('.btn-tool').forEach(b => {
+        if (b.textContent.includes('얇게') || b.textContent.includes('보통') || b.textContent.includes('두껍게')) {
+          b.classList.remove('active');
+        }
+      });
+      el.classList.add('active');
+    }
+
+    function setEraser(el) {
+      isEraser = true;
+      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    }
+
+    function clearBoard() {
+      if (confirm('칠판을 모두 지우시겠습니까?')) {
+        ctx.fillStyle = '#07080d';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    // 학생 화면으로 전송 (Google Apps Script POST)
+    async function sendToStudents() {
+      const statusEl = document.getElementById('sync-status');
+      statusEl.textContent = '전송 중...';
+      statusEl.style.background = 'rgba(245,158,11,0.2)';
+      statusEl.style.color = '#f59e0b';
+
+      // 캔버스 이미지를 적당한 크기의 JPEG/PNG Base64로 압축
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+      const payload = {
+        author: '채경원 (강사)',
+        type: '칠판',
+        content: dataUrl
+      };
+
+      try {
+        await fetch(GOOGLE_SHEET_API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ':' + now.getSeconds().toString().padStart(2,'0');
+
+        statusEl.textContent = '전송 완료! (' + timeStr + ')';
+        statusEl.style.background = 'rgba(16,185,129,0.2)';
+        statusEl.style.color = '#10b981';
+        document.getElementById('last-sent-time').textContent = '최근 전송: ' + timeStr;
+        alert('🎉 수강생 칠판으로 성공적으로 전송되었습니다!\n학생 화면에서 4초 이내에 자동 최신화됩니다.');
+      } catch (err) {
+        statusEl.textContent = '전송 실패';
+        statusEl.style.background = 'rgba(239,68,68,0.2)';
+        statusEl.style.color = '#ef4444';
+        alert('전송 중 오류가 발생했습니다: ' + err);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -465,6 +465,79 @@ let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.no
   updated_at: "2026-10-19 17:52"
 };
 
+// 🎨 강사 라이브 칠판 모달 제어 및 실시간 감시
+let boardPollingTimer = null;
+function openBoardModal() {
+  document.getElementById('board-modal').classList.add('active');
+  loadLiveBoard();
+  if (!boardPollingTimer) {
+    boardPollingTimer = setInterval(loadLiveBoard, 4000); // 4초마다 칠판 최신화
+  }
+}
+
+function closeBoardModal() {
+  document.getElementById('board-modal').classList.remove('active');
+  if (boardPollingTimer) {
+    clearInterval(boardPollingTimer);
+    boardPollingTimer = null;
+  }
+}
+
+async function loadLiveBoard(isManual = false) {
+  const loading = document.getElementById('board-loading-indicator');
+  const img = document.getElementById('board-live-image');
+  const textDiv = document.getElementById('board-text-fallback');
+
+  if (isManual && loading) loading.style.display = 'flex';
+
+  if (!GOOGLE_SHEET_API_URL) return;
+
+  try {
+    const res = await fetch(GOOGLE_SHEET_API_URL + "?type=board&t=" + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      // data: [{ id, createdAt, author, type, content, reply }]
+      // '칠판' 또는 '판서' 타입의 가장 최신 항목 찾기
+      const boardItem = Array.isArray(data) ? data.find(item => item.type === '칠판' || item.type === '판서' || item.content?.startsWith('data:image')) : null;
+
+      if (loading) loading.style.display = 'none';
+
+      if (boardItem && boardItem.content) {
+        if (boardItem.content.startsWith('data:image') || boardItem.content.startsWith('http')) {
+          img.src = boardItem.content;
+          img.style.display = 'block';
+          textDiv.style.display = 'none';
+        } else {
+          img.style.display = 'none';
+          textDiv.textContent = boardItem.content;
+          textDiv.style.display = 'block';
+        }
+        const titleEl = document.getElementById('board-modal-title');
+        if (titleEl && boardItem.createdAt) {
+          titleEl.textContent = `강사 채경원님의 실시간 판서 (${boardItem.createdAt} 업데이트)`;
+        }
+      } else {
+        // 아직 칠판 데이터가 없으면 기본 안내
+        if (img.style.display !== 'block') {
+          if (loading) {
+            loading.style.display = 'flex';
+            loading.innerHTML = `
+              <div style="font-size:36px;">🎨</div>
+              <div style="font-size:14px; font-weight:700; color:#f1f3f9;">아직 전송된 강사 판서가 없습니다.</div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">강사님이 스마트폰 전용 판서창(board_draw.html)에서 펜으로 작성 후 전송하면 여기에 즉시 나타납니다.</p>
+              <a href="board_draw.html" target="_blank" class="btn btn-primary" style="margin-top:12px; font-size:12px; background:linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
+                ✏️ 강사 전용 폰 판서창 열어보기 ↗
+              </a>
+            `;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.log("칠판 데이터 불러오기 오류:", e);
+  }
+}
+
 // 🎯 4시간 강의 로드맵 & LLM 원리 모달 제어
 function openTimetableModal() {
   document.getElementById('timetable-modal').classList.add('active');
