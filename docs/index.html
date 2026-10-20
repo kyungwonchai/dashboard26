@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=20261020_094354">
+  <link rel="stylesheet" href="style.css?v=20261020_095203">
 </head>
 <body>
   <!-- 상단 네비게이션 헤더 -->
@@ -32,17 +32,8 @@
         <button class="btn btn-primary" onclick="openBoardModal()" style="margin-right:8px; background:linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
           📋 실시간 메모보드
         </button>
-        <button class="btn btn-primary" onclick="openTimetableModal()" style="margin-right:8px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-          🎯 4시간 강의 로드맵 & 학습목표
-        </button>
-        <button class="btn btn-primary" onclick="openVisionModal()" style="margin-right:8px; background:linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
-          🚀 AI 비전 & 도구 로드맵
-        </button>
         <button class="btn btn-secondary" onclick="openDeployModal()" style="margin-right:8px; border-color:rgba(16,185,129,0.4); color:#6ee7b7;">
           🌐 초간단 무료 공유법
-        </button>
-        <button class="btn btn-primary" onclick="openNoteModal()" style="margin-right:8px; background:var(--grad-brand);">
-          📜 강사 특별 노트 (종이 한 장)
         </button>
         <button class="btn btn-secondary" onclick="openQnAModal()" style="margin-right:8px;">
           💬 문의 & 질문함
@@ -109,22 +100,6 @@
         </div>
       </section>
 
-      <!-- 📜 상단 종이 한 장: 강사 특별 노트 배너 -->
-      <section class="glass-card" style="padding: 20px 24px; border-left: 4px solid var(--accent); background: rgba(139, 92, 246, 0.05); display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:18px;">📜</span>
-            <h3 style="font-size:15px; font-weight:700;" id="banner-note-title">바이브코딩 대시보드 심화 실습 핵심 요약 & 강사 특별 노트</h3>
-            <span style="font-size:11px; padding:2px 6px; border-radius:4px; background:rgba(16,185,129,0.2); color:#10b981; font-weight:600;">실시간 동기화</span>
-          </div>
-          <p style="font-size:12px; color:var(--text-muted); margin-top:4px;" id="banner-note-snippet">
-            채경원 작성 실전 가이드라인과 핵심 요약이 담겨 있습니다.
-          </p>
-        </div>
-        <button class="btn btn-secondary" onclick="openNoteModal()" style="font-size:12px; padding:6px 14px; white-space:nowrap;">
-          전체 펼쳐보기 ↗
-        </button>
-      </section>
       <!-- 프롬프트 카드 -->
       <section class="prompt-box glass-card">
         <div class="prompt-header">
@@ -539,7 +514,7 @@
     </div>
   </div>
 
-  <script src="data.js?v=20261020_094354"></script>
-  <script src="demo.js?v=20261020_094354"></script>
+  <script src="data.js?v=20261020_095203"></script>
+  <script src="demo.js?v=20261020_095203"></script>
 </body>
 </html>

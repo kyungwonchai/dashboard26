@@ -638,7 +638,13 @@ async function loadQnAList() {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          renderQnAItems(data);
+          // 🛡️ 필터링: 칠판 이미지(data:image)나 판서 데이터는 문의/질문함에서 완전 제외!
+          const cleanQnA = data.filter(item => {
+            const c = String(item.content || '');
+            const t = String(item.type || '');
+            return !c.startsWith('data:image') && t !== '칠판' && t !== '메모보드' && t !== '판서';
+          });
+          renderQnAItems(cleanQnA);
           return;
         }
       }
