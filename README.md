@@ -50,6 +50,26 @@ python3 -m venv venv
 
 ---
 
+
+---
+
+## 🎨 2026 블루프린트 허브 (BlueprintHub) 디자인 컴포넌트 칠판 & 코드 카탈로그 (무료 개방)
+
+> **"원하는 UI 컨트롤을 칠판에서 고르고 배치하면, AI가 0% 오차 완벽한 코드로 만들어 드립니다!"**  
+> **수강생 및 실무자 여러분 누구나 자유롭게 가져다 쓰세요! (상용/개인 프로젝트 100% 무료 허용)**
+
+본 대시보드(`dashboard26`)의 딥 다크 네온 글래스모피즘 룩앤필의 기반이 되는 **블루프린트 허브(BlueprintHub)** 컴포넌트 시스템이 GitHub Pages 내에 무료 개방되어 있습니다.
+
+* 🌐 **블루프린트 허브 바로가기**: **[https://kyungwonchai.github.io/dashboard26/blueprint-hub/](https://kyungwonchai.github.io/dashboard26/blueprint-hub/)**
+* 📖 **대시보드26 공식 깃페이지**: **[https://kyungwonchai.github.io/dashboard26/](https://kyungwonchai.github.io/dashboard26/)**
+
+### 💡 어떤 컴포넌트들을 가져다 쓸 수 있나요?
+1. **2026 초정밀 글래스모피즘 KPI 지표 카드**: 실시간 상태 펄스, 상승/하락 트렌드 뱃지, 네온 백라이트
+2. **실시간 텔레메트리 스트림 차트**: 초당 60fps 부드러운 렌더링, 수율/가동률/불량률 공정 관제 패널
+3. **인터랙티브 데이터 그리드 & 피벗 테이블**: 실시간 정렬, 컬럼 필터, CSV/엑셀 내보내기 내장
+4. **포스트잇 화이트보드 칠판**: 화면 구성을 자유롭게 드래그앤드롭하여 공간 배치도를 만들고 AI 스냅샷 생성
+5. **순수 MIT 오픈소스**: 특정 벤더(DevExpress 등)의 라이선스 종속이 일절 없는 100% 순수 React 19 + Tailwind CSS 독자 컴포넌트
+
 ## 📚 교재 단계별 프롬프트 가이드 (STEP 01 ~ 11)
 - 교재 PPT에 수록된 모든 Gemini CLI 프롬프트와 나만의 변형 미션은 프로젝트 내 `GEMINI.md`와 GitHub Pages 웹 튜토리얼(`docs/index.html`)에서 언제든지 복사하여 실습할 수 있습니다.
 - 초보자 눈높이의 데이터베이스 해설은 `DATABASE_GUIDE.md`를 참고하세요.
