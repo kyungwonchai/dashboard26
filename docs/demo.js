@@ -514,20 +514,17 @@ async function loadLiveBoard(isManual = false) {
         }
         const titleEl = document.getElementById('board-modal-title');
         if (titleEl && boardItem.createdAt) {
-          titleEl.textContent = `강사 채경원님의 실시간 판서 (${boardItem.createdAt} 업데이트)`;
+          titleEl.textContent = `채경원 실시간 메모보드 (${boardItem.createdAt} 업데이트)`;
         }
       } else {
-        // 아직 칠판 데이터가 없으면 기본 안내
+        // 아직 메모보드 데이터가 없으면 기본 안내
         if (img.style.display !== 'block') {
           if (loading) {
             loading.style.display = 'flex';
             loading.innerHTML = `
-              <div style="font-size:36px;">🎨</div>
-              <div style="font-size:14px; font-weight:700; color:#f1f3f9;">아직 전송된 강사 판서가 없습니다.</div>
-              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">강사님이 스마트폰 전용 판서창(board_draw.html)에서 펜으로 작성 후 전송하면 여기에 즉시 나타납니다.</p>
-              <a href="board_draw.html" target="_blank" class="btn btn-primary" style="margin-top:12px; font-size:12px; background:linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
-                ✏️ 강사 전용 폰 판서창 열어보기 ↗
-              </a>
+              <div style="font-size:36px;">📋</div>
+              <div style="font-size:14px; font-weight:700; color:#f1f3f9;">아직 전송된 메모보드가 없습니다.</div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">스마트폰 전용 메모보드(board_draw.html)에서 작성 후 전송하면 여기에 즉시 나타납니다.</p>
             `;
           }
         }
@@ -706,7 +703,7 @@ async function submitQnA(e) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ author, type, content })
       });
-      alert('🎉 구글 스프레드시트에 질문이 실시간으로 등록되었습니다!\n강사님이 확인 후 답변을 작성하면 화면에 자동 표시됩니다.');
+      alert('🎉 구글 스프레드시트에 질문이 실시간으로 등록되었습니다!\n확인 후 답변을 작성하면 화면에 자동 표시됩니다.');
       document.getElementById('qna-content').value = '';
       setTimeout(loadQnAList, 1500);
       return;
