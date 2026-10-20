@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=20261020_095841">
+  <link rel="stylesheet" href="style.css?v=20261020_110910">
 </head>
 <body>
   <!-- 상단 네비게이션 헤더 -->
@@ -33,7 +33,7 @@
           📋 실시간 메모보드
         </button>
         <button class="btn btn-secondary" onclick="openDeployModal()" style="margin-right:8px; border-color:rgba(16,185,129,0.4); color:#6ee7b7;">
-          🌐 초간단 무료 공유법
+          🌐 사내 DB구축 & 배포 가이드
         </button>
         <button class="btn btn-secondary" onclick="openQnAModal()" style="margin-right:8px;">
           💬 문의 & 질문함
@@ -283,66 +283,81 @@
     </div>
   </div>
 
-  <!-- 🌐 초간단 무료 웹앱 공유 가이드 모달 (보안 무위험 · 외부 공개 배포법) -->
+  <!-- 🌐 사내 무료 DB(PostgreSQL/SQLite) 구축 & 엔터프라이즈 서비스 가이드 모달 -->
   <div class="modal-overlay" id="deploy-modal">
-    <div class="glass-card modal-card" style="width:92%; max-width:840px; padding:32px; max-height:90vh; overflow-y:auto; background: #0c0e14; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.85);">
+    <div class="glass-card modal-card" style="width:94%; max-width:920px; padding:32px; max-height:92vh; overflow-y:auto; background: #0c0e14; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.85);">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:16px;">
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:22px;">🌐</span>
-            <span style="font-size:11px; padding:3px 8px; border-radius:4px; background:linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color:#fff; font-weight:700;">실습 공유 실전 가이드</span>
-            <span style="font-size:11px; color:var(--text-dim);">누구나 무료로 1분 만에 배포</span>
+            <span style="font-size:22px;">🏢</span>
+            <span style="font-size:11px; padding:3px 8px; border-radius:4px; background:linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color:#fff; font-weight:700;">엔터프라이즈 아키텍처 실무</span>
+            <span style="font-size:11px; color:var(--text-dim);">사내 무료 DB 구축 & 실습 연계 가이드</span>
           </div>
-          <h2 style="font-size:20px; font-weight:800; margin-top:8px;">내 PC·집 네트워크 침범 없이 안전하게 웹앱을 세상에 공유하는 3가지 방법</h2>
+          <h2 style="font-size:20px; font-weight:800; margin-top:8px;">사내 PostgreSQL 무료 DB 구축 및 사내망 서비스 배포 전략</h2>
         </div>
         <button class="btn btn-secondary" onclick="closeDeployModal()" style="padding:4px 10px;">✕</button>
       </div>
 
       <div style="display:flex; flex-direction:column; gap:20px; font-size:13px; line-height:1.7; color:var(--text);">
-        <!-- 인트로 -->
-        <div style="background:rgba(239, 68, 68, 0.08); border-left:4px solid #ef4444; padding:14px 18px; border-radius:8px;">
-          <b style="color:#f87171;">⚠️ 왜 집/회사 서버를 외부로 직접 열면 안 될까요?</b>
-          <p style="color:var(--text-muted); font-size:12px; margin-top:4px;">
-            내 컴퓨터의 포트를 외부에 직접 열거나 포트포워딩을 하면 IP 노출, 해킹, 악성코드 침입 등 보안 위험이 큽니다. 따라서 <b>내 PC나 서버는 전혀 건드리지 않고, 검증된 글로벌 무료 클라우드를 활용해 정적 웹이나 안전한 샌드박스로 공유</b>하는 것이 현명합니다.
+        <!-- 핵심 요약 카드: 실습과 사내 배포의 황금 밸런스 -->
+        <div style="background:rgba(6, 182, 212, 0.08); border-left:4px solid #06b6d4; padding:16px 20px; border-radius:8px;">
+          <h4 style="font-size:15px; color:#38bdf8; font-weight:700; margin-bottom:6px;">🎯 실습은 개인 PC(SQLite), 실무는 사내 인가 서버(PostgreSQL)!</h4>
+          <p style="color:var(--text-muted); font-size:12px; line-height:1.6;">
+            • <b>교육/실습 환경:</b> 개인 PC에서 설치와 설정이 0초인 파일형 DB인 <code>SQLite (dashboard.db)</code>로 빠르고 안전하게 바이브코딩 검증.<br>
+            • <b>사내 정식 서비스:</b> 검증된 코드를 회사 사내 리눅스 서버나 승인된 도커 컨테이너의 <code>PostgreSQL (무료 오픈소스)</code>에 연결하여 사내 허용 IP/도메인으로 팀 전체에 서비스.
           </p>
         </div>
 
-        <!-- 3대 공유 방법 카드 -->
+        <!-- 3단계 사내 무료 DB 구축 & 서비스 로드맵 -->
         <div style="display:grid; grid-template-columns:1fr; gap:14px;">
-          <!-- 방법 1 -->
+          <!-- 1단계: PostgreSQL 무료 구축법 -->
           <div style="background:var(--bg-soft); border:1px solid var(--border); padding:18px; border-radius:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h4 style="font-size:15px; color:#34d399; font-weight:700;">🥇 1. GitHub Pages (가장 강력하고 100% 무료 · 현재 사이트 배포 방식)</h4>
-              <span style="font-size:11px; background:#10b98122; color:#34d399; padding:2px 8px; border-radius:4px; font-weight:600;">초보자 추천 1위</span>
+              <h4 style="font-size:15px; color:#34d399; font-weight:700;">🐘 1. 사내 무료 PostgreSQL DB 구축 (Docker 1분 컷)</h4>
+              <span style="font-size:11px; background:#10b98122; color:#34d399; padding:2px 8px; border-radius:4px; font-weight:600;">기업 표준 No.1 오픈소스</span>
             </div>
-            <p style="color:var(--text-muted);">
-              내가 만든 HTML, CSS, JS 파일을 깃허브 저장소에 올리고 [Settings] ➔ [Pages] ➔ [main branch]를 선택하면 1초 만에 <code>https://내아이디.github.io/프로젝트명/</code> 주소가 무료로 생성됩니다.
+            <p style="color:var(--text-muted); font-size:12px;">
+              라이선스 비용 0원의 세계 최고 오픈소스 관계형 DB인 PostgreSQL을 사내 공용 PC나 개발 서버에 명령어 한 줄로 띄웁니다:
             </p>
-            <div style="background:#07080d; border-radius:6px; padding:10px 14px; margin-top:8px; font-size:12px; color:#a7f3d0;">
-              ✨ <b>백엔드 데이터가 필요할 땐?</b> 오늘 배운 <b>구글 스프레드시트 Web App(Apps Script)</b>을 연결하면, DB 서버 한 대 없이도 누구나 글을 쓰고 읽는 실시간 풀스택 웹앱이 완성됩니다!
+            <div style="background:#07080d; border-radius:6px; padding:10px 14px; margin-top:8px; font-family:monospace; font-size:11px; color:#38bdf8;">
+              docker run -d --name corp-postgres -p 5432:5432 -e POSTGRES_PASSWORD=mysecret corp/postgres:latest
             </div>
-          </div>
-
-          <!-- 방법 2 -->
-          <div style="background:var(--bg-soft); border:1px solid var(--border); padding:18px; border-radius:10px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h4 style="font-size:15px; color:#38bdf8; font-weight:700;">🥈 2. Vercel 또는 Netlify (폴더 드래그앤드롭으로 30초 배포)</h4>
-              <span style="font-size:11px; background:#0284c722; color:#38bdf8; padding:2px 8px; border-radius:4px; font-weight:600;">클릭 몇 번으로 끝</span>
-            </div>
-            <p style="color:var(--text-muted);">
-              가입 후 웹 브라우저 화면에 내가 만든 웹앱 폴더(HTML 파일들)를 <b>마우스로 끌어다 놓기(Drag & Drop)</b>만 하면 즉시 전 세계 어디서든 접속 가능한 <code>https://내앱.vercel.app</code> 보안 HTTPS 링크가 만들어집니다.
+            <p style="color:var(--text-dim); font-size:11px; margin-top:6px;">
+              • 동시 접속 수백 명 처리, 트랜잭션 보장, 데이터 자동 백업 및 복구가 완벽 지원됩니다.
             </p>
           </div>
 
-          <!-- 방법 3 -->
+          <!-- 2단계: 주소 사내 허용 및 팀 배포 전략 -->
           <div style="background:var(--bg-soft); border:1px solid var(--border); padding:18px; border-radius:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h4 style="font-size:15px; color:#f472b6; font-weight:700;">🥉 3. 구글 코랩(Colab) + ngrok 임시 터널링 (실습 중 5분 시연용)</h4>
-              <span style="font-size:11px; background:#db277722; color:#f472b6; padding:2px 8px; border-radius:4px; font-weight:600;">수업 시간 전용</span>
+              <h4 style="font-size:15px; color:#fbbf24; font-weight:700;">🏢 2. 사내 허용 주소 바인딩 & 방화벽 인바운드 허용 (--team 모드)</h4>
+              <span style="font-size:11px; background:#f59e0b22; color:#fbbf24; padding:2px 8px; border-radius:4px; font-weight:600;">사내망 전용</span>
             </div>
-            <p style="color:var(--text-muted);">
-              내 PC 대신 구글이 무료로 제공하는 웹 컴퓨터(Colab)에서 Python Flask 서버를 돌리고, ngrok 또는 localtunnel 명령 한 줄로 임시 퍼블릭 URL을 만들어 동료들에게 링크를 보내는 방식입니다. 수업이 끝나면 세션이 닫혀 완벽히 격리됩니다.
+            <p style="color:var(--text-muted); font-size:12px;">
+              외부 인터넷이 아닌 <b>사내 인트라넷(예: 172.x.x.x 또는 10.x.x.x)</b> 안에서만 안전하게 팀원들과 대시보드를 공유하는 방식입니다:
             </p>
+            <ul style="color:var(--text-dim); font-size:12px; margin-top:6px; padding-left:18px; line-height:1.6;">
+              <li><b>0.0.0.0 바인딩:</b> <code>python app.py --team</code> 또는 <code>start_team.bat</code>으로 내 PC/서버의 사내 사설 IP로 오픈.</li>
+              <li><b>사내 방화벽 설정:</b> 윈도우 고급 방화벽 ➔ 인바운드 규칙에서 포트 <code>10211</code> 허용.</li>
+              <li><b>사내 DNS / 인트라넷 주소:</b> 사내 공용 도메인(예: <code>http://dashboard.corp.internal/</code>)을 Nginx 리버스 프록시로 연결하면 팀원 전원이 바로 접속 가능!</li>
+            </ul>
+          </div>
+
+          <!-- 3단계: SQLite에서 PostgreSQL로 1초 전환법 (SQLAlchemy) -->
+          <div style="background:var(--bg-soft); border:1px solid var(--border); padding:18px; border-radius:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="font-size:15px; color:#a78bfa; font-weight:700;">🔄 3. 코드 한 줄로 SQLite ➔ PostgreSQL 즉시 전환 (바이브코딩)</h4>
+              <span style="font-size:11px; background:#8b5cf622; color:#a78bfa; padding:2px 8px; border-radius:4px; font-weight:600;">실무 팁</span>
+            </div>
+            <p style="color:var(--text-muted); font-size:12px;">
+              실습 때 짠 파이썬 코드를 사내 정식 서비스로 올릴 때 코드를 다시 짤 필요가 전혀 없습니다. DB 접속 주소(Connection String) 단 한 줄만 바꿔주면 끝납니다:
+            </p>
+            <div style="background:#07080d; border-radius:6px; padding:10px 14px; margin-top:8px; font-family:monospace; font-size:11px; color:#c084fc;">
+              # 개인 실습 모드 (로컬 SQLite):<br>
+              DB_URL = "sqlite:///dashboard.db"<br><br>
+              # 사내 정식 서비스 모드 (사내 PostgreSQL):<br>
+              DB_URL = "postgresql://user:pass@172.30.1.50:5432/corp_dashboard"
+            </div>
           </div>
         </div>
       </div>
@@ -514,7 +529,7 @@
     </div>
   </div>
 
-  <script src="data.js?v=20261020_095841"></script>
-  <script src="demo.js?v=20261020_095841"></script>
+  <script src="data.js?v=20261020_110910"></script>
+  <script src="demo.js?v=20261020_110910"></script>
 </body>
 </html>
