@@ -463,6 +463,29 @@ let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.no
 };
 
 // 📱 QR코드 모달 제어
+// 🎬 데모 영상 모달 제어
+function openVideoModal() {
+  const modal = document.getElementById('video-modal');
+  if (modal) {
+    modal.classList.add('active');
+    const player = document.getElementById('demo-video-player');
+    if (player) {
+      player.play().catch(e => console.log('Autoplay blocked, user click needed:', e));
+    }
+  }
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('video-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    const player = document.getElementById('demo-video-player');
+    if (player) {
+      player.pause();
+    }
+  }
+}
+
 function openQrModal() {
   document.getElementById('qr-modal').classList.add('active');
 }

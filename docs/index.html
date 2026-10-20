@@ -32,6 +32,9 @@
         <button class="btn btn-primary" onclick="openBoardModal()" style="margin-right:8px; background:linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
           📋 실시간 메모보드
         </button>
+        <button class="btn btn-primary" onclick="openVideoModal()" style="margin-right:8px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow:0 0 15px rgba(16,185,129,0.3);">
+          🎬 데모 영상 재생
+        </button>
         <button class="btn btn-secondary" onclick="openDeployModal()" style="margin-right:8px; border-color:rgba(16,185,129,0.4); color:#6ee7b7;">
           🌐 사내 DB구축 & 배포 가이드
         </button>
@@ -62,6 +65,27 @@
 
     <!-- 우측: 해당 단계의 동작 시뮬레이션 및 프롬프트 설명창 -->
     <main class="content-simulator">
+      <!-- 🎬 시연 영상 하이라이트 배너 -->
+      <section class="glass-card" style="padding: 16px 20px; border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.06); display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
+            🎬
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h4 style="font-size: 14px; font-weight: 700; color: #f1f3f9; margin: 0;">대시보드 실전 완성 시연 영상</h4>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; font-weight: 700;">10초 프리뷰</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 3px 0 0 0;">
+              Flask 서버와 SQLite DB, 대시보드 화면이 어떻게 연동되어 동작하는지 실제 구동 화면을 영상으로 확인해보세요.
+            </p>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="openVideoModal()" style="padding: 8px 18px; font-size: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); flex-shrink: 0; box-shadow: 0 0 12px rgba(16,185,129,0.3);">
+          ▶ 영상 시청하기
+        </button>
+      </section>
+
       <!-- 🎯 [4줄 핵심 학습목표] & LLM의 본질 배너 -->
       <section class="glass-card" style="padding: 20px 24px; border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
@@ -507,6 +531,39 @@
   </div>
 
   <!-- 📱 수강생 접속 QR코드 모달 -->
+    <!-- 🎬 모달: 데모 영상 모달 (누구나 재생 가능) -->
+  <div class="modal-overlay" id="video-modal" onclick="if(event.target===this)closeVideoModal()">
+    <div class="glass-card modal-card" style="width:94%; max-width:880px; padding:24px; background:#0c0e14; border:1px solid rgba(16,185,129,0.4); box-shadow:0 20px 60px rgba(0,0,0,0.85);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">🎬</span>
+          <div>
+            <h3 style="font-size:18px; font-weight:800; color:#f1f3f9;">바이브코딩 대시보드 시연 영상</h3>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">브라우저 내장 HTML5 비디오 플레이어로 누구나 즉시 고화질로 시청할 수 있습니다.</p>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="closeVideoModal()" style="padding:6px 14px; font-size:12px;">✕ 닫기</button>
+      </div>
+
+      <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; background:#000; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.6);">
+        <video id="demo-video-player" controls preload="metadata" style="width:100%; height:auto; display:block; max-height:68vh; outline:none;" poster="">
+          <source src="demo.mp4" type="video/mp4">
+          현재 브라우저가 비디오 태그를 지원하지 않습니다.
+        </video>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06); font-size:12px; color:var(--text-dim);">
+        <div style="display:flex; gap:16px;">
+          <span>⚡ 형식: MP4 (H.264 / AAC)</span>
+          <span>📐 해상도: 1280x720 (720p HD)</span>
+        </div>
+        <a href="demo.mp4" download="Gemini_CLI_대시보드_시연.mp4" class="btn btn-secondary" style="font-size:11px; padding:4px 12px; text-decoration:none;">
+          💾 영상 직접 다운로드
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="qr-modal">
     <div class="glass-card modal-card" style="width:90%; max-width:440px; padding:32px 24px; text-align:center; background:#0c0e14; border:1px solid rgba(59,130,246,0.4); box-shadow:0 20px 60px rgba(0,0,0,0.85);">
       <div style="font-size:32px; margin-bottom:10px;">📱</div>
