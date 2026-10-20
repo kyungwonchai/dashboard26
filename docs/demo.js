@@ -465,6 +465,14 @@ let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.no
   updated_at: "2026-10-19 17:52"
 };
 
+// 📱 QR코드 모달 제어
+function openQrModal() {
+  document.getElementById('qr-modal').classList.add('active');
+}
+function closeQrModal() {
+  document.getElementById('qr-modal').classList.remove('active');
+}
+
 // 🎨 강사 라이브 칠판 모달 제어 및 실시간 감시
 let boardPollingTimer = null;
 function openBoardModal() {
