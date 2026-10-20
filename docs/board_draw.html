@@ -150,6 +150,21 @@
   </style>
 </head>
 <body>
+  <!-- 🔒 강사 인증 게이트웨이 락 화면 -->
+  <div id="authGate" style="position:fixed; inset:0; background:#07080d; z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#0e1017; border:1px solid rgba(236,72,153,0.4); border-radius:12px; padding:32px 28px; width:100%; max-width:380px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+      <div style="font-size:36px; margin-bottom:12px;">🔒</div>
+      <h2 style="font-size:18px; font-weight:800; color:#f1f3f9; margin-bottom:8px;">강사 전용 인증</h2>
+      <p style="font-size:12px; color:#9ba1b6; line-height:1.5; margin-bottom:20px;">본 화면은 강사님만 진입할 수 있습니다.<br>인증 비밀번호를 입력해주세요.</p>
+      
+      <form onsubmit="verifyLecturer(event)">
+        <input type="password" id="pinInput" placeholder="강사 PIN 4자리 입력" maxlength="8" autofocus style="width:100%; background:#07080d; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:12px; color:#fff; font-size:18px; text-align:center; letter-spacing:4px; margin-bottom:14px; outline:none;">
+        <button type="submit" style="width:100%; background:linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border:none; border-radius:8px; padding:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer;">인증하고 칠판 열기</button>
+      </form>
+      <div id="gateError" style="font-size:12px; color:#ef4444; margin-top:12px; display:none;">비밀번호가 올바르지 않습니다.</div>
+    </div>
+  </div>
+
   <header>
     <div class="brand">
       <span>🎨</span>
@@ -214,6 +229,43 @@
   </footer>
 
   <script>
+    // 🔒 단방향 솔트 암호화 해시 검증 (비밀번호 원본은 코드 어디에도 존재하지 않음)
+    const AUTH_HASH = "24335830e70443bc34be02b60d8b4d01b320a7c332f6890f809d6a47908b1ded";
+    const SALT = "dashboard26_kw_master";
+
+    async function sha256(str) {
+      const buffer = new TextEncoder().encode(str);
+      const hash = await crypto.subtle.digest('SHA-256', buffer);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function checkSavedAuth() {
+      const token = localStorage.getItem('kw_lecturer_token');
+      if (token === AUTH_HASH) {
+        document.getElementById('authGate').style.display = 'none';
+        return true;
+      }
+      return false;
+    }
+
+    async function verifyLecturer(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('pinInput').value.trim();
+      const hashed = await sha256(input + SALT);
+      if (hashed === AUTH_HASH) {
+        localStorage.setItem('kw_lecturer_token', AUTH_HASH);
+        document.getElementById('authGate').style.display = 'none';
+        document.getElementById('gateError').style.display = 'none';
+      } else {
+        const err = document.getElementById('gateError');
+        err.style.display = 'block';
+        err.textContent = '❌ 비밀번호가 올바르지 않습니다.';
+        document.getElementById('pinInput').value = '';
+      }
+    }
+
+    checkSavedAuth();
+
     const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzj7R66hw1P6suB-emsCr52oIPEjDlOK2I2ho9TZ9f0KjgT2CT3MV9OMiw2xTVGjTSX/exec";
 
     const viewport = document.getElementById('viewport');
@@ -520,18 +572,12 @@
       context.stroke();
     }
 
-    // 🚀 학생 화면으로 전송 (비밀번호 보안 검증 탑재)
+    // 🚀 학생 화면으로 전송 (인증된 상태에서만 동작)
     async function sendToStudents() {
-      // 1. 강사 보안 비밀번호 확인 (브라우저에 1회 기억)
-      let savedPin = localStorage.getItem('kw_lecturer_pin');
-      if (!savedPin) {
-        savedPin = prompt('🔒 강사 전용 인증 비밀번호 4자리를 입력하세요 (수강생 낙서 방지용):', '');
-        if (!savedPin) return;
-        if (savedPin !== '2626') {
-          alert('❌ 강사 비밀번호가 일치하지 않습니다. 전송 권한이 없습니다.');
-          return;
-        }
-        localStorage.setItem('kw_lecturer_pin', savedPin);
+      const token = localStorage.getItem('kw_lecturer_token');
+      if (token !== AUTH_HASH) {
+        document.getElementById('authGate').style.display = 'flex';
+        return;
       }
 
       const statusEl = document.getElementById('sync-status');
