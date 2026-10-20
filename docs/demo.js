@@ -254,7 +254,7 @@ const CURRICULUM = [
     part: "PART 5 · 사내 배포와 미래 확장",
     title: "사내 무료 DB(PostgreSQL) & 엔터프라이즈 서비스",
     desc: "개인 PC 실습(SQLite)을 거쳐 검증된 대시보드를 사내 무료 PostgreSQL DB 및 사내 인트라넷 IP로 안전하게 전환·배포하는 실무 엔터프라이즈 아키텍처 전략입니다.",
-    prompt: `우리 대시보드를 사내 실무 환경에 맞춰 PostgreSQL 무료 DB로 연동하고 사내망 팀원들에게 서비스하는 방법을 정리해줘.\n- 실습은 개인 PC에서 설정이 필요 없는 SQLite(dashboard.db)로 검증\n- 실무 배포는 Docker 무료 오픈소스 PostgreSQL 컨테이너 구축\n- 파이썬 DB 연결 주소(DB_URL) 단 한 줄 교체로 SQLite에서 PostgreSQL로 즉시 전환\n- 사내망 0.0.0.0 IP 바인딩 및 윈도우 방화벽 10211 포트 오픈 설정\n- 사내 DNS 및 Nginx 리버스 프록시로 안전한 사내 정식 포털 완성\n- 2026 블루프린트 허브(BlueprintHub) 컴포넌트 칠판 & 오픈소스 패키지 연계`,
+    prompt: `우리 대시보드를 사내 실무 환경에 맞춰 PostgreSQL 무료 DB로 연동하고 사내망 팀원들에게 서비스하는 방법을 정리해줘.\n- 실습은 개인 PC에서 설정이 필요 없는 SQLite(dashboard.db)로 검증\n- 실무 배포는 Docker 무료 오픈소스 PostgreSQL 컨테이너 구축\n- 파이썬 DB 연결 주소(DB_URL) 단 한 줄 교체로 SQLite에서 PostgreSQL로 즉시 전환\n- 사내망 0.0.0.0 IP 바인딩 및 윈도우 방화벽 10211 포트 오픈 설정\n- 사내 DNS 및 Nginx 리버스 프록시로 안전한 사내 정식 포털 완성`,
     mission: "상단 '🌐 사내 DB구축 & 배포 가이드'를 열어 엔터프라이즈 배포 전략을 확인해보세요.",
     render: () => `
       <div style="display:flex; flex-direction:column; gap:12px; font-size:12px;">
@@ -276,24 +276,6 @@ const CURRICULUM = [
           <div style="background:#0e1017; border:1px solid #8b5cf6; border-radius:8px; padding:12px;">
             <b style="color:#a78bfa;">🐘 사내 정식 서비스 모드</b>
             <p style="color:#888; font-size:11px; margin-top:4px;">postgresql://user:pass@172.x.x.x:5432/corp_db</p>
-          </div>
-        </div>
-
-        <div style="background:#0e1017; border:1px solid #a855f7; border-radius:8px; padding:12px; margin-top:10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <b style="color:#c084fc;">🎨 2026 블루프린트 허브 (컴포넌트 카탈로그 & 소스코드)</b>
-            <span style="background:rgba(168,85,247,0.2); color:#d8b4fe; padding:2px 8px; border-radius:4px; font-size:10px;">오픈소스 공개</span>
-          </div>
-          <p style="color:#aaa; font-size:11px; margin-top:4px; line-height:1.5;">
-            오늘 교육의 대시보드 구조에 바로 붙일 수 있는 2026 최고급 다크 UI 컴포넌트와 100여 개 전체 소스코드를 로그인 없이 즉시 열람하고 다운로드할 수 있습니다.
-          </p>
-          <div style="display:flex; gap:8px; margin-top:8px;">
-            <button class="btn btn-primary" onclick="openBlueprintModal()" style="font-size:11px; padding:6px 12px; background:linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);">
-              🎨 블루프린트 허브 열기
-            </button>
-            <a href="https://kwopi.duckdns.org/blueprint-hub/download" download="blueprint-hub-source.zip" class="btn btn-secondary" style="font-size:11px; padding:6px 12px; text-decoration:none; border-color:#10b981; color:#6ee7b7;">
-              ⚡ ZIP 직다운로드
-            </a>
           </div>
         </div>
 
@@ -482,17 +464,6 @@ let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.no
 
 // 📱 QR코드 모달 제어
 // 🎬 데모 영상 모달 제어
-
-// 🎨 블루프린트 허브 모달 제어
-function openBlueprintModal() {
-  const el = document.getElementById('blueprint-modal');
-  if (el) el.classList.add('active');
-}
-function closeBlueprintModal() {
-  const el = document.getElementById('blueprint-modal');
-  if (el) el.classList.remove('active');
-}
-
 function openVideoModal() {
   const modal = document.getElementById('video-modal');
   if (modal) {
