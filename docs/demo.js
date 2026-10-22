@@ -765,3 +765,82 @@ function escapeHtml(str) {
   })[m]);
 }
 
+
+// ✨ 블루프린트 허브 슬라이드 갤러리 제어
+const TOTAL_SLIDES = 9;
+let currentSlideIdx = 1;
+
+function openBlueprintSlidesModal() {
+  const modal = document.getElementById('blueprint-slides-modal');
+  if (modal) {
+    modal.classList.add('active');
+    renderSlideThumbnails();
+    setSlide(currentSlideIdx);
+  }
+}
+
+function closeBlueprintSlidesModal() {
+  const modal = document.getElementById('blueprint-slides-modal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+function renderSlideThumbnails() {
+  const container = document.getElementById('slides-thumbnail-container');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= TOTAL_SLIDES; i++) {
+    const thumb = document.createElement('div');
+    thumb.className = `slide-thumb-item ${i === currentSlideIdx ? 'active' : ''}`;
+    thumb.style.cssText = `
+      flex-shrink: 0; width: 110px; height: 62px; border-radius: 6px; overflow: hidden;
+      border: 2px solid ${i === currentSlideIdx ? '#6366f1' : 'rgba(255,255,255,0.1)'};
+      cursor: pointer; position: relative; transition: all 0.2s; background: #000;
+    `;
+    thumb.innerHTML = `
+      <img src="./blueprint-hub-slides/slide_${String(i).padStart(2, '0')}.png" style="width:100%; height:100%; object-fit:cover; display:block;">
+      <span style="position:absolute; bottom:2px; right:4px; font-size:9px; background:rgba(0,0,0,0.7); color:#fff; padding:1px 4px; border-radius:3px;">#${i}</span>
+    `;
+    thumb.onclick = () => setSlide(i);
+    container.appendChild(thumb);
+  }
+}
+
+function setSlide(idx) {
+  if (idx < 1) idx = TOTAL_SLIDES;
+  if (idx > TOTAL_SLIDES) idx = 1;
+  currentSlideIdx = idx;
+
+  const img = document.getElementById('main-slide-img');
+  const badge = document.getElementById('slide-page-badge');
+  if (img) {
+    img.style.opacity = '0.4';
+    setTimeout(() => {
+      img.src = `./blueprint-hub-slides/slide_${String(idx).padStart(2, '0')}.png`;
+      img.style.opacity = '1';
+    }, 100);
+  }
+  if (badge) {
+    badge.textContent = `${idx} / ${TOTAL_SLIDES}`;
+  }
+  renderSlideThumbnails();
+}
+
+function prevSlide() {
+  setSlide(currentSlideIdx - 1);
+}
+
+function nextSlide() {
+  setSlide(currentSlideIdx + 1);
+}
+
+// Keyboard arrow navigation
+window.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('blueprint-slides-modal');
+  if (modal && modal.classList.contains('active')) {
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'Escape') closeBlueprintSlidesModal();
+  }
+});
