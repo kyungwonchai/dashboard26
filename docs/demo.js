@@ -1199,3 +1199,160 @@ function renderGeminiDeepScrollView(partIdx = 0) {
 
   container.scrollTop = 0;
 }
+
+/* ========================================================
+   📚 바이브코딩 디지털 도서관 렌더링 & 검색 엔진
+   ======================================================== */
+let currentLibCategory = 'all';
+let currentLibSearchQuery = '';
+
+function getAllLibraryBooks() {
+  const books = [];
+  
+  if (typeof VIBE_CURRICULUM_DATA !== 'undefined' && Array.isArray(VIBE_CURRICULUM_DATA)) {
+    VIBE_CURRICULUM_DATA.forEach((item, idx) => {
+      books.push({
+        type: 'vibe',
+        category: '바이브코딩 정규 과정',
+        badge: '정규 14부작',
+        badgeClass: 'badge-vibe',
+        index: idx,
+        part: item.part,
+        title: item.title,
+        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
+        totalSlides: item.totalSlides,
+        thumb: item.thumb || (item.slides && item.slides[0]) || '',
+        actionLabel: '웹툰형 읽기 ▶',
+        onClick: () => openVibeCurriculumModal(idx)
+      });
+    });
+  }
+
+  if (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' && Array.isArray(GEMINI_CLI_DEEP_DATA)) {
+    GEMINI_CLI_DEEP_DATA.forEach((item, idx) => {
+      books.push({
+        type: 'gemini',
+        category: 'Gemini CLI 실무 심화',
+        badge: '심화 7부작',
+        badgeClass: 'badge-gemini',
+        index: idx,
+        part: item.part,
+        title: item.title,
+        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
+        totalSlides: item.totalSlides,
+        thumb: item.thumb || (item.slides && item.slides[0]) || '',
+        actionLabel: '웹툰형 읽기 ▶',
+        onClick: () => openGeminiDeepModal(idx)
+      });
+    });
+  }
+
+  return books;
+}
+
+function renderLibraryBooks() {
+  const grid = document.getElementById('library-books-grid');
+  const noResults = document.getElementById('library-no-results');
+  if (!grid) return;
+
+  const allBooks = getAllLibraryBooks();
+  
+  // 카테고리 필터링
+  let filtered = allBooks;
+  if (currentLibCategory === 'vibe') {
+    filtered = filtered.filter(b => b.type === 'vibe');
+  } else if (currentLibCategory === 'gemini') {
+    filtered = filtered.filter(b => b.type === 'gemini');
+  }
+
+  // 검색어 필터링
+  if (currentLibSearchQuery.trim()) {
+    const q = currentLibSearchQuery.trim().toLowerCase();
+    filtered = filtered.filter(b => 
+      b.title.toLowerCase().includes(q) ||
+      b.category.toLowerCase().includes(q) ||
+      String(b.part).includes(q)
+    );
+  }
+
+  // 통계 수치 갱신
+  const statBooks = document.getElementById('lib-stat-books');
+  const statSlides = document.getElementById('lib-stat-slides');
+  const tabAll = document.getElementById('tab-count-all');
+  const tabVibe = document.getElementById('tab-count-vibe');
+  const tabGemini = document.getElementById('tab-count-gemini');
+
+  const vibeCount = allBooks.filter(b => b.type === 'vibe').length;
+  const geminiCount = allBooks.filter(b => b.type === 'gemini').length;
+  const totalSlidesCount = allBooks.reduce((sum, b) => sum + (b.totalSlides || 0), 0);
+
+  if (statBooks) statBooks.textContent = allBooks.length;
+  if (statSlides) statSlides.textContent = totalSlidesCount;
+  if (tabAll) tabAll.textContent = allBooks.length;
+  if (tabVibe) tabVibe.textContent = vibeCount;
+  if (tabGemini) tabGemini.textContent = geminiCount;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    if (noResults) noResults.style.display = 'block';
+    return;
+  }
+
+  if (noResults) noResults.style.display = 'none';
+
+  grid.innerHTML = filtered.map(book => `
+    <div class="lib-book-card" onclick="handleBookCardClick('${book.type}', ${book.index})">
+      <div class="lib-book-thumb">
+        <span class="lib-book-badge ${book.badgeClass}">${book.badge}</span>
+        <img src="${book.thumb}" alt="${book.title}" loading="lazy" onerror="this.style.opacity='0.2';">
+        <span class="lib-book-slides-count">${book.totalSlides}컷</span>
+      </div>
+      <div class="lib-book-body">
+        <div class="lib-book-category">${book.category} · 제 ${book.part}화</div>
+        <h4 class="lib-book-title">${book.cleanTitle}</h4>
+        <div class="lib-book-footer">
+          <span class="lib-book-tag">${book.type === 'vibe' ? '기초·자습' : '실무·엔터프라이즈'}</span>
+          <span class="lib-book-action">${book.actionLabel}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function handleBookCardClick(type, index) {
+  if (type === 'vibe') {
+    openVibeCurriculumModal(index);
+  } else if (type === 'gemini') {
+    openGeminiDeepModal(index);
+  }
+}
+
+function filterLibraryCategory(cat, btn) {
+  currentLibCategory = cat;
+  document.querySelectorAll('.lib-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderLibraryBooks();
+}
+
+function handleLibrarySearch(val) {
+  currentLibSearchQuery = val;
+  const clearBtn = document.getElementById('search-clear-btn');
+  if (clearBtn) {
+    clearBtn.style.display = val ? 'block' : 'none';
+  }
+  renderLibraryBooks();
+}
+
+function clearLibrarySearch() {
+  const input = document.getElementById('library-search-input');
+  if (input) {
+    input.value = '';
+    handleLibrarySearch('');
+    input.focus();
+  }
+}
+
+// 라이브러리 자동 마운트
+document.addEventListener('DOMContentLoaded', () => {
+  renderLibraryBooks();
+});

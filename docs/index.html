@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=1793001700">
+  <link rel="stylesheet" href="style.css?v=1793002600">
 </head>
 <body>
   <!-- 상단 네비게이션 헤더 -->
@@ -23,192 +23,126 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="btn btn-primary" onclick="openVibeCurriculumModal(0)" style="margin-right:8px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); font-weight:800; box-shadow:0 0 20px rgba(16,185,129,0.45); border:1px solid rgba(255,255,255,0.25);">
-          📖 웹툰 커리큘럼 (1~14편)
-        </button>
-        <button class="btn btn-primary" onclick="openGeminiDeepModal(0)" style="margin-right:8px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); font-weight:800; box-shadow:0 0 20px rgba(245,158,11,0.45); border:1px solid rgba(255,255,255,0.25);">
-          ⚡ gemini cli 심화 (1~7편)
-        </button>
-        <button class="btn btn-primary" onclick="openBlueprintSlidesModal()" style="margin-right:8px; background:linear-gradient(135deg, #6366f1 0%, #a855f7 100%); box-shadow:0 0 18px rgba(99,102,241,0.4); border:1px solid rgba(255,255,255,0.2);">
-          ✨ 블루프린트허브 도구
-        </button>
-        <button class="btn btn-secondary" onclick="openVideoModal()" style="margin-right:8px; border-color:rgba(16,185,129,0.4); color:#6ee7b7;">
-          🎬 AI 학습 참고영상
-        </button>
-        <button class="btn btn-secondary" onclick="openQrModal()" style="margin-right:8px;">
-          📱 수강생 QR
-        </button>
-        <a href="https://github.com/kyungwonchai/dashboard26" target="_blank" class="btn btn-github">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          소스코드 다운로드
-        </a>
+        <div class="header-tool-group">
+          <a href="./blueprint-hub/" target="_blank" class="btn btn-tool" title="UI 디자인 시스템 칠판 바로가기">
+            <span class="tool-icon">🎨</span>
+            <span class="tool-name">블루프린트 허브 ↗</span>
+          </a>
+          <button class="btn btn-tool" onclick="openBlueprintSlidesModal()" title="블루프린트허브 소개 슬라이드 열람">
+            <span class="tool-icon">✨</span>
+            <span class="tool-name">소개 슬라이드 (9p)</span>
+          </button>
+        </div>
+        <div class="header-divider"></div>
+        <div class="header-sub-group">
+          <button class="btn btn-sub" onclick="openVideoModal()" title="AI 학습 참고영상 시청">
+            🎬 참고영상
+          </button>
+          <button class="btn btn-sub" onclick="openQrModal()" title="스마트폰 모바일 접속용 QR">
+            📱 QR
+          </button>
+          <a href="https://github.com/kyungwonchai/dashboard26" target="_blank" class="btn btn-github" title="GitHub 저장소">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            소스코드
+          </a>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- 메인 2단 레이아웃 (좌: 목차 및 프롬프트 가이드 / 우: 가상 웹앱 시뮬레이터) -->
-  <div class="main-container">
-    <!-- 좌측: STEP별 강의 목차 및 프롬프트 복사기 -->
-    
+  <!-- 메인: 바이브코딩 인터랙티브 도서관 (Interactive Digital Library) -->
+  <main class="library-main">
 
-    <!-- 우측: 해당 단계의 동작 시뮬레이션 및 프롬프트 설명창 -->
-    <main class="content-simulator">
-
-<!-- 🎓 [바이브코딩 14부작 전 커리큘럼 - 과정 이해하기] 프리미엄 슬라이드 쇼케이스 배너 -->
-      <section class="glass-card" style="padding: 22px 26px; border-left: 4px solid #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(6,182,212,0.08) 100%); margin-bottom: 20px; box-shadow: 0 8px 32px rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.25);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
-          <div style="display: flex; gap: 16px; max-width: 760px;">
-            <div style="width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; box-shadow: 0 0 20px rgba(16,185,129,0.5);">
-              🎓
-            </div>
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
-                <h3 style="font-size: 16.5px; font-weight: 800; color: #ffffff; margin: 0; letter-spacing: -0.02em;">
-                  비전공자·초보자를 위한 바이브 코딩 14부작 정규 커리큘럼
-                </h3>
-                <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: rgba(16,185,129,0.3); color: #a7f3d0; font-weight: 700; border: 1px solid rgba(110,231,183,0.4);">01~14차시 전편 완결 수록</span>
-              </div>
-              <p style="font-size: 12.5px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.6;">
-                어려운 컴퓨터 공학 용어 없이 실생활 비유로 쉽게 깨우치는 자습/독습형 고밀도 슬라이드 팩입니다. 바이브 코딩 첫걸음부터 미니 게임 3종, 웹 서버, 실전 대시보드 구축까지 14단계 전체 흐름을 웹에서 바로 감상하세요.
-              </p>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <span style="font-size: 11px; padding: 3px 9px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.08);">📚 총 169개 고화질 슬라이드</span>
-                <span style="font-size: 11px; padding: 3px 9px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.08);">⚡ 1:1 소스 격리 정밀 교재</span>
-                <span style="font-size: 11px; padding: 3px 9px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.08);">📜 연속 스크롤 & 전편 목차 네비게이터</span>
-              </div>
-            </div>
+    <!-- 📚 도서관 히어로 배너 & 통합 검색/필터 -->
+    <section class="library-hero-card">
+      <div class="library-hero-top">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span class="library-badge-pill">📚 바이브코딩 디지털 도서관</span>
+            <span style="font-size:11px; color:#10b981; font-weight:700;">● 전편 열람 가능</span>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 8px; align-self: center; flex-shrink: 0;">
-            <button class="btn btn-primary" onclick="openVibeCurriculumModal()" style="padding: 12px 24px; font-size: 13.5px; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 0 20px rgba(16,185,129,0.45); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; cursor: pointer;">
-              <span>📖 과정이해하기 (1~14편)</span>
-            </button>
-            <span style="font-size: 11px; color: #94a3b8; text-align: center;">클릭 시 전편 슬라이드 즉시 열람</span>
+          <h2 class="library-hero-title">원하는 교재를 검색하고 웹툰형 세로 스크롤로 읽어보세요</h2>
+          <p class="library-hero-desc">
+            비전공자 기초 14부작부터 엔터프라이즈 실무 7부작까지, 모든 교육 슬라이드가 차시별로 잘 정리되어 있습니다.
+          </p>
+        </div>
+        <div class="library-hero-stats">
+          <div class="stat-item">
+            <span class="stat-num" id="lib-stat-books">21</span>
+            <span class="stat-label">전체 도서</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num" id="lib-stat-slides">237</span>
+            <span class="stat-label">총 슬라이드</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num" style="color:#10b981;">100%</span>
+            <span class="stat-label">웹툰형 뷰어</span>
           </div>
         </div>
-      </section>
+      </div>
 
-
-
-      <!-- ⚡ [gemini cli 심화 7부작] 실무 아키텍처 슬라이드 배너 -->
-      <section class="glass-card" style="padding: 22px 26px; border-left: 4px solid #f59e0b; background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(217,119,6,0.08) 100%); margin-bottom: 20px; box-shadow: 0 8px 32px rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.25);">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-          <div style="display: flex; gap: 16px; max-width: 760px; align-items: center;">
-            <div style="width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; box-shadow: 0 0 20px rgba(245,158,11,0.5);">
-              ⚡
-            </div>
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
-                <h3 style="font-size: 16.5px; font-weight: 800; color: #ffffff; margin: 0; letter-spacing: -0.02em;">
-                  gemini cli 심화 7부작 (엔터프라이즈 실무 아키텍처)
-                </h3>
-                <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: rgba(245,158,11,0.3); color: #fde68a; font-weight: 700; border: 1px solid rgba(251,191,36,0.4);">01~07차시 전편 완결 (총 68슬라이드)</span>
-              </div>
-              <p style="font-size: 12.5px; color: #cbd5e1; margin: 0 0 8px 0; line-height: 1.5;">
-                아키텍처 설계부터 엔터프라이즈 DB 모델링, Auth/RBAC, 대용량 엑셀 스트리밍, CI/CD 배포 자동화까지 7개 핵심 챕터를 웹툰형 스크롤로 학습하세요.
-              </p>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <span style="font-size: 11px; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.08);">⚡ 총 7개 심화 챕터</span>
-                <span style="font-size: 11px; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.08);">📜 챕터별 세로 스크롤 웹툰뷰</span>
-              </div>
-            </div>
-          </div>
-          <div style="flex-shrink: 0;">
-            <button class="btn btn-primary" onclick="openGeminiDeepModal(0)" style="padding: 12px 24px; font-size: 13.5px; font-weight: 800; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 0 20px rgba(245,158,11,0.45); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; cursor: pointer;">
-              <span>⚡ gemini cli 심화 (1~7편) 열기</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-
-
-      <!-- 🎨 [블루프린트 허브] UI 컴포넌트 갤러리 배너 -->
-      <section class="glass-card" style="padding: 18px 22px; border-left: 4px solid #6366f1; background: rgba(99,102,241,0.06); margin-bottom: 20px; border: 1px solid rgba(139,92,246,0.2);">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-          <div style="display: flex; gap: 14px; max-width: 720px; align-items: center;">
-            <span style="font-size: 26px;">🎨</span>
-            <div>
-              <h3 style="font-size: 15.5px; font-weight: 700; color: #ffffff; margin: 0 0 4px 0;">
-                블루프린트 허브 (BlueprintHub)
-              </h3>
-              <p style="font-size: 12px; color: #cbd5e1; margin: 0; line-height: 1.5;">
-                AI가 화면을 만들 때 바로 참고할 수 있는 UI 컴포넌트와 예시 디자인 모음집입니다.
-              </p>
-            </div>
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <button class="btn btn-primary" onclick="openBlueprintSlidesModal()" style="padding: 8px 14px; font-size: 12px; font-weight: 600; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border: 1px solid rgba(255,255,255,0.2);">
-              소개 슬라이드 (9장)
-            </button>
-            <a href="./blueprint-hub/" target="_blank" class="btn btn-secondary" style="padding: 8px 14px; font-size: 12px; font-weight: 600; text-decoration: none; border-color: rgba(168,85,247,0.4); color: #d8b4fe;">
-              컴포넌트 보러가기 ↗
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- 🎯 [4줄 핵심 학습목표] & LLM의 본질 배너 -->
-      <section class="glass-card" style="padding: 20px 24px; border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:20px;">🎯</span>
-            <h3 style="font-size:16px; font-weight:800; color:#fbbf24;">오늘의 바이브코딩 대시보드 심화 4대 핵심 목표</h3>
-            <span style="font-size:11px; padding:2px 8px; border-radius:4px; background:rgba(245,158,11,0.2); color:#fbbf24; font-weight:700;">강의 핵심</span>
-          </div>
-          <button class="btn btn-secondary" onclick="openTimetableModal()" style="font-size:11px; padding:4px 10px;">
-            4시간 수업시간표 보기 ↗
+      <!-- 검색 & 카테고리 필터 탭 -->
+      <div class="library-filter-bar">
+        <div class="library-tabs">
+          <button class="lib-tab active" onclick="filterLibraryCategory('all', this)">
+            <span>📚 전체 보기</span>
+            <span class="tab-count" id="tab-count-all">21</span>
+          </button>
+          <button class="lib-tab" onclick="filterLibraryCategory('vibe', this)">
+            <span>🎓 바이브코딩 정규 (1~14편)</span>
+            <span class="tab-count" id="tab-count-vibe">14</span>
+          </button>
+          <button class="lib-tab" onclick="filterLibraryCategory('gemini', this)">
+            <span>⚡ gemini cli 심화 (1~7편)</span>
+            <span class="tab-count" id="tab-count-gemini">7</span>
           </button>
         </div>
-        <!-- 4줄 목표 -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:10px; margin-bottom:14px;">
-          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
-            <b style="color:#38bdf8;">1. [의도와 맥락의 주입]</b>
-            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">왜(Why), 무엇을(What), 어떻게(How)의 명확한 의도를 제시해 AI가 스스로 고품질 코드를 생성하도록 조율한다.</p>
-          </div>
-          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
-            <b style="color:#a78bfa;">2. [실전 풀스택 대시보드 완성]</b>
-            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">Flask + SQLite + Chart.js + 엑셀(openpyxl) 자동화로 100% 동작하는 업무 포털을 내 손으로 구축한다.</p>
-          </div>
-          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
-            <b style="color:#34d399;">3. [규칙 기반 자동 안전망]</b>
-            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">GEMINI.md 규칙과 7회 자동 회전 백업으로 코드와 데이터를 절대 날리지 않는 엔터프라이즈 안전성을 확보한다.</p>
-          </div>
-          <div style="background:#07080d; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px; font-size:12px;">
-            <b style="color:#fbbf24;">4. [경험의 선점과 안전한 공유]</b>
-            <p style="color:var(--text-muted); margin-top:3px; line-height:1.5;">사내망 0.0.0.0 및 GitHub Pages·구글시트 NoSQL로 보안 위협 없이 세상에 내 앱을 배포하고 AI 미래를 선점한다.</p>
-          </div>
-        </div>
-        <!-- LLM의 본질 한 줄 -->
-        <div style="background:rgba(139,92,246,0.1); border-radius:6px; padding:8px 12px; font-size:12px; color:#c084fc; display:flex; align-items:center; gap:8px;">
-          <span>💡</span>
-          <span><b>LLM(거대언어모델)의 본질:</b> 문맥(Context)과 의도가 모호하면 그럴듯한 거짓말을 하지만, <b>'왜(Why) · 무엇을(What) · 어떻게(How)'</b>가 명확하고 파일 규칙이 제공되면 스스로 완벽한 정답을 찾아냅니다.</span>
-        </div>
-      </section>
 
-      <!-- 📊 [슬라이드: 수업노트] 구글 슬라이드 참고자료 -->
-      <section class="glass-card" style="padding: 16px 20px; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.06); margin-bottom: 24px; border: 1px solid rgba(245,158,11,0.2);">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
-          <div style="display: flex; gap: 12px; align-items: center;">
-            <span style="font-size: 22px;">📊</span>
-            <div>
-              <h3 style="font-size: 14.5px; font-weight: 700; color: #ffffff; margin: 0;">
-                슬라이드: 수업노트
-              </h3>
-              <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">
-                수업 중 다루었던 일부 참고용 슬라이드 메모입니다.
-              </p>
-            </div>
-          </div>
-          <div>
-            <a href="https://docs.google.com/presentation/d/1vzfHPdas1OWZCIywBsHEmZ1giM_Z6_qa/edit?usp=drivesdk&ouid=103458009895235511885&rtpof=true&sd=true" target="_blank" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px; font-weight: 600; text-decoration: none; border-color: rgba(245,158,11,0.4); color: #fbbf24;">
-              슬라이드 열기 ↗
-            </a>
-          </div>
+        <div class="library-search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="library-search-input" class="library-search-input" placeholder="교재 제목이나 키워드 검색 (예: DB, 인증, 게임, Flask...)" oninput="handleLibrarySearch(this.value)">
+          <button id="search-clear-btn" class="search-clear-btn" style="display:none;" onclick="clearLibrarySearch()">✕</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-    </main>
-  </div>
+    <!-- 📖 도서 카드 갤러리 그리드 -->
+    <section>
+      <div id="library-books-grid" class="library-grid">
+        <!-- JavaScript로 동적 렌더링 -->
+      </div>
+      <!-- 검색 결과 없음 안내 -->
+      <div id="library-no-results" style="display:none; text-align:center; padding:60px 20px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed var(--border);">
+        <div style="font-size:36px; margin-bottom:10px;">🔍</div>
+        <div style="font-size:15px; font-weight:700; color:#fff;">일치하는 교재를 찾을 수 없습니다.</div>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">검색어를 변경하거나 전체 보기 탭을 선택해보세요.</p>
+      </div>
+    </section>
+
+    <!-- 📊 [슬라이드: 수업노트] 구글 슬라이드 참고자료 쉘프 -->
+    <section class="library-bottom-shelf">
+      <div style="display: flex; gap: 14px; align-items: center;">
+        <span style="font-size: 24px;">📊</span>
+        <div>
+          <h4 style="font-size: 14px; font-weight: 700; color: #ffffff; margin: 0;">
+            슬라이드: 수업노트
+          </h4>
+          <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">
+            수업 중 다루었던 일부 참고용 슬라이드 메모입니다.
+          </p>
+        </div>
+      </div>
+      <div>
+        <a href="https://docs.google.com/presentation/d/1vzfHPdas1OWZCIywBsHEmZ1giM_Z6_qa/edit?usp=drivesdk&ouid=103458009895235511885&rtpof=true&sd=true" target="_blank" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px; font-weight: 600; text-decoration: none; border-color: rgba(245,158,11,0.4); color: #fbbf24;">
+          구글 슬라이드 열기 ↗
+        </a>
+      </div>
+    </section>
+
+  </main>
 
   <!-- 문의사항 & 강사 메모 모달 (구글 스프레드시트 연동 지원) -->
   <div class="modal-overlay" id="qna-modal">
@@ -764,7 +698,7 @@
     </div>
   </div>
 
-  <script src="data.js?v=1793001700"></script>
-  <script src="demo.js?v=1793001700"></script>
+  <script src="data.js?v=1793002600"></script>
+  <script src="demo.js?v=1793002600"></script>
 </body>
 </html>
