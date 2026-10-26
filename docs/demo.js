@@ -1072,8 +1072,10 @@ window.addEventListener('keydown', (e) => {
 });
 
 
-/* ── ⚡ gemini cli 심화 (7페이지) 슬라이드 뷰어 엔진 ── */
+
+/* ── ⚡ gemini cli 심화 7부작 슬라이드 뷰어 엔진 ── */
 let geminiDeepData = [];
+let currentDeepPartIdx = 0;
 
 function loadGeminiDeepData() {
   if (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' && GEMINI_CLI_DEEP_DATA.length > 0) {
@@ -1091,7 +1093,7 @@ function openGeminiDeepModal(partIndex = 0) {
   if (modal) {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
-    renderGeminiDeepScrollView(partIndex);
+    selectGeminiDeepPart(partIndex);
   }
 }
 
@@ -1101,6 +1103,47 @@ function closeGeminiDeepModal() {
     modal.classList.remove('active');
     document.body.style.overflow = '';
   }
+}
+
+function renderGeminiDeepChapterList() {
+  const listEl = document.getElementById('gemini-deep-chapter-list');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+
+  geminiDeepData.forEach((item, idx) => {
+    const isActive = idx === currentDeepPartIdx;
+    const itemEl = document.createElement('div');
+    itemEl.style.cssText = `
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px;
+      cursor: pointer; transition: all 0.15s; font-size: 11.5px;
+      background: ${isActive ? 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.15))' : 'transparent'};
+      border: 1px solid ${isActive ? 'rgba(245,158,11,0.5)' : 'transparent'};
+      color: ${isActive ? '#fde68a' : '#94a3b8'};
+      font-weight: ${isActive ? '700' : '500'};
+    `;
+    itemEl.innerHTML = `
+      <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.08); color: ${isActive ? '#f59e0b' : '#cbd5e1'}; font-weight: 700; flex-shrink: 0;">${String(item.part).padStart(2, '0')}</span>
+      <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title.replace(/^0?\d+차시\.\s*/, '')}</span>
+      <span style="font-size: 10px; opacity: 0.6; flex-shrink: 0;">${item.totalSlides}p</span>
+    `;
+    itemEl.onclick = () => selectGeminiDeepPart(idx);
+    listEl.appendChild(itemEl);
+  });
+}
+
+function selectGeminiDeepPart(idx) {
+  if (idx < 0 || idx >= geminiDeepData.length) return;
+  currentDeepPartIdx = idx;
+
+  const part = geminiDeepData[idx];
+  const titleEl = document.getElementById('gemini-deep-title');
+  if (titleEl) titleEl.textContent = part.title;
+
+  const badgeEl = document.getElementById('gemini-deep-badge');
+  if (badgeEl) badgeEl.textContent = `${part.totalSlides}컷 완결`;
+
+  renderGeminiDeepChapterList();
+  renderGeminiDeepScrollView(idx);
 }
 
 function renderGeminiDeepScrollView(partIdx = 0) {
@@ -1116,14 +1159,14 @@ function renderGeminiDeepScrollView(partIdx = 0) {
   headerBar.style.cssText = 'width: 100%; max-width: 880px; padding: 14px 20px; margin-bottom: 16px; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5);';
   headerBar.innerHTML = `
     <div style="display: flex; align-items: center; gap: 10px;">
-      <span style="background: #f59e0b; color: #000; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 5px;">CLI 심화</span>
+      <span style="background: #f59e0b; color: #000; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 5px;">제 ${String(part.part).padStart(2, '0')} 화</span>
       <span style="color: #fff; font-weight: 700; font-size: 14px;">${part.title}</span>
     </div>
-    <span style="font-size: 11.5px; color: #fde68a; font-weight: 600;">총 ${part.totalSlides}컷 완결</span>
+    <span style="font-size: 11.5px; color: #fde68a; font-weight: 600;">총 ${part.totalSlides}컷 연속 스크롤</span>
   `;
   container.appendChild(headerBar);
 
-  // 7컷 연속 웹툰형 렌더링
+  // 컷별 연속 웹툰형 렌더링
   part.slides.forEach((src, idx) => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 880px; margin-bottom: 14px; position: relative;';
@@ -1134,13 +1177,25 @@ function renderGeminiDeepScrollView(partIdx = 0) {
     container.appendChild(wrap);
   });
 
-  // 하단 완주 축하 바
-  const footerBar = document.createElement('div');
-  footerBar.style.cssText = 'width: 100%; max-width: 880px; padding: 18px 24px; margin-top: 10px; margin-bottom: 30px; background: rgba(15,20,32,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 40px rgba(0,0,0,0.8);';
-  footerBar.innerHTML = `
-    <span style="color: #f59e0b; font-weight: 800; font-size: 13px;">🎉 gemini cli 심화 7페이지 마스터 완료!</span>
+  // 하단 이전화 / 다음화 네비게이터 배너
+  const footerNav = document.createElement('div');
+  footerNav.style.cssText = 'width: 100%; max-width: 880px; padding: 20px 24px; margin-top: 10px; margin-bottom: 40px; background: rgba(15,20,32,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);';
+  
+  const hasPrev = currentDeepPartIdx > 0;
+  const hasNext = currentDeepPartIdx < geminiDeepData.length - 1;
+
+  footerNav.innerHTML = `
+    <div>
+      ${hasPrev ? `<button onclick="selectGeminiDeepPart(${currentDeepPartIdx - 1})" class="btn btn-secondary" style="padding: 9px 18px; font-size: 12px; font-weight: 600;">◀ 이전화 (${String(currentDeepPartIdx).padStart(2, '0')}화)</button>` : '<span style="color:#64748b; font-size:12px;">첫 번째 화입니다</span>'}
+    </div>
+    <div style="font-size: 12.5px; color: #94a3b8; font-weight: 700;">
+      진행도: ${part.part} / 7 챕터
+    </div>
+    <div>
+      ${hasNext ? `<button onclick="selectGeminiDeepPart(${currentDeepPartIdx + 1})" class="btn btn-primary" style="padding: 9px 20px; font-size: 12.5px; font-weight: 800; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 0 15px rgba(245,158,11,0.4);">다음화 (${String(currentDeepPartIdx + 2).padStart(2, '0')}화) 연속 보기 ▶</button>` : '<span style="color:#f59e0b; font-weight:800; font-size:13px;">🎉 gemini cli 심화 7부작 전편 완주!</span>'}
+    </div>
   `;
-  container.appendChild(footerBar);
+  container.appendChild(footerNav);
 
   container.scrollTop = 0;
 }
