@@ -844,3 +844,224 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeBlueprintSlidesModal();
   }
 });
+
+/* ── 🎓 바이브 코딩 14부작 슬라이드 뷰어 엔진 ── */
+let vibeCurriculumData = [];
+let currentPartIdx = 0;   // 0 ~ 13 (1~14차시)
+let currentPartSlideIdx = 1; // 1 ~ N
+let vibeViewMode = 'slide'; // 'slide' | 'scroll'
+
+function loadVibeCurriculumData() {
+  if (typeof VIBE_CURRICULUM_DATA !== 'undefined' && VIBE_CURRICULUM_DATA.length > 0) {
+    vibeCurriculumData = VIBE_CURRICULUM_DATA;
+  }
+}
+
+function openVibeCurriculumModal(partIndex = 0) {
+  loadVibeCurriculumData();
+  if (!vibeCurriculumData.length) {
+    alert('커리큘럼 데이터를 불러올 수 없습니다.');
+    return;
+  }
+  const modal = document.getElementById('vibe-curriculum-modal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    selectVibePart(partIndex);
+  }
+}
+
+function closeVibeCurriculumModal() {
+  const modal = document.getElementById('vibe-curriculum-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function renderVibeChapterList() {
+  const listEl = document.getElementById('vibe-chapter-list');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+
+  vibeCurriculumData.forEach((item, idx) => {
+    const isActive = idx === currentPartIdx;
+    const itemEl = document.createElement('div');
+    itemEl.style.cssText = `
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px;
+      cursor: pointer; transition: all 0.15s; font-size: 11.5px;
+      background: ${isActive ? 'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(6,182,212,0.15))' : 'transparent'};
+      border: 1px solid ${isActive ? 'rgba(16,185,129,0.5)' : 'transparent'};
+      color: ${isActive ? '#6ee7b7' : '#94a3b8'};
+      font-weight: ${isActive ? '700' : '500'};
+    `;
+    itemEl.innerHTML = `
+      <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.08); color: ${isActive ? '#10b981' : '#cbd5e1'}; font-weight: 700; flex-shrink: 0;">${String(item.part).padStart(2, '0')}</span>
+      <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title.replace(/^0?\d+차시\.\s*/, '')}</span>
+      <span style="font-size: 10px; opacity: 0.6; flex-shrink: 0;">${item.totalSlides}p</span>
+    `;
+    itemEl.onclick = () => selectVibePart(idx);
+    listEl.appendChild(itemEl);
+  });
+}
+
+function selectVibePart(idx) {
+  if (idx < 0 || idx >= vibeCurriculumData.length) return;
+  currentPartIdx = idx;
+  currentPartSlideIdx = 1;
+
+  const part = vibeCurriculumData[idx];
+  const titleEl = document.getElementById('vibe-curri-part-title');
+  if (titleEl) titleEl.textContent = part.title;
+
+  renderVibeChapterList();
+  if (vibeViewMode === 'slide') {
+    renderVibeSlideView();
+    renderVibeThumbnails();
+  } else {
+    renderVibeScrollView();
+  }
+}
+
+function setVibeViewMode(mode) {
+  vibeViewMode = mode;
+  const slideBtn = document.getElementById('vibe-viewmode-slide');
+  const scrollBtn = document.getElementById('vibe-viewmode-scroll');
+  const slideContainer = document.getElementById('vibe-slide-mode-container');
+  const scrollContainer = document.getElementById('vibe-scroll-mode-container');
+  const thumbBar = document.getElementById('vibe-thumbnail-bar');
+
+  if (mode === 'slide') {
+    slideBtn.style.background = 'rgba(16,185,129,0.3)';
+    slideBtn.style.color = '#fff';
+    slideBtn.style.fontWeight = '700';
+    scrollBtn.style.background = 'transparent';
+    scrollBtn.style.color = '#94a3b8';
+    scrollBtn.style.fontWeight = '500';
+
+    slideContainer.style.display = 'flex';
+    scrollContainer.style.display = 'none';
+    if (thumbBar) thumbBar.style.display = 'flex';
+    renderVibeSlideView();
+    renderVibeThumbnails();
+  } else {
+    scrollBtn.style.background = 'rgba(16,185,129,0.3)';
+    scrollBtn.style.color = '#fff';
+    scrollBtn.style.fontWeight = '700';
+    slideBtn.style.background = 'transparent';
+    slideBtn.style.color = '#94a3b8';
+    slideBtn.style.fontWeight = '500';
+
+    slideContainer.style.display = 'none';
+    scrollContainer.style.display = 'flex';
+    if (thumbBar) thumbBar.style.display = 'none';
+    renderVibeScrollView();
+  }
+}
+
+function renderVibeSlideView() {
+  const part = vibeCurriculumData[currentPartIdx];
+  if (!part) return;
+
+  const img = document.getElementById('vibe-main-slide-img');
+  const badge = document.getElementById('vibe-curri-page-badge');
+
+  if (img && part.slides[currentPartSlideIdx - 1]) {
+    img.style.opacity = '0.3';
+    setTimeout(() => {
+      img.src = part.slides[currentPartSlideIdx - 1];
+      img.style.opacity = '1';
+    }, 80);
+  }
+
+  if (badge) {
+    badge.textContent = `${currentPartSlideIdx} / ${part.totalSlides}`;
+  }
+  renderVibeThumbnails();
+}
+
+function renderVibeThumbnails() {
+  const bar = document.getElementById('vibe-thumbnail-bar');
+  if (!bar) return;
+  bar.innerHTML = '';
+
+  const part = vibeCurriculumData[currentPartIdx];
+  if (!part) return;
+
+  part.slides.forEach((slideSrc, idx) => {
+    const pNum = idx + 1;
+    const isAct = pNum === currentPartSlideIdx;
+    const thumb = document.createElement('div');
+    thumb.style.cssText = `
+      flex-shrink: 0; width: 96px; height: 54px; border-radius: 6px; overflow: hidden;
+      border: 2px solid ${isAct ? '#10b981' : 'rgba(255,255,255,0.1)'};
+      cursor: pointer; position: relative; background: #000; transition: all 0.15s;
+    `;
+    thumb.innerHTML = `
+      <img src="${slideSrc}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      <span style="position: absolute; bottom: 2px; right: 4px; font-size: 9px; background: rgba(0,0,0,0.7); color: #fff; padding: 1px 4px; border-radius: 3px;">#${pNum}</span>
+    `;
+    thumb.onclick = () => {
+      currentPartSlideIdx = pNum;
+      renderVibeSlideView();
+    };
+    bar.appendChild(thumb);
+  });
+}
+
+function prevVibeSlide() {
+  const part = vibeCurriculumData[currentPartIdx];
+  if (!part) return;
+  if (currentPartSlideIdx > 1) {
+    currentPartSlideIdx--;
+    renderVibeSlideView();
+  } else if (currentPartIdx > 0) {
+    selectVibePart(currentPartIdx - 1);
+    currentPartSlideIdx = vibeCurriculumData[currentPartIdx].totalSlides;
+    renderVibeSlideView();
+  }
+}
+
+function nextVibeSlide() {
+  const part = vibeCurriculumData[currentPartIdx];
+  if (!part) return;
+  if (currentPartSlideIdx < part.totalSlides) {
+    currentPartSlideIdx++;
+    renderVibeSlideView();
+  } else if (currentPartIdx < vibeCurriculumData.length - 1) {
+    selectVibePart(currentPartIdx + 1);
+  }
+}
+
+function renderVibeScrollView() {
+  const scrollContainer = document.getElementById('vibe-scroll-mode-container');
+  if (!scrollContainer) return;
+  scrollContainer.innerHTML = '';
+
+  const part = vibeCurriculumData[currentPartIdx];
+  if (!part) return;
+
+  const badge = document.getElementById('vibe-curri-page-badge');
+  if (badge) badge.textContent = `전체 ${part.totalSlides}장 스크롤 모드`;
+
+  part.slides.forEach((src, idx) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 960px; margin-bottom: 24px;';
+    wrap.innerHTML = `
+      <img src="${src}" loading="lazy" alt="Slide ${idx+1}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.85); display: block;">
+      <div style="font-size: 11px; color: #64748b; font-weight: 700; margin-top: 6px;">${idx+1} / ${part.totalSlides}</div>
+    `;
+    scrollContainer.appendChild(wrap);
+  });
+  scrollContainer.scrollTop = 0;
+}
+
+// 키보드 내비게이션 바인딩
+window.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('vibe-curriculum-modal');
+  if (modal && modal.classList.contains('active')) {
+    if (e.key === 'ArrowLeft') prevVibeSlide();
+    if (e.key === 'ArrowRight') nextVibeSlide();
+    if (e.key === 'Escape') closeVibeCurriculumModal();
+  }
+});
