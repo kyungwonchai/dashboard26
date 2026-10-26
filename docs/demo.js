@@ -311,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderSidebar() {
   const container = document.getElementById('steps-container');
+  if (!container) return;
   container.innerHTML = CURRICULUM.map((item, idx) => `
     <div class="step-card ${idx === currentIdx ? 'active' : ''}" onclick="selectStep(${idx})">
       <div class="step-header">
@@ -849,7 +850,7 @@ window.addEventListener('keydown', (e) => {
 let vibeCurriculumData = [];
 let currentPartIdx = 0;   // 0 ~ 13 (1~14차시)
 let currentPartSlideIdx = 1; // 1 ~ N
-let vibeViewMode = 'slide'; // 'slide' | 'scroll'
+let vibeViewMode = 'scroll'; // 'slide' | 'scroll'
 
 function loadVibeCurriculumData() {
   if (typeof VIBE_CURRICULUM_DATA !== 'undefined' && VIBE_CURRICULUM_DATA.length > 0) {
@@ -867,6 +868,7 @@ function openVibeCurriculumModal(partIndex = 0) {
   if (modal) {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    setVibeViewMode('scroll'); // 기본적으로 웹툰 세로 스크롤 모드로 활성화
     selectVibePart(partIndex);
   }
 }
@@ -1042,17 +1044,51 @@ function renderVibeScrollView() {
   if (!part) return;
 
   const badge = document.getElementById('vibe-curri-page-badge');
-  if (badge) badge.textContent = `전체 ${part.totalSlides}장 스크롤 모드`;
+  if (badge) badge.textContent = `[제 ${String(part.part).padStart(2, '0')}화] 전체 ${part.totalSlides}컷 완결`;
 
+  // 상단 챕터 안내 바
+  const headerBar = document.createElement('div');
+  headerBar.style.cssText = 'width: 100%; max-width: 880px; padding: 14px 20px; margin-bottom: 16px; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5);';
+  headerBar.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="background: #10b981; color: #000; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 5px;">제 ${String(part.part).padStart(2, '0')} 화</span>
+      <span style="color: #fff; font-weight: 700; font-size: 14px;">${part.title}</span>
+    </div>
+    <span style="font-size: 11.5px; color: #a7f3d0; font-weight: 600;">총 ${part.totalSlides}컷 연속 스크롤</span>
+  `;
+  scrollContainer.appendChild(headerBar);
+
+  // 슬라이드 연속 웹툰 렌더링 (자연스러운 컷 연결)
   part.slides.forEach((src, idx) => {
     const wrap = document.createElement('div');
-    wrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 960px; margin-bottom: 24px;';
+    wrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 880px; margin-bottom: 14px; position: relative;';
     wrap.innerHTML = `
-      <img src="${src}" loading="lazy" alt="Slide ${idx+1}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.85); display: block;">
-      <div style="font-size: 11px; color: #64748b; font-weight: 700; margin-top: 6px;">${idx+1} / ${part.totalSlides}</div>
+      <img src="${src}" loading="lazy" alt="Cut ${idx+1}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 10px 35px rgba(0,0,0,0.9); display: block; border: 1px solid rgba(255,255,255,0.08);">
+      <div style="font-size: 10.5px; color: #64748b; font-family: monospace; font-weight: 700; margin-top: 5px;">CUT ${idx+1} / ${part.totalSlides}</div>
     `;
     scrollContainer.appendChild(wrap);
   });
+
+  // 하단 다음화 / 이전화 네비게이터 배너
+  const footerNav = document.createElement('div');
+  footerNav.style.cssText = 'width: 100%; max-width: 880px; padding: 20px 24px; margin-top: 10px; margin-bottom: 40px; background: rgba(15,20,32,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);';
+  
+  const hasPrev = currentPartIdx > 0;
+  const hasNext = currentPartIdx < vibeCurriculumData.length - 1;
+
+  footerNav.innerHTML = `
+    <div>
+      ${hasPrev ? `<button onclick="selectVibePart(${currentPartIdx - 1})" class="btn btn-secondary" style="padding: 9px 18px; font-size: 12px; font-weight: 600;">◀ 이전화 (${String(currentPartIdx).padStart(2, '0')}화)</button>` : '<span style="color:#64748b; font-size:12px;">첫 번째 화입니다</span>'}
+    </div>
+    <div style="font-size: 12.5px; color: #94a3b8; font-weight: 700;">
+      진행도: ${part.part} / 14 챕터
+    </div>
+    <div>
+      ${hasNext ? `<button onclick="selectVibePart(${currentPartIdx + 1})" class="btn btn-primary" style="padding: 9px 20px; font-size: 12.5px; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 0 15px rgba(16,185,129,0.4);">다음화 (${String(currentPartIdx + 2).padStart(2, '0')}화) 연속 보기 ▶</button>` : '<span style="color:#10b981; font-weight:800; font-size:13px;">🎉 14부작 전편 완주를 축하합니다!</span>'}
+    </div>
+  `;
+  scrollContainer.appendChild(footerNav);
+
   scrollContainer.scrollTop = 0;
 }
 

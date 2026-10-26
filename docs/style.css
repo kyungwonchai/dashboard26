@@ -186,6 +186,9 @@ body {
 
 /* 우측 본문 및 시뮬레이터 */
 .content-simulator {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
   flex: 1;
   padding: 24px 32px;
   display: flex;
