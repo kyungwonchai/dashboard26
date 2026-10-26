@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=1793049600">
+  <link rel="stylesheet" href="style.css?v=1793052000">
   <style>
     body {
       background: #07080d;
@@ -392,7 +392,7 @@
     ▲
   </button>
 
-  <script src="data.js?v=1793049600"></script>
+  <script src="data.js?v=1793052000"></script>
   <script>
     let currentSeries = 'vibe';
     let currentMode = 'select';
@@ -400,6 +400,10 @@
     let targetSlideIndex = -1;
     let seriesData = [];
 
+    // 대시보드26 전체 352개 고유번호 연속 계산을 위한 시리즈별 시작 번호 정의
+    // Vibe(14편/162p): 1 ~ 162
+    // Worker(10편/122p): 163 ~ 284
+    // Gemini(7편/68p): 285 ~ 352
     const SERIES_CONFIG = {
       vibe: {
         code: 'VIBE',
@@ -407,6 +411,7 @@
         badgeBg: 'rgba(16,185,129,0.2)',
         badgeColor: '#34d399',
         badgeBorder: 'rgba(16,185,129,0.4)',
+        globalStart: 1,
         getData: () => (typeof VIBE_CURRICULUM_DATA !== 'undefined' ? VIBE_CURRICULUM_DATA : [])
       },
       worker: {
@@ -415,6 +420,7 @@
         badgeBg: 'rgba(59,130,246,0.2)',
         badgeColor: '#60a5fa',
         badgeBorder: 'rgba(59,130,246,0.4)',
+        globalStart: 163,
         getData: () => (typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [])
       },
       gemini: {
@@ -423,9 +429,12 @@
         badgeBg: 'rgba(245,158,11,0.2)',
         badgeColor: '#fbbf24',
         badgeBorder: 'rgba(245,158,11,0.4)',
+        globalStart: 285,
         getData: () => (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [])
       }
     };
+
+    const TOTAL_ALL_SLIDES = 352;
 
     function initViewer() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -452,7 +461,7 @@
       applyModeUI();
       renderContent();
 
-      // 특정 슬라이드 지정 시 자동 스크롤
+      // 특정 슬라이드 지정 시 자동 스크롤 및 하이라이트
       if (targetSlideIndex > 0) {
         setTimeout(() => {
           const targetEl = document.getElementById('slide-card-' + targetSlideIndex);
@@ -469,12 +478,22 @@
       if (!listEl) return;
       listEl.innerHTML = '';
 
+      const cfg = SERIES_CONFIG[currentSeries] || SERIES_CONFIG.vibe;
+      let runningOffset = cfg.globalStart;
+
       seriesData.forEach((item, idx) => {
+        const startNum = runningOffset;
+        const endNum = runningOffset + item.totalSlides - 1;
+        runningOffset = endNum + 1;
+
         const itemEl = document.createElement('div');
         itemEl.className = 'chapter-item' + (currentMode === 'select' && idx === currentPartIndex ? ' active' : '');
         itemEl.innerHTML = `
           <span class="chapter-part-num">${String(item.part).padStart(2, '0')}</span>
-          <span class="chapter-title-text" title="${item.title}">${item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, '')}</span>
+          <div style="flex:1; overflow:hidden; text-overflow:ellipsis;">
+            <div class="chapter-title-text" title="${item.title}">${item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, '')}</div>
+            <div style="font-size:10px; color:#38bdf8; font-family:monospace; margin-top:2px;">#${startNum}~#${endNum}</div>
+          </div>
           <span class="chapter-page-count">${item.totalSlides}p</span>
         `;
         itemEl.onclick = () => {
@@ -531,6 +550,7 @@
 
       const cfg = SERIES_CONFIG[currentSeries] || SERIES_CONFIG.vibe;
       const seriesCode = cfg.code;
+      const seriesStart = cfg.globalStart;
       const totalSeriesSlides = seriesData.reduce((s, x) => s + x.totalSlides, 0);
 
       if (currentMode === 'select') {
@@ -540,6 +560,7 @@
 
         titleEl.textContent = `${String(part.part).padStart(2, '0')}. ${part.title}`;
 
+        // 이 편 이전까지의 누적 슬라이드 수
         let priorSlides = 0;
         for (let i = 0; i < currentPartIndex; i++) {
           priorSlides += seriesData[i].totalSlides;
@@ -547,7 +568,7 @@
 
         part.slides.forEach((src, pIdx) => {
           const pageNum = pIdx + 1;
-          const globalNum = priorSlides + pageNum;
+          const globalNum = seriesStart + priorSlides + pIdx;
           const slideIdStr = `${seriesCode}-${String(part.part).padStart(2, '0')}-${String(pageNum).padStart(2, '0')}`;
 
           const card = document.createElement('div');
@@ -557,12 +578,13 @@
           card.innerHTML = `
             <div class="slide-badge-bar">
               <div class="badge-bar-left">
-                <span class="slide-global-badge">#${globalNum} (${slideIdStr})</span>
+                <span class="slide-global-badge">전체고유 #${globalNum} / 352</span>
                 <span class="slide-part-badge">제 ${String(part.part).padStart(2, '0')}편</span>
+                <span style="font-size:10.5px; opacity:0.6; font-family:monospace;">(${slideIdStr})</span>
               </div>
               <div class="badge-bar-right">
-                <span class="slide-page-badge">${pageNum} / ${part.totalSlides}p</span>
-                <button class="btn-copy-slide-link" onclick="copySlideLink('${currentSeries}', 'select', ${currentPartIndex}, ${pageNum})">링크 복사</button>
+                <span class="slide-page-badge">해당 편 ${pageNum} / ${part.totalSlides}p</span>
+                <button class="btn-copy-slide-link" onclick="copySlideLink('${currentSeries}', 'select', ${currentPartIndex}, ${pageNum}, ${globalNum})">링크 복사</button>
               </div>
             </div>
             <img class="viewer-slide-img" src="${src}" alt="${part.title} - ${pageNum}p" loading="${pIdx < 3 ? 'eager' : 'lazy'}">
@@ -594,36 +616,41 @@
         // [세로로 연속보기 (전편) 모드]
         titleEl.textContent = `${cfg.name} 전편 연속보기 (총 ${seriesData.length}개 차시 / ${totalSeriesSlides}컷)`;
 
-        let globalCounter = 0;
+        let runningOffset = seriesStart;
 
         seriesData.forEach((part, cIdx) => {
+          const partStartNum = runningOffset;
+          const partEndNum = runningOffset + part.totalSlides - 1;
+          runningOffset = partEndNum + 1;
+
           const div = document.createElement('div');
           div.className = 'all-mode-chapter-divider';
           div.id = 'chapter-anchor-' + cIdx;
           div.innerHTML = `
             <span>제 ${String(part.part).padStart(2, '0')}편 · ${part.title}</span>
-            <span style="font-size:12px; font-weight:500; opacity:0.7;">총 ${part.totalSlides}컷</span>
+            <span style="font-size:12px; font-weight:600; color:#38bdf8; font-family:monospace;">고유 #${partStartNum} ~ #${partEndNum} (${part.totalSlides}컷)</span>
           `;
           box.appendChild(div);
 
           part.slides.forEach((src, pIdx) => {
-            globalCounter++;
             const pageNum = pIdx + 1;
+            const globalNum = partStartNum + pIdx;
             const slideIdStr = `${seriesCode}-${String(part.part).padStart(2, '0')}-${String(pageNum).padStart(2, '0')}`;
 
             const card = document.createElement('div');
             card.className = 'viewer-slide-card';
-            card.id = 'slide-card-' + globalCounter;
+            card.id = 'slide-card-' + pageNum; // 각 편 내 상대 카드 id
 
             card.innerHTML = `
               <div class="slide-badge-bar">
                 <div class="badge-bar-left">
-                  <span class="slide-global-badge">전체 #${globalCounter} / ${totalSeriesSlides} (${slideIdStr})</span>
+                  <span class="slide-global-badge">전체고유 #${globalNum} / 352</span>
                   <span class="slide-part-badge">제 ${String(part.part).padStart(2, '0')}편</span>
+                  <span style="font-size:10.5px; opacity:0.6; font-family:monospace;">(${slideIdStr})</span>
                 </div>
                 <div class="badge-bar-right">
                   <span class="slide-page-badge">해당 편 ${pageNum} / ${part.totalSlides}p</span>
-                  <button class="btn-copy-slide-link" onclick="copySlideLink('${currentSeries}', 'all', ${cIdx}, ${globalCounter})">링크 복사</button>
+                  <button class="btn-copy-slide-link" onclick="copySlideLink('${currentSeries}', 'all', ${cIdx}, ${pageNum}, ${globalNum})">링크 복사</button>
                 </div>
               </div>
               <img class="viewer-slide-img" src="${src}" alt="${part.title} - ${pageNum}p" loading="${cIdx === 0 && pIdx < 3 ? 'eager' : 'lazy'}">
@@ -639,10 +666,10 @@
       }
     }
 
-    function copySlideLink(series, mode, part, slide) {
-      const url = `${window.location.origin}${window.location.pathname}?series=${series}&mode=${mode}&part=${part}&slide=${slide}`;
+    function copySlideLink(series, mode, part, page, globalNum) {
+      const url = `${window.location.origin}${window.location.pathname}?series=${series}&mode=${mode}&part=${part}&slide=${page}`;
       navigator.clipboard.writeText(url).then(() => {
-        alert(`📋 해당 페이지 링크가 복사되었습니다!\n${url}`);
+        alert(`📋 전체고유 #${globalNum} 슬라이드 링크가 복사되었습니다!\n${url}`);
       });
     }
 

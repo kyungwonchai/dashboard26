@@ -1204,8 +1204,9 @@ function renderGeminiDeepScrollView(partIdx = 0) {
 
 
 
+
 /* ========================================================
-   📚 3대 시리즈 목록 & 고유번호 기반 슬라이드 정밀 검색 엔진 (#238)
+   📚 3대 시리즈 목록 & 전체 고유번호(1~352) 단일 채번 검색 엔진 (#240)
    ======================================================== */
 let currentLibSearchQuery = '';
 const seriesOpenState = {
@@ -1280,25 +1281,32 @@ const SERIES_META = [
   }
 ];
 
+// 대시보드26 전체에 대해 1번부터 352번까지 단일 누적 고유번호(Global ID) 부여
 function getAllSeriesData() {
+  let globalRunningNumber = 0;
+
   const mapSeries = (dataArr, seriesId, seriesCode) => {
     if (!dataArr || !Array.isArray(dataArr)) return [];
-    let runningGlobal = 0;
     return dataArr.map((item, idx) => {
       const partNum = item.part;
       const partStr = String(partNum).padStart(2, '0');
-      const startGlobal = runningGlobal + 1;
-      const endGlobal = runningGlobal + item.totalSlides;
-      runningGlobal += item.totalSlides;
+      const startGlobal = globalRunningNumber + 1;
+      const endGlobal = globalRunningNumber + item.totalSlides;
+      globalRunningNumber += item.totalSlides;
 
-      // 해당 편 내 슬라이드 개별 고유 ID들 (검색용)
+      // 이 차시가 포함하는 전체 고유번호들 배열
+      const slideGlobalNumbers = [];
       const slideKeys = [];
+      for (let g = startGlobal; g <= endGlobal; g++) {
+        slideGlobalNumbers.push(g);
+        slideKeys.push(String(g));
+        slideKeys.push('#' + g);
+      }
+
       for (let p = 1; p <= item.totalSlides; p++) {
         slideKeys.push(`${seriesCode}-${partStr}-${String(p).padStart(2, '0')}`);
-        slideKeys.push(`${seriesId} ${p}p`);
         slideKeys.push(`${partNum}편 ${p}p`);
         slideKeys.push(`${partNum}편 ${p}페이지`);
-        slideKeys.push(`#${startGlobal + p - 1}`);
       }
 
       return {
@@ -1313,16 +1321,22 @@ function getAllSeriesData() {
         totalSlides: item.totalSlides,
         startGlobal: startGlobal,
         endGlobal: endGlobal,
+        slideGlobalNumbers: slideGlobalNumbers,
         tags: BOOK_HIDDEN_TAGS[`${seriesId}_${partNum}`] || '',
         slideKeysStr: slideKeys.join(' ')
       };
     });
   };
 
+  const vibeItems = mapSeries(typeof VIBE_CURRICULUM_DATA !== 'undefined' ? VIBE_CURRICULUM_DATA : [], 'vibe', 'VIBE');
+  const workerItems = mapSeries(typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [], 'worker', 'WORKER');
+  const geminiItems = mapSeries(typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [], 'gemini', 'GEMINI');
+
   return {
-    vibe: mapSeries(typeof VIBE_CURRICULUM_DATA !== 'undefined' ? VIBE_CURRICULUM_DATA : [], 'vibe', 'VIBE'),
-    worker: mapSeries(typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [], 'worker', 'WORKER'),
-    gemini: mapSeries(typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [], 'gemini', 'GEMINI')
+    vibe: vibeItems,
+    worker: workerItems,
+    gemini: geminiItems,
+    totalSlides: globalRunningNumber
   };
 }
 
@@ -1339,9 +1353,19 @@ function openSeriesInViewer(seriesId, mode, partIdx = 0, slideIdx = -1) {
   window.open(url, '_blank');
 }
 
-// 특정 고유번호/슬라이드 페이지 직접 열기
-function openSpecificSlide(seriesId, partIdx, pageInPart) {
-  openSeriesInViewer(seriesId, 'select', partIdx, pageInPart);
+// 전체 고유번호로 바로 뷰어 열기
+function openByGlobalNumber(targetGlobalNum) {
+  const data = getAllSeriesData();
+  const allItems = [...data.vibe, ...data.worker, ...data.gemini];
+
+  for (const item of allItems) {
+    if (targetGlobalNum >= item.startGlobal && targetGlobalNum <= item.endGlobal) {
+      const pageInPart = targetGlobalNum - item.startGlobal + 1;
+      openSeriesInViewer(item.seriesId, 'select', item.index, pageInPart);
+      return;
+    }
+  }
+  alert(`고유번호 #${targetGlobalNum}에 해당하는 슬라이드를 찾을 수 없습니다. (범위: 1~352)`);
 }
 
 function renderSeriesLibrary() {
@@ -1350,38 +1374,40 @@ function renderSeriesLibrary() {
   if (!container) return;
 
   const data = getAllSeriesData();
-  const q = currentLibSearchQuery.trim().toLowerCase();
+  const rawQ = currentLibSearchQuery.trim();
+  const q = rawQ.toLowerCase();
 
-  // 검색 로직: 제목, 숨김태그, 차시번호 외에 고유 슬라이드번호(예: #15, VIBE-01-05 등) 매칭 지원
+  // 검색어가 순수 숫자인지 판별 (예: "2" 또는 "#2")
+  const isPureNumber = /^#?\d+$/.test(rawQ);
+  const searchNum = isPureNumber ? parseInt(rawQ.replace('#', ''), 10) : null;
+
+  const filterItem = (item) => {
+    if (!q) return true;
+    
+    // 1. 순수 숫자 검색 시: 해당 고유번호가 이 차시의 범위(startGlobal ~ endGlobal)에 속하는지 엄격 검사
+    if (searchNum !== null) {
+      return searchNum >= item.startGlobal && searchNum <= item.endGlobal;
+    }
+
+    // 2. 텍스트 검색 시: 제목, 차시번호, 키워드태그 매칭
+    return (
+      item.title.toLowerCase().includes(q) ||
+      item.cleanTitle.toLowerCase().includes(q) ||
+      item.partStr.includes(q) ||
+      item.tags.toLowerCase().includes(q) ||
+      item.slideKeysStr.toLowerCase().includes(q)
+    );
+  };
+
   const filteredData = {
-    vibe: data.vibe.filter(item => !q || (
-      item.title.toLowerCase().includes(q) ||
-      item.cleanTitle.toLowerCase().includes(q) ||
-      item.partStr.includes(q) ||
-      item.tags.toLowerCase().includes(q) ||
-      item.slideKeysStr.toLowerCase().includes(q)
-    )),
-    worker: data.worker.filter(item => !q || (
-      item.title.toLowerCase().includes(q) ||
-      item.cleanTitle.toLowerCase().includes(q) ||
-      item.partStr.includes(q) ||
-      item.tags.toLowerCase().includes(q) ||
-      item.slideKeysStr.toLowerCase().includes(q)
-    )),
-    gemini: data.gemini.filter(item => !q || (
-      item.title.toLowerCase().includes(q) ||
-      item.cleanTitle.toLowerCase().includes(q) ||
-      item.partStr.includes(q) ||
-      item.tags.toLowerCase().includes(q) ||
-      item.slideKeysStr.toLowerCase().includes(q)
-    ))
+    vibe: data.vibe.filter(filterItem),
+    worker: data.worker.filter(filterItem),
+    gemini: data.gemini.filter(filterItem)
   };
 
   const totalVisible = filteredData.vibe.length + filteredData.worker.length + filteredData.gemini.length;
   const totalAll = data.vibe.length + data.worker.length + data.gemini.length;
-  const totalSlides = data.vibe.reduce((s, x) => s + x.totalSlides, 0) +
-                      data.worker.reduce((s, x) => s + x.totalSlides, 0) +
-                      data.gemini.reduce((s, x) => s + x.totalSlides, 0);
+  const totalSlides = data.totalSlides;
 
   const statBooks = document.getElementById('lib-stat-books');
   const statSlides = document.getElementById('lib-stat-slides');
@@ -1398,6 +1424,7 @@ function renderSeriesLibrary() {
 
   container.innerHTML = SERIES_META.map(meta => {
     const items = filteredData[meta.id];
+    // 검색어가 있을 땐 검색결과가 있는 시리즈를 자동으로 열고, 없으면 사용자가 토글한 상태 사용
     const isOpen = q ? (items.length > 0) : seriesOpenState[meta.id];
     const visibleCount = items.length;
     const seriesSlides = items.reduce((s, x) => s + x.totalSlides, 0);
@@ -1414,7 +1441,7 @@ function renderSeriesLibrary() {
             <div>
               <div style="display:flex; align-items:center; gap:8px;">
                 <h3 class="series-title">${meta.title}</h3>
-                <span class="series-count-pill">${visibleCount}개 차시 수록</span>
+                <span class="series-count-pill">${visibleCount}개 차시</span>
               </div>
               <p class="series-desc">${meta.desc}</p>
             </div>
@@ -1442,36 +1469,44 @@ function renderSeriesLibrary() {
                 <tr>
                   <th style="width: 70px; text-align: center;">차시</th>
                   <th>강의 교재 및 학습 내용</th>
-                  <th style="width: 140px; text-align: center;">고유 번호 대역</th>
+                  <th style="width: 150px; text-align: center;">전체 고유번호 대역</th>
                   <th style="width: 80px; text-align: center;">분량</th>
-                  <th style="width: 130px; text-align: center;">열람</th>
+                  <th style="width: 140px; text-align: center;">열람</th>
                 </tr>
               </thead>
               <tbody>
-                ${items.map(item => `
-                  <tr class="series-item-row" onclick="openSeriesInViewer('${item.seriesId}', 'select', ${item.index})">
-                    <td style="text-align: center;">
-                      <span class="item-part-badge">${item.partStr}</span>
-                    </td>
-                    <td>
-                      <div class="item-title-box">
-                        <span class="item-title">${item.cleanTitle}</span>
-                        <span class="item-hidden-keywords" style="display:none;">${item.tags} ${item.slideKeysStr}</span>
-                      </div>
-                    </td>
-                    <td style="text-align: center;">
-                      <span class="item-range-badge" title="이 차시의 슬라이드 고유번호">#${item.startGlobal} ~ #${item.endGlobal}</span>
-                    </td>
-                    <td style="text-align: center;">
-                      <span class="item-slides-count">${item.totalSlides}p</span>
-                    </td>
-                    <td style="text-align: center;">
-                      <button class="btn-item-read" onclick="event.stopPropagation(); openSeriesInViewer('${item.seriesId}', 'select', ${item.index})">
-                        새 창 열람 ↗
-                      </button>
-                    </td>
-                  </tr>
-                `).join('')}
+                ${items.map(item => {
+                  // 만약 특정 번호 검색 중이라면 그 번호의 페이지를 직접 열 수 있게 계산
+                  const targetPage = (searchNum !== null && searchNum >= item.startGlobal && searchNum <= item.endGlobal)
+                    ? (searchNum - item.startGlobal + 1)
+                    : -1;
+
+                  return `
+                    <tr class="series-item-row" onclick="openSeriesInViewer('${item.seriesId}', 'select', ${item.index}, ${targetPage > 0 ? targetPage : -1})">
+                      <td style="text-align: center;">
+                        <span class="item-part-badge">${item.partStr}</span>
+                      </td>
+                      <td>
+                        <div class="item-title-box">
+                          <span class="item-title">${item.cleanTitle}</span>
+                          ${targetPage > 0 ? `<span style="font-size:11px; color:#38bdf8; font-weight:700; margin-top:2px;">👉 고유번호 #${searchNum} 슬라이드 포함 (${targetPage}페이지)</span>` : ''}
+                          <span class="item-hidden-keywords" style="display:none;">${item.tags} ${item.slideKeysStr}</span>
+                        </div>
+                      </td>
+                      <td style="text-align: center;">
+                        <span class="item-range-badge" title="대시보드26 전체 고유번호">#${item.startGlobal} ~ #${item.endGlobal}</span>
+                      </td>
+                      <td style="text-align: center;">
+                        <span class="item-slides-count">${item.totalSlides}p</span>
+                      </td>
+                      <td style="text-align: center;">
+                        <button class="btn-item-read" onclick="event.stopPropagation(); openSeriesInViewer('${item.seriesId}', 'select', ${item.index}, ${targetPage > 0 ? targetPage : -1})">
+                          ${targetPage > 0 ? `고유 #${searchNum} 열람 ↗` : '새 창 열람 ↗'}
+                        </button>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
               </tbody>
             </table>
           </div>
