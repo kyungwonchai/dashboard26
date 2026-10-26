@@ -1070,3 +1070,77 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeVibeCurriculumModal();
   }
 });
+
+
+/* ── ⚡ gemini cli 심화 (7페이지) 슬라이드 뷰어 엔진 ── */
+let geminiDeepData = [];
+
+function loadGeminiDeepData() {
+  if (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' && GEMINI_CLI_DEEP_DATA.length > 0) {
+    geminiDeepData = GEMINI_CLI_DEEP_DATA;
+  }
+}
+
+function openGeminiDeepModal(partIndex = 0) {
+  loadGeminiDeepData();
+  if (!geminiDeepData.length) {
+    alert('심화 슬라이드 데이터를 불러올 수 없습니다.');
+    return;
+  }
+  const modal = document.getElementById('gemini-deep-modal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    renderGeminiDeepScrollView(partIndex);
+  }
+}
+
+function closeGeminiDeepModal() {
+  const modal = document.getElementById('gemini-deep-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function renderGeminiDeepScrollView(partIdx = 0) {
+  const container = document.getElementById('gemini-deep-scroll-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const part = geminiDeepData[partIdx] || geminiDeepData[0];
+  if (!part) return;
+
+  // 상단 안내 바
+  const headerBar = document.createElement('div');
+  headerBar.style.cssText = 'width: 100%; max-width: 880px; padding: 14px 20px; margin-bottom: 16px; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5);';
+  headerBar.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="background: #f59e0b; color: #000; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 5px;">CLI 심화</span>
+      <span style="color: #fff; font-weight: 700; font-size: 14px;">${part.title}</span>
+    </div>
+    <span style="font-size: 11.5px; color: #fde68a; font-weight: 600;">총 ${part.totalSlides}컷 완결</span>
+  `;
+  container.appendChild(headerBar);
+
+  // 7컷 연속 웹툰형 렌더링
+  part.slides.forEach((src, idx) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 880px; margin-bottom: 14px; position: relative;';
+    wrap.innerHTML = `
+      <img src="${src}" loading="lazy" alt="Cut ${idx+1}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 10px 35px rgba(0,0,0,0.9); display: block; border: 1px solid rgba(255,255,255,0.08);">
+      <div style="font-size: 10.5px; color: #64748b; font-family: monospace; font-weight: 700; margin-top: 5px;">CUT ${idx+1} / ${part.totalSlides}</div>
+    `;
+    container.appendChild(wrap);
+  });
+
+  // 하단 완주 축하 바
+  const footerBar = document.createElement('div');
+  footerBar.style.cssText = 'width: 100%; max-width: 880px; padding: 18px 24px; margin-top: 10px; margin-bottom: 30px; background: rgba(15,20,32,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 40px rgba(0,0,0,0.8);';
+  footerBar.innerHTML = `
+    <span style="color: #f59e0b; font-weight: 800; font-size: 13px;">🎉 gemini cli 심화 7페이지 마스터 완료!</span>
+  `;
+  container.appendChild(footerBar);
+
+  container.scrollTop = 0;
+}
