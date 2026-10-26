@@ -1201,13 +1201,17 @@ function renderGeminiDeepScrollView(partIdx = 0) {
 }
 
 
-/* ========================================================
-   📚 바이브코딩 도서관 텍스트 목록(Row Table) & 내용 검색 엔진 (#226)
-   ======================================================== */
-let currentLibCategory = 'all';
-let currentLibSearchQuery = '';
 
-// 차시별 상세 검색용 숨김 키워드 & 태그 매핑
+/* ========================================================
+   📚 바이브코딩 2대 시리즈 목록 & 아코디언 차시 전개 엔진 (#228)
+   ======================================================== */
+let currentLibSearchQuery = '';
+// 시리즈별 아코디언 열림/닫힘 상태 (기본값: 둘 다 열림)
+const seriesOpenState = {
+  vibe: true,
+  gemini: true
+};
+
 const BOOK_HIDDEN_TAGS = {
   'vibe_1': 'AI 입문 바이브코딩 개념 기초 LLM ChatGPT Claude Gemini 모델 작동 원리 프롬프트 첫걸음',
   'vibe_2': '개발환경 설치 준비 venv 파이썬 가상환경 VSCode 터미널 CLI 패키지 설정 마법도구함',
@@ -1232,148 +1236,187 @@ const BOOK_HIDDEN_TAGS = {
   'gemini_7': 'CI/CD 배포 자동화 데몬 프로세스 생존주기 systemd pm2 supervisor nohup 무중단 운영 헬스체크'
 };
 
-function getAllLibraryBooks() {
-  const books = [];
-  
-  if (typeof VIBE_CURRICULUM_DATA !== 'undefined' && Array.isArray(VIBE_CURRICULUM_DATA)) {
-    VIBE_CURRICULUM_DATA.forEach((item, idx) => {
-      const partKey = `vibe_${item.part}`;
-      books.push({
-        id: partKey,
-        type: 'vibe',
-        category: '바이브코딩 정규',
-        badge: '정규',
-        badgeClass: 'row-badge-vibe',
+const SERIES_META = [
+  {
+    id: 'vibe',
+    title: '바이브코딩 정규 시리즈',
+    desc: '비전공자·초보자를 위한 컴퓨터 과학 비유 & 실전 웹/대시보드 제작 과정',
+    color: '#10b981',
+    badgeClass: 'series-badge-vibe',
+    icon: '🎓'
+  },
+  {
+    id: 'gemini',
+    title: 'Gemini CLI 심화 시리즈',
+    desc: '엔터프라이즈 아키텍처, DB 모델링, 인증/RBAC, 대용량 엑셀 및 CI/CD 배포',
+    color: '#f59e0b',
+    badgeClass: 'series-badge-gemini',
+    icon: '⚡'
+  }
+];
+
+function getAllSeriesData() {
+  const vibeItems = (typeof VIBE_CURRICULUM_DATA !== 'undefined' && Array.isArray(VIBE_CURRICULUM_DATA))
+    ? VIBE_CURRICULUM_DATA.map((item, idx) => ({
+        id: `vibe_${item.part}`,
+        seriesId: 'vibe',
         index: idx,
         part: item.part,
         partStr: String(item.part).padStart(2, '0'),
         title: item.title,
         cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
         totalSlides: item.totalSlides,
-        tags: BOOK_HIDDEN_TAGS[partKey] || '',
+        tags: BOOK_HIDDEN_TAGS[`vibe_${item.part}`] || '',
         onClick: () => openVibeCurriculumModal(idx)
-      });
-    });
-  }
+      }))
+    : [];
 
-  if (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' && Array.isArray(GEMINI_CLI_DEEP_DATA)) {
-    GEMINI_CLI_DEEP_DATA.forEach((item, idx) => {
-      const partKey = `gemini_${item.part}`;
-      books.push({
-        id: partKey,
-        type: 'gemini',
-        category: 'Gemini CLI 심화',
-        badge: '심화',
-        badgeClass: 'row-badge-gemini',
+  const geminiItems = (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' && Array.isArray(GEMINI_CLI_DEEP_DATA))
+    ? GEMINI_CLI_DEEP_DATA.map((item, idx) => ({
+        id: `gemini_${item.part}`,
+        seriesId: 'gemini',
         index: idx,
         part: item.part,
         partStr: String(item.part).padStart(2, '0'),
         title: item.title,
         cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
         totalSlides: item.totalSlides,
-        tags: BOOK_HIDDEN_TAGS[partKey] || '',
+        tags: BOOK_HIDDEN_TAGS[`gemini_${item.part}`] || '',
         onClick: () => openGeminiDeepModal(idx)
-      });
-    });
-  }
+      }))
+    : [];
 
-  return books;
+  return { vibe: vibeItems, gemini: geminiItems };
 }
 
-function renderLibraryBooks() {
-  const tbody = document.getElementById('library-table-body');
+function toggleSeries(seriesId) {
+  seriesOpenState[seriesId] = !seriesOpenState[seriesId];
+  renderSeriesLibrary();
+}
+
+function renderSeriesLibrary() {
+  const container = document.getElementById('series-library-container');
   const noResults = document.getElementById('library-no-results');
-  const tableEl = document.getElementById('library-table');
-  if (!tbody) return;
+  if (!container) return;
 
-  const allBooks = getAllLibraryBooks();
-  
-  // 1. 카테고리 필터링
-  let filtered = allBooks;
-  if (currentLibCategory === 'vibe') {
-    filtered = filtered.filter(b => b.type === 'vibe');
-  } else if (currentLibCategory === 'gemini') {
-    filtered = filtered.filter(b => b.type === 'gemini');
-  }
+  const data = getAllSeriesData();
+  const q = currentLibSearchQuery.trim().toLowerCase();
 
-  // 2. 검색어 필터링 (제목 + 차시 + 숨김 태그 + 카테고리)
-  if (currentLibSearchQuery.trim()) {
-    const q = currentLibSearchQuery.trim().toLowerCase();
-    filtered = filtered.filter(b => 
-      b.title.toLowerCase().includes(q) ||
-      b.cleanTitle.toLowerCase().includes(q) ||
-      b.category.toLowerCase().includes(q) ||
-      b.partStr.includes(q) ||
-      b.tags.toLowerCase().includes(q)
-    );
-  }
+  // 검색어가 있을 때는 검색어에 매칭되는 아이템만 필터링하고 강제로 아코디언 오픈
+  const filteredData = {
+    vibe: data.vibe.filter(item => !q || (
+      item.title.toLowerCase().includes(q) ||
+      item.cleanTitle.toLowerCase().includes(q) ||
+      item.partStr.includes(q) ||
+      item.tags.toLowerCase().includes(q)
+    )),
+    gemini: data.gemini.filter(item => !q || (
+      item.title.toLowerCase().includes(q) ||
+      item.cleanTitle.toLowerCase().includes(q) ||
+      item.partStr.includes(q) ||
+      item.tags.toLowerCase().includes(q)
+    ))
+  };
 
-  // 3. 통계 수치 갱신
+  const totalVisible = filteredData.vibe.length + filteredData.gemini.length;
+  const totalAll = data.vibe.length + data.gemini.length;
+  const totalSlides = data.vibe.reduce((s, x) => s + x.totalSlides, 0) + data.gemini.reduce((s, x) => s + x.totalSlides, 0);
+
   const statBooks = document.getElementById('lib-stat-books');
   const statSlides = document.getElementById('lib-stat-slides');
-  const tabAll = document.getElementById('tab-count-all');
-  const tabVibe = document.getElementById('tab-count-vibe');
-  const tabGemini = document.getElementById('tab-count-gemini');
+  if (statBooks) statBooks.textContent = q ? `${totalVisible}/${totalAll}` : totalAll;
+  if (statSlides) statSlides.textContent = totalSlides;
 
-  const vibeCount = allBooks.filter(b => b.type === 'vibe').length;
-  const geminiCount = allBooks.filter(b => b.type === 'gemini').length;
-  const totalSlidesCount = allBooks.reduce((sum, b) => sum + (b.totalSlides || 0), 0);
-
-  if (statBooks) statBooks.textContent = allBooks.length;
-  if (statSlides) statSlides.textContent = totalSlidesCount;
-  if (tabAll) tabAll.textContent = allBooks.length;
-  if (tabVibe) tabVibe.textContent = vibeCount;
-  if (tabGemini) tabGemini.textContent = geminiCount;
-
-  if (filtered.length === 0) {
-    tbody.innerHTML = '';
-    if (tableEl) tableEl.style.display = 'none';
+  if (totalVisible === 0) {
+    container.innerHTML = '';
     if (noResults) noResults.style.display = 'block';
     return;
   }
 
-  if (tableEl) tableEl.style.display = 'table';
   if (noResults) noResults.style.display = 'none';
 
-  tbody.innerHTML = filtered.map(book => `
-    <tr class="library-row" onclick="handleBookRowClick('${book.type}', ${book.index})">
-      <td style="text-align: center;">
-        <span class="row-part-number">${book.partStr}</span>
-      </td>
-      <td>
-        <span class="row-category-badge ${book.badgeClass}">${book.category}</span>
-      </td>
-      <td>
-        <div class="row-title-box">
-          <span class="row-main-title">${book.cleanTitle}</span>
-          <span class="row-hidden-keywords" style="display:none;">${book.tags}</span>
+  container.innerHTML = SERIES_META.map(meta => {
+    const items = filteredData[meta.id];
+    // 검색어가 있을 땐 자동으로 열고, 없으면 사용자가 토글한 상태 사용
+    const isOpen = q ? (items.length > 0) : seriesOpenState[meta.id];
+    const totalCount = (meta.id === 'vibe' ? data.vibe.length : data.gemini.length);
+    const visibleCount = items.length;
+    const seriesSlides = items.reduce((s, x) => s + x.totalSlides, 0);
+
+    return `
+      <div class="series-card ${isOpen ? 'open' : ''}">
+        <!-- 시리즈 메인 헤더 행 (클릭 시 하위 차시 전개/접기) -->
+        <div class="series-header-row" onclick="toggleSeries('${meta.id}')">
+          <div class="series-header-left">
+            <span class="series-toggle-chevron">${isOpen ? '▼' : '▶'}</span>
+            <div class="series-icon-box ${meta.badgeClass}">
+              ${meta.icon}
+            </div>
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <h3 class="series-title">${meta.title}</h3>
+                <span class="series-count-pill">${visibleCount}개 차시 수록</span>
+              </div>
+              <p class="series-desc">${meta.desc}</p>
+            </div>
+          </div>
+          <div class="series-header-right">
+            <span class="series-stat-summary">${seriesSlides}p</span>
+            <button class="btn-series-toggle" onclick="event.stopPropagation(); toggleSeries('${meta.id}')">
+              ${isOpen ? '목록 접기 ▲' : '목록 열기 (' + visibleCount + '개) ▼'}
+            </button>
+          </div>
         </div>
-      </td>
-      <td style="text-align: center;">
-        <span class="row-slides-count">${book.totalSlides}p</span>
-      </td>
-      <td style="text-align: center;">
-        <button class="btn-row-read" onclick="event.stopPropagation(); handleBookRowClick('${book.type}', ${book.index})">
-          열람 ↗
-        </button>
-      </td>
-    </tr>
-  `).join('');
+
+        <!-- 하위 차시 텍스트 목록 행 (Row List Table) -->
+        ${isOpen ? `
+          <div class="series-items-wrapper">
+            <table class="series-items-table">
+              <thead>
+                <tr>
+                  <th style="width: 70px; text-align: center;">차시</th>
+                  <th>강의 교재 및 학습 내용</th>
+                  <th style="width: 90px; text-align: center;">분량</th>
+                  <th style="width: 100px; text-align: center;">열람</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${items.map(item => `
+                  <tr class="series-item-row" onclick="handleSeriesItemClick('${item.seriesId}', ${item.index})">
+                    <td style="text-align: center;">
+                      <span class="item-part-badge">${item.partStr}</span>
+                    </td>
+                    <td>
+                      <div class="item-title-box">
+                        <span class="item-title">${item.cleanTitle}</span>
+                        <span class="item-hidden-keywords" style="display:none;">${item.tags}</span>
+                      </div>
+                    </td>
+                    <td style="text-align: center;">
+                      <span class="item-slides-count">${item.totalSlides}p</span>
+                    </td>
+                    <td style="text-align: center;">
+                      <button class="btn-item-read" onclick="event.stopPropagation(); handleSeriesItemClick('${item.seriesId}', ${item.index})">
+                        열람 ↗
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
 }
 
-function handleBookRowClick(type, index) {
-  if (type === 'vibe') {
+function handleSeriesItemClick(seriesId, index) {
+  if (seriesId === 'vibe') {
     openVibeCurriculumModal(index);
-  } else if (type === 'gemini') {
+  } else if (seriesId === 'gemini') {
     openGeminiDeepModal(index);
   }
-}
-
-function filterLibraryCategory(cat, btn) {
-  currentLibCategory = cat;
-  document.querySelectorAll('.lib-tab').forEach(t => t.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderLibraryBooks();
 }
 
 function handleLibrarySearch(val) {
@@ -1382,7 +1425,7 @@ function handleLibrarySearch(val) {
   if (clearBtn) {
     clearBtn.style.display = val ? 'block' : 'none';
   }
-  renderLibraryBooks();
+  renderSeriesLibrary();
 }
 
 function clearLibrarySearch() {
@@ -1394,7 +1437,6 @@ function clearLibrarySearch() {
   }
 }
 
-// 라이브러리 자동 마운트
 document.addEventListener('DOMContentLoaded', () => {
-  renderLibraryBooks();
+  renderSeriesLibrary();
 });

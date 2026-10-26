@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=1793003000">
+  <link rel="stylesheet" href="style.css?v=1793003400">
 </head>
 <body>
   <!-- 상단 네비게이션 헤더 -->
@@ -53,7 +53,7 @@
   <!-- 메인: 바이브코딩 인터랙티브 도서관 (Interactive Digital Library) -->
   <main class="library-main">
 
-    <!-- 📚 도서관 검색 및 분류 필터 툴바 -->
+    <!-- 📚 도서관 검색 바 (단일 통합 검색) -->
     <section class="library-search-header-panel">
       <div class="library-search-row">
         <div class="library-search-box-large">
@@ -62,56 +62,24 @@
           <button id="search-clear-btn" class="search-clear-btn" style="display:none;" onclick="clearLibrarySearch()">✕</button>
         </div>
         <div class="library-quick-stats">
+          <span class="quick-stat-badge">2개 시리즈 수록</span>
           <span class="quick-stat-badge">총 <b id="lib-stat-books" style="color:#38bdf8;">21</b>개 차시</span>
-          <span class="quick-stat-badge">총 <b id="lib-stat-slides" style="color:#a78bfa;">237</b>컷 수록</span>
-        </div>
-      </div>
-
-      <div class="library-tabs-row">
-        <div class="library-tabs">
-          <button class="lib-tab active" onclick="filterLibraryCategory('all', this)">
-            <span>전체 목차</span>
-            <span class="tab-count" id="tab-count-all">21</span>
-          </button>
-          <button class="lib-tab" onclick="filterLibraryCategory('vibe', this)">
-            <span>바이브코딩 정규 (01~14차시)</span>
-            <span class="tab-count" id="tab-count-vibe">14</span>
-          </button>
-          <button class="lib-tab" onclick="filterLibraryCategory('gemini', this)">
-            <span>Gemini CLI 심화 (01~07차시)</span>
-            <span class="tab-count" id="tab-count-gemini">7</span>
-          </button>
-        </div>
-        <div style="font-size: 11.5px; color: var(--text-dim); display:flex; align-items:center; gap:6px;">
-          <span>💡 목차 행을 클릭하면 해당 차시 슬라이드가 즉시 열립니다</span>
+          <span class="quick-stat-badge">총 <b id="lib-stat-slides" style="color:#a78bfa;">237</b>컷</span>
         </div>
       </div>
     </section>
 
-    <!-- 📋 교재 텍스트 목차 목록 (Row Table List) -->
-    <section class="library-table-container">
-      <table class="library-table" id="library-table">
-        <thead>
-          <tr>
-            <th style="width: 70px; text-align: center;">차시</th>
-            <th style="width: 140px;">구분</th>
-            <th>강의 교재 및 학습 내용</th>
-            <th style="width: 100px; text-align: center;">분량</th>
-            <th style="width: 110px; text-align: center;">열람</th>
-          </tr>
-        </thead>
-        <tbody id="library-table-body">
-          <!-- JavaScript로 동적 렌더링 -->
-        </tbody>
-      </table>
-
-      <!-- 검색 결과 없음 안내 -->
-      <div id="library-no-results" style="display:none; text-align:center; padding:50px 20px; background:rgba(255,255,255,0.02); border-radius:10px;">
-        <div style="font-size:32px; margin-bottom:8px;">🔍</div>
-        <div style="font-size:14px; font-weight:700; color:#fff;">일치하는 교재 목차가 없습니다.</div>
-        <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">검색어를 변경하시거나 '전체 목차' 탭을 선택해주세요.</p>
-      </div>
+    <!-- 📚 총 2개 시리즈 목록 (아코디언/목록 클릭 시 하위 차시 전개) -->
+    <section class="series-library-container" id="series-library-container">
+      <!-- JavaScript로 동적 렌더링 -->
     </section>
+
+    <!-- 검색 결과 없음 안내 -->
+    <div id="library-no-results" style="display:none; text-align:center; padding:50px 20px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed var(--border);">
+      <div style="font-size:32px; margin-bottom:8px;">🔍</div>
+      <div style="font-size:14px; font-weight:700; color:#fff;">일치하는 내용이나 차시를 찾을 수 없습니다.</div>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">검색어를 변경해보세요.</p>
+    </div>
 
     <!-- 📊 [슬라이드: 수업노트] 구글 슬라이드 참고자료 쉘프 -->
     <section class="library-bottom-shelf">
@@ -689,7 +657,7 @@
     </div>
   </div>
 
-  <script src="data.js?v=1793003000"></script>
-  <script src="demo.js?v=1793003000"></script>
+  <script src="data.js?v=1793003400"></script>
+  <script src="demo.js?v=1793003400"></script>
 </body>
 </html>
