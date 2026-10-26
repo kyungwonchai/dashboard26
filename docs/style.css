@@ -850,3 +850,13 @@ body {
     align-items: stretch;
   }
 }
+
+.item-range-badge {
+  font-family: monospace;
+  font-size: 11px;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 2px 7px;
+  border-radius: 4px;
+}

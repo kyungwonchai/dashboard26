@@ -1203,8 +1203,9 @@ function renderGeminiDeepScrollView(partIdx = 0) {
 
 
 
+
 /* ========================================================
-   📚 3대 시리즈 목록 & 듀얼 새창 뷰어 엔진 (#237)
+   📚 3대 시리즈 목록 & 고유번호 기반 슬라이드 정밀 검색 엔진 (#238)
    ======================================================== */
 let currentLibSearchQuery = '';
 const seriesOpenState = {
@@ -1255,6 +1256,7 @@ const BOOK_HIDDEN_TAGS = {
 const SERIES_META = [
   {
     id: 'vibe',
+    code: 'VIBE',
     title: '바이브코딩 정규 시리즈',
     desc: '비전공자·초보자를 위한 컴퓨터 과학 비유 & 실전 웹/대시보드 제작 과정',
     badgeClass: 'series-badge-vibe',
@@ -1262,6 +1264,7 @@ const SERIES_META = [
   },
   {
     id: 'worker',
+    code: 'WORKER',
     title: '직장인 실전 AI 활용 시리즈',
     desc: '문서 요약, 엑셀 10초 분석, 자동화 도구 제작부터 제미나이 CLI 실무 활용까지',
     badgeClass: 'series-badge-worker',
@@ -1269,6 +1272,7 @@ const SERIES_META = [
   },
   {
     id: 'gemini',
+    code: 'GEMINI',
     title: 'Gemini CLI 심화 시리즈',
     desc: '엔터프라이즈 아키텍처, DB 모델링, 인증/RBAC, 대용량 엑셀 및 CI/CD 배포',
     badgeClass: 'series-badge-gemini',
@@ -1277,49 +1281,49 @@ const SERIES_META = [
 ];
 
 function getAllSeriesData() {
-  const vibeItems = (typeof VIBE_CURRICULUM_DATA !== 'undefined' && Array.isArray(VIBE_CURRICULUM_DATA))
-    ? VIBE_CURRICULUM_DATA.map((item, idx) => ({
-        id: `vibe_${item.part}`,
-        seriesId: 'vibe',
+  const mapSeries = (dataArr, seriesId, seriesCode) => {
+    if (!dataArr || !Array.isArray(dataArr)) return [];
+    let runningGlobal = 0;
+    return dataArr.map((item, idx) => {
+      const partNum = item.part;
+      const partStr = String(partNum).padStart(2, '0');
+      const startGlobal = runningGlobal + 1;
+      const endGlobal = runningGlobal + item.totalSlides;
+      runningGlobal += item.totalSlides;
+
+      // 해당 편 내 슬라이드 개별 고유 ID들 (검색용)
+      const slideKeys = [];
+      for (let p = 1; p <= item.totalSlides; p++) {
+        slideKeys.push(`${seriesCode}-${partStr}-${String(p).padStart(2, '0')}`);
+        slideKeys.push(`${seriesId} ${p}p`);
+        slideKeys.push(`${partNum}편 ${p}p`);
+        slideKeys.push(`${partNum}편 ${p}페이지`);
+        slideKeys.push(`#${startGlobal + p - 1}`);
+      }
+
+      return {
+        id: `${seriesId}_${partNum}`,
+        seriesId: seriesId,
+        seriesCode: seriesCode,
         index: idx,
-        part: item.part,
-        partStr: String(item.part).padStart(2, '0'),
+        part: partNum,
+        partStr: partStr,
         title: item.title,
         cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, ''),
         totalSlides: item.totalSlides,
-        tags: BOOK_HIDDEN_TAGS[`vibe_${item.part}`] || ''
-      }))
-    : [];
+        startGlobal: startGlobal,
+        endGlobal: endGlobal,
+        tags: BOOK_HIDDEN_TAGS[`${seriesId}_${partNum}`] || '',
+        slideKeysStr: slideKeys.join(' ')
+      };
+    });
+  };
 
-  const workerItems = (typeof WORKER_AI_DATA !== 'undefined' && Array.isArray(WORKER_AI_DATA))
-    ? WORKER_AI_DATA.map((item, idx) => ({
-        id: `worker_${item.part}`,
-        seriesId: 'worker',
-        index: idx,
-        part: item.part,
-        partStr: String(item.part).padStart(2, '0'),
-        title: item.title,
-        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, ''),
-        totalSlides: item.totalSlides,
-        tags: BOOK_HIDDEN_TAGS[`worker_${item.part}`] || ''
-      }))
-    : [];
-
-  const geminiItems = (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' && Array.isArray(GEMINI_CLI_DEEP_DATA))
-    ? GEMINI_CLI_DEEP_DATA.map((item, idx) => ({
-        id: `gemini_${item.part}`,
-        seriesId: 'gemini',
-        index: idx,
-        part: item.part,
-        partStr: String(item.part).padStart(2, '0'),
-        title: item.title,
-        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, ''),
-        totalSlides: item.totalSlides,
-        tags: BOOK_HIDDEN_TAGS[`gemini_${item.part}`] || ''
-      }))
-    : [];
-
-  return { vibe: vibeItems, worker: workerItems, gemini: geminiItems };
+  return {
+    vibe: mapSeries(typeof VIBE_CURRICULUM_DATA !== 'undefined' ? VIBE_CURRICULUM_DATA : [], 'vibe', 'VIBE'),
+    worker: mapSeries(typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [], 'worker', 'WORKER'),
+    gemini: mapSeries(typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [], 'gemini', 'GEMINI')
+  };
 }
 
 function toggleSeries(seriesId) {
@@ -1327,9 +1331,17 @@ function toggleSeries(seriesId) {
   renderSeriesLibrary();
 }
 
-function openSeriesInViewer(seriesId, mode, partIdx = 0) {
-  const url = `./viewer.html?series=${seriesId}&mode=${mode}&part=${partIdx}`;
+function openSeriesInViewer(seriesId, mode, partIdx = 0, slideIdx = -1) {
+  let url = `./viewer.html?series=${seriesId}&mode=${mode}&part=${partIdx}`;
+  if (slideIdx > 0) {
+    url += `&slide=${slideIdx}`;
+  }
   window.open(url, '_blank');
+}
+
+// 특정 고유번호/슬라이드 페이지 직접 열기
+function openSpecificSlide(seriesId, partIdx, pageInPart) {
+  openSeriesInViewer(seriesId, 'select', partIdx, pageInPart);
 }
 
 function renderSeriesLibrary() {
@@ -1340,24 +1352,28 @@ function renderSeriesLibrary() {
   const data = getAllSeriesData();
   const q = currentLibSearchQuery.trim().toLowerCase();
 
+  // 검색 로직: 제목, 숨김태그, 차시번호 외에 고유 슬라이드번호(예: #15, VIBE-01-05 등) 매칭 지원
   const filteredData = {
     vibe: data.vibe.filter(item => !q || (
       item.title.toLowerCase().includes(q) ||
       item.cleanTitle.toLowerCase().includes(q) ||
       item.partStr.includes(q) ||
-      item.tags.toLowerCase().includes(q)
+      item.tags.toLowerCase().includes(q) ||
+      item.slideKeysStr.toLowerCase().includes(q)
     )),
     worker: data.worker.filter(item => !q || (
       item.title.toLowerCase().includes(q) ||
       item.cleanTitle.toLowerCase().includes(q) ||
       item.partStr.includes(q) ||
-      item.tags.toLowerCase().includes(q)
+      item.tags.toLowerCase().includes(q) ||
+      item.slideKeysStr.toLowerCase().includes(q)
     )),
     gemini: data.gemini.filter(item => !q || (
       item.title.toLowerCase().includes(q) ||
       item.cleanTitle.toLowerCase().includes(q) ||
       item.partStr.includes(q) ||
-      item.tags.toLowerCase().includes(q)
+      item.tags.toLowerCase().includes(q) ||
+      item.slideKeysStr.toLowerCase().includes(q)
     ))
   };
 
@@ -1426,8 +1442,9 @@ function renderSeriesLibrary() {
                 <tr>
                   <th style="width: 70px; text-align: center;">차시</th>
                   <th>강의 교재 및 학습 내용</th>
-                  <th style="width: 90px; text-align: center;">분량</th>
-                  <th style="width: 140px; text-align: center;">열람</th>
+                  <th style="width: 140px; text-align: center;">고유 번호 대역</th>
+                  <th style="width: 80px; text-align: center;">분량</th>
+                  <th style="width: 130px; text-align: center;">열람</th>
                 </tr>
               </thead>
               <tbody>
@@ -1439,8 +1456,11 @@ function renderSeriesLibrary() {
                     <td>
                       <div class="item-title-box">
                         <span class="item-title">${item.cleanTitle}</span>
-                        <span class="item-hidden-keywords" style="display:none;">${item.tags}</span>
+                        <span class="item-hidden-keywords" style="display:none;">${item.tags} ${item.slideKeysStr}</span>
                       </div>
+                    </td>
+                    <td style="text-align: center;">
+                      <span class="item-range-badge" title="이 차시의 슬라이드 고유번호">#${item.startGlobal} ~ #${item.endGlobal}</span>
                     </td>
                     <td style="text-align: center;">
                       <span class="item-slides-count">${item.totalSlides}p</span>
