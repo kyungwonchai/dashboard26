@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=1793047800">
+  <link rel="stylesheet" href="style.css?v=1793049600">
   <style>
     body {
       background: #07080d;
@@ -392,44 +392,12 @@
     ▲
   </button>
 
-  <script src="data.js?v=1793047800"></script>
+  <script src="data.js?v=1793049600"></script>
   <script>
-    let currentSeries = 'vibe'; // 'vibe', 'worker', 'gemini'
-    let currentMode = 'select'; // 'select' (편고르고 보기), 'all' (세로로 연속보기)
-    let currentPartIndex = 0;
-    let seriesData = [];
-
-    const SERIES_CONFIG = {
-      vibe: {
-        name: '바이브코딩 정규',
-        badgeClass: 'badge-vibe',
-        badgeBg: 'rgba(16,185,129,0.2)',
-        badgeColor: '#34d399',
-        badgeBorder: 'rgba(16,185,129,0.4)',
-        getData: () => (typeof VIBE_CURRICULUM_DATA !== 'undefined' ? VIBE_CURRICULUM_DATA : [])
-      },
-      worker: {
-        name: '직장인 실전 AI 활용',
-        badgeClass: 'badge-worker',
-        badgeBg: 'rgba(59,130,246,0.2)',
-        badgeColor: '#60a5fa',
-        badgeBorder: 'rgba(59,130,246,0.4)',
-        getData: () => (typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [])
-      },
-      gemini: {
-        name: 'Gemini CLI 심화',
-        badgeClass: 'badge-gemini',
-        badgeBg: 'rgba(245,158,11,0.2)',
-        badgeColor: '#fbbf24',
-        badgeBorder: 'rgba(245,158,11,0.4)',
-        getData: () => (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [])
-      }
-    };
-
     let currentSeries = 'vibe';
     let currentMode = 'select';
     let currentPartIndex = 0;
-    let targetSlideIndex = -1; // 1-based page in current part or global
+    let targetSlideIndex = -1;
     let seriesData = [];
 
     const SERIES_CONFIG = {
@@ -572,7 +540,6 @@
 
         titleEl.textContent = `${String(part.part).padStart(2, '0')}. ${part.title}`;
 
-        // 이 편 이전까지의 누적 슬라이드 수
         let priorSlides = 0;
         for (let i = 0; i < currentPartIndex; i++) {
           priorSlides += seriesData[i].totalSlides;
@@ -630,7 +597,6 @@
         let globalCounter = 0;
 
         seriesData.forEach((part, cIdx) => {
-          // 챕터 구분 배너
           const div = document.createElement('div');
           div.className = 'all-mode-chapter-divider';
           div.id = 'chapter-anchor-' + cIdx;

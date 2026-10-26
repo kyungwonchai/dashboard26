@@ -1209,9 +1209,9 @@ function renderGeminiDeepScrollView(partIdx = 0) {
    ======================================================== */
 let currentLibSearchQuery = '';
 const seriesOpenState = {
-  vibe: true,
-  worker: true,
-  gemini: true
+  vibe: false,
+  worker: false,
+  gemini: false
 };
 
 const BOOK_HIDDEN_TAGS = {
