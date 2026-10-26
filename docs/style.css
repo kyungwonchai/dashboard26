@@ -389,3 +389,55 @@ body {
 .slide-thumb-item.active {
   box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
 }
+
+/* 📱 Mobile Optimization - Zero Floating Gap */
+@media (max-width: 768px) {
+  .header-inner {
+    padding: 10px 14px !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .header-actions .btn {
+    flex: 1 1 auto;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+    justify-content: center;
+  }
+  .main-container {
+    padding: 8px 10px !important;
+    margin-top: 0 !important;
+  }
+  .content-simulator {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  .glass-card {
+    padding: 14px 16px !important;
+    margin-bottom: 14px !important;
+    border-radius: 10px !important;
+  }
+  .modal-card {
+    width: 98% !important;
+    max-width: 98% !important;
+    padding: 14px 12px !important;
+    max-height: 96vh !important;
+  }
+  #vibe-curriculum-modal .modal-card > div[style*="height:78vh"] {
+    flex-direction: column !important;
+    height: 82vh !important;
+    max-height: 82vh !important;
+  }
+  #vibe-chapter-list {
+    width: 100% !important;
+    max-height: 120px !important;
+    flex-shrink: 0 !important;
+  }
+}

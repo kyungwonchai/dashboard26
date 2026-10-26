@@ -563,26 +563,16 @@
           <div>
             <h3 style="font-size:17px; font-weight:800; color:#ffffff; margin:0; display:flex; align-items:center; gap:8px;">
               <span id="vibe-curri-part-title">01차시. AI와 나누는 첫 인사: 바이브 코딩이 뭔가요?</span>
-              <span id="vibe-curri-page-badge" style="font-size:11px; padding:2px 8px; border-radius:10px; background:rgba(16,185,129,0.25); color:#6ee7b7; font-weight:700;">1 / 10</span>
+              <span id="vibe-curri-page-badge" style="font-size:11px; padding:2px 8px; border-radius:10px; background:rgba(16,185,129,0.25); color:#6ee7b7; font-weight:700;">10컷 완결</span>
             </h3>
-            <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-              바이브 코딩 14부작 전 커리큘럼 고밀도 슬라이드 팩 (웹툰형 연속 스크롤 & 슬라이드 뷰 지원)
+            <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+              바이브 코딩 14부작 전 커리큘럼
             </p>
           </div>
         </div>
 
         <div style="display:flex; align-items:center; gap:8px;">
-          <!-- 뷰 모드 토글 -->
-          <div style="display:flex; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:7px; overflow:hidden;">
-            <button id="vibe-viewmode-slide" onclick="setVibeViewMode('slide')" class="btn btn-secondary" style="border:none; border-radius:0; padding:5px 10px; font-size:11.5px; background:rgba(16,185,129,0.3); color:#fff; font-weight:700;">
-              🖼 한 장씩 보기
-            </button>
-            <button id="vibe-viewmode-scroll" onclick="setVibeViewMode('scroll')" class="btn btn-secondary" style="border:none; border-radius:0; padding:5px 10px; font-size:11.5px; background:transparent; color:#94a3b8;">
-              📜 웹툰처럼 연속 스크롤
-            </button>
-          </div>
-
-          <button class="btn btn-secondary" onclick="closeVibeCurriculumModal()" style="padding:6px 12px; font-size:12px;">✕ 닫기</button>
+          <button class="btn btn-secondary" onclick="closeVibeCurriculumModal()" style="padding:6px 14px; font-size:12.5px; font-weight:700;">✕ 닫기</button>
         </div>
       </div>
 
@@ -593,32 +583,15 @@
           <!-- JS 동적 렌더링 -->
         </div>
 
-        <!-- 우측: 메인 슬라이드 표시 영역 -->
+        <!-- 우측: 메인 세로 스크롤 뷰어 영역 -->
         <div style="flex:1; display:flex; flex-direction:column; background:#040508; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); position:relative;">
           
-          <!-- 슬라이드 모드 (1장씩) -->
-          <div id="vibe-slide-mode-container" style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; padding:12px;">
-            <img id="vibe-main-slide-img" src="" alt="Curriculum Slide" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px; box-shadow:0 8px 30px rgba(0,0,0,0.85); transition:opacity 0.15s;">
-            <!-- 좌우 화살표 -->
-            <button onclick="prevVibeSlide()" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; background:rgba(15,18,30,0.85); border:1px solid rgba(255,255,255,0.25); color:white; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:all 0.2s;">
-              ‹
-            </button>
-            <button onclick="nextVibeSlide()" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; background:rgba(15,18,30,0.85); border:1px solid rgba(255,255,255,0.25); color:white; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:all 0.2s;">
-              ›
-            </button>
-          </div>
-
-          <!-- 연속 스크롤 모드 (웹툰형) -->
-          <div id="vibe-scroll-mode-container" style="flex:1; overflow-y:auto; padding:20px; display:none; flex-direction:column; align-items:center; gap:20px; background:#07090e;">
+          <!-- 세로 스크롤 뷰어 -->
+          <div id="vibe-scroll-mode-container" style="flex:1; overflow-y:auto; padding:20px 14px; display:flex; flex-direction:column; align-items:center; gap:16px; background:#07090e;">
             <!-- JS 동적 생성 -->
           </div>
 
         </div>
-      </div>
-
-      <!-- 하단 썸네일 스트립 (슬라이드 모드일 때만 표시) -->
-      <div id="vibe-thumbnail-bar" style="margin-top:12px; display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; flex-shrink:0;">
-        <!-- JS 동적 생성 -->
       </div>
     </div>
   </div>

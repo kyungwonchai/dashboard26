@@ -910,19 +910,13 @@ function renderVibeChapterList() {
 function selectVibePart(idx) {
   if (idx < 0 || idx >= vibeCurriculumData.length) return;
   currentPartIdx = idx;
-  currentPartSlideIdx = 1;
 
   const part = vibeCurriculumData[idx];
   const titleEl = document.getElementById('vibe-curri-part-title');
   if (titleEl) titleEl.textContent = part.title;
 
   renderVibeChapterList();
-  if (vibeViewMode === 'slide') {
-    renderVibeSlideView();
-    renderVibeThumbnails();
-  } else {
-    renderVibeScrollView();
-  }
+  renderVibeScrollView();
 }
 
 function setVibeViewMode(mode) {
