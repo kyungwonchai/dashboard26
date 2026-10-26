@@ -1027,7 +1027,7 @@ function renderVibeScrollView() {
   `;
   scrollContainer.appendChild(headerBar);
 
-  // 슬라이드 연속 웹툰 렌더링 (자연스러운 컷 연결)
+  // 슬라이드 연속 스크롤 렌더링
   part.slides.forEach((src, idx) => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 880px; margin-bottom: 14px; position: relative;';
@@ -1166,7 +1166,7 @@ function renderGeminiDeepScrollView(partIdx = 0) {
   `;
   container.appendChild(headerBar);
 
-  // 컷별 연속 웹툰형 렌더링
+  // 컷별 연속 스크롤 렌더링
   part.slides.forEach((src, idx) => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 880px; margin-bottom: 14px; position: relative;';
@@ -1200,29 +1200,57 @@ function renderGeminiDeepScrollView(partIdx = 0) {
   container.scrollTop = 0;
 }
 
+
 /* ========================================================
-   📚 바이브코딩 디지털 도서관 렌더링 & 검색 엔진
+   📚 바이브코딩 도서관 텍스트 목록(Row Table) & 내용 검색 엔진 (#226)
    ======================================================== */
 let currentLibCategory = 'all';
 let currentLibSearchQuery = '';
+
+// 차시별 상세 검색용 숨김 키워드 & 태그 매핑
+const BOOK_HIDDEN_TAGS = {
+  'vibe_1': 'AI 입문 바이브코딩 개념 기초 LLM ChatGPT Claude Gemini 모델 작동 원리 프롬프트 첫걸음',
+  'vibe_2': '개발환경 설치 준비 venv 파이썬 가상환경 VSCode 터미널 CLI 패키지 설정 마법도구함',
+  'vibe_3': '프롬프트 작성법 원칙 마법 주문 문맥 의도 엔지니어링 팁 지시문 명령 질문 템플릿',
+  'vibe_4': '디지털 명함 웹페이지 HTML CSS 자기소개 프로필 첫작품 10분 레이아웃',
+  'vibe_5': '동적 인터랙션 버튼 클릭 이벤트 자바스크립트 DOM 상태변화 UI 애니메이션 마법 체험',
+  'vibe_6': '디버깅 버그 해결 에러 오답노트 오류수정 트러블슈팅 예외처리 로그 분석',
+  'vibe_7': '게임 개발 가위바위보 조건문 난수 if else 랜덤 로직 미니게임 1단계 승부',
+  'vibe_8': '업다운 숫자맞히기 반복문 루프 게임 로직 긴장감 업다운 카운트 미니게임 2단계',
+  'vibe_9': '두더지잡기 액션게임 타이머 클릭 반응속도 순발력 점수판 카운트다운 미니게임 3단계',
+  'vibe_10': '웹서버 Flask 파이썬 내컴퓨터 방송국 포트 로컬호스트 라우팅 HTTP 서버 뼈대',
+  'vibe_11': '스마트 모니터링 대시보드 실전프로젝트 1단계 UI 뼈대 지표 카드 레이아웃 틀',
+  'vibe_12': 'Chart.js 차트 그래프 데이터 시각화 통계 바차트 라인차트 시각화 마법 2단계',
+  'vibe_13': '보안 암호화 비밀번호 RBAC 인증 안전수칙 토큰 환경변수 API키 보호 방패',
+  'vibe_14': '배포 포털 GitHub Pages 최종완성 퍼블리싱 완성작품 포트폴리오 바이브코더',
+  'gemini_1': '제미나이 CLI 아키텍처 양방향 커맨드 실행 엔진 설계 파이프라인 subprocess STDIN STDOUT 백엔드',
+  'gemini_2': '엔터프라이즈 데이터베이스 DB 모델링 SQLite PostgreSQL SQLAlchemy 테이블 인덱스 연동 최적화',
+  'gemini_3': '철통 보안 사용자 인증 Auth JWT 세션 RBAC 역할 기반 권한 제어 인가 비밀번호 해시 bcrypt',
+  'gemini_4': '디스크 폭발 방지 데이터 용량 관리 Size 파티셔닝 아카이빙 테이블정리 purge 백업 로테이션',
+  'gemini_5': '10만건 고속 엑셀 Excel CSV 내보내기 다운로드 최적화 openpyxl 스트리밍 청크 메모리 절약',
+  'gemini_6': '비동기 대용량 엑셀 업로드 백그라운드 파싱 실시간 진행률 Progress Webhook SSE 비동기 큐 알림',
+  'gemini_7': 'CI/CD 배포 자동화 데몬 프로세스 생존주기 systemd pm2 supervisor nohup 무중단 운영 헬스체크'
+};
 
 function getAllLibraryBooks() {
   const books = [];
   
   if (typeof VIBE_CURRICULUM_DATA !== 'undefined' && Array.isArray(VIBE_CURRICULUM_DATA)) {
     VIBE_CURRICULUM_DATA.forEach((item, idx) => {
+      const partKey = `vibe_${item.part}`;
       books.push({
+        id: partKey,
         type: 'vibe',
-        category: '바이브코딩 정규 과정',
-        badge: '정규 14부작',
-        badgeClass: 'badge-vibe',
+        category: '바이브코딩 정규',
+        badge: '정규',
+        badgeClass: 'row-badge-vibe',
         index: idx,
         part: item.part,
+        partStr: String(item.part).padStart(2, '0'),
         title: item.title,
         cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
         totalSlides: item.totalSlides,
-        thumb: item.thumb || (item.slides && item.slides[0]) || '',
-        actionLabel: '웹툰형 읽기 ▶',
+        tags: BOOK_HIDDEN_TAGS[partKey] || '',
         onClick: () => openVibeCurriculumModal(idx)
       });
     });
@@ -1230,18 +1258,20 @@ function getAllLibraryBooks() {
 
   if (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' && Array.isArray(GEMINI_CLI_DEEP_DATA)) {
     GEMINI_CLI_DEEP_DATA.forEach((item, idx) => {
+      const partKey = `gemini_${item.part}`;
       books.push({
+        id: partKey,
         type: 'gemini',
-        category: 'Gemini CLI 실무 심화',
-        badge: '심화 7부작',
-        badgeClass: 'badge-gemini',
+        category: 'Gemini CLI 심화',
+        badge: '심화',
+        badgeClass: 'row-badge-gemini',
         index: idx,
         part: item.part,
+        partStr: String(item.part).padStart(2, '0'),
         title: item.title,
         cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
         totalSlides: item.totalSlides,
-        thumb: item.thumb || (item.slides && item.slides[0]) || '',
-        actionLabel: '웹툰형 읽기 ▶',
+        tags: BOOK_HIDDEN_TAGS[partKey] || '',
         onClick: () => openGeminiDeepModal(idx)
       });
     });
@@ -1251,13 +1281,14 @@ function getAllLibraryBooks() {
 }
 
 function renderLibraryBooks() {
-  const grid = document.getElementById('library-books-grid');
+  const tbody = document.getElementById('library-table-body');
   const noResults = document.getElementById('library-no-results');
-  if (!grid) return;
+  const tableEl = document.getElementById('library-table');
+  if (!tbody) return;
 
   const allBooks = getAllLibraryBooks();
   
-  // 카테고리 필터링
+  // 1. 카테고리 필터링
   let filtered = allBooks;
   if (currentLibCategory === 'vibe') {
     filtered = filtered.filter(b => b.type === 'vibe');
@@ -1265,17 +1296,19 @@ function renderLibraryBooks() {
     filtered = filtered.filter(b => b.type === 'gemini');
   }
 
-  // 검색어 필터링
+  // 2. 검색어 필터링 (제목 + 차시 + 숨김 태그 + 카테고리)
   if (currentLibSearchQuery.trim()) {
     const q = currentLibSearchQuery.trim().toLowerCase();
     filtered = filtered.filter(b => 
       b.title.toLowerCase().includes(q) ||
+      b.cleanTitle.toLowerCase().includes(q) ||
       b.category.toLowerCase().includes(q) ||
-      String(b.part).includes(q)
+      b.partStr.includes(q) ||
+      b.tags.toLowerCase().includes(q)
     );
   }
 
-  // 통계 수치 갱신
+  // 3. 통계 수치 갱신
   const statBooks = document.getElementById('lib-stat-books');
   const statSlides = document.getElementById('lib-stat-slides');
   const tabAll = document.getElementById('tab-count-all');
@@ -1293,33 +1326,42 @@ function renderLibraryBooks() {
   if (tabGemini) tabGemini.textContent = geminiCount;
 
   if (filtered.length === 0) {
-    grid.innerHTML = '';
+    tbody.innerHTML = '';
+    if (tableEl) tableEl.style.display = 'none';
     if (noResults) noResults.style.display = 'block';
     return;
   }
 
+  if (tableEl) tableEl.style.display = 'table';
   if (noResults) noResults.style.display = 'none';
 
-  grid.innerHTML = filtered.map(book => `
-    <div class="lib-book-card" onclick="handleBookCardClick('${book.type}', ${book.index})">
-      <div class="lib-book-thumb">
-        <span class="lib-book-badge ${book.badgeClass}">${book.badge}</span>
-        <img src="${book.thumb}" alt="${book.title}" loading="lazy" onerror="this.style.opacity='0.2';">
-        <span class="lib-book-slides-count">${book.totalSlides}컷</span>
-      </div>
-      <div class="lib-book-body">
-        <div class="lib-book-category">${book.category} · 제 ${book.part}화</div>
-        <h4 class="lib-book-title">${book.cleanTitle}</h4>
-        <div class="lib-book-footer">
-          <span class="lib-book-tag">${book.type === 'vibe' ? '기초·자습' : '실무·엔터프라이즈'}</span>
-          <span class="lib-book-action">${book.actionLabel}</span>
+  tbody.innerHTML = filtered.map(book => `
+    <tr class="library-row" onclick="handleBookRowClick('${book.type}', ${book.index})">
+      <td style="text-align: center;">
+        <span class="row-part-number">${book.partStr}</span>
+      </td>
+      <td>
+        <span class="row-category-badge ${book.badgeClass}">${book.category}</span>
+      </td>
+      <td>
+        <div class="row-title-box">
+          <span class="row-main-title">${book.cleanTitle}</span>
+          <span class="row-hidden-keywords" style="display:none;">${book.tags}</span>
         </div>
-      </div>
-    </div>
+      </td>
+      <td style="text-align: center;">
+        <span class="row-slides-count">${book.totalSlides}p</span>
+      </td>
+      <td style="text-align: center;">
+        <button class="btn-row-read" onclick="event.stopPropagation(); handleBookRowClick('${book.type}', ${book.index})">
+          열람 ↗
+        </button>
+      </td>
+    </tr>
   `).join('');
 }
 
-function handleBookCardClick(type, index) {
+function handleBookRowClick(type, index) {
   if (type === 'vibe') {
     openVibeCurriculumModal(index);
   } else if (type === 'gemini') {

@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=1793002600">
+  <link rel="stylesheet" href="style.css?v=1793003000">
 </head>
 <body>
   <!-- 상단 네비게이션 헤더 -->
@@ -53,72 +53,63 @@
   <!-- 메인: 바이브코딩 인터랙티브 도서관 (Interactive Digital Library) -->
   <main class="library-main">
 
-    <!-- 📚 도서관 히어로 배너 & 통합 검색/필터 -->
-    <section class="library-hero-card">
-      <div class="library-hero-top">
-        <div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-            <span class="library-badge-pill">📚 바이브코딩 디지털 도서관</span>
-            <span style="font-size:11px; color:#10b981; font-weight:700;">● 전편 열람 가능</span>
-          </div>
-          <h2 class="library-hero-title">원하는 교재를 검색하고 웹툰형 세로 스크롤로 읽어보세요</h2>
-          <p class="library-hero-desc">
-            비전공자 기초 14부작부터 엔터프라이즈 실무 7부작까지, 모든 교육 슬라이드가 차시별로 잘 정리되어 있습니다.
-          </p>
+    <!-- 📚 도서관 검색 및 분류 필터 툴바 -->
+    <section class="library-search-header-panel">
+      <div class="library-search-row">
+        <div class="library-search-box-large">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="library-search-input" class="library-search-input-large" placeholder="내용 검색 (예: DB, SQLite, 인증, RBAC, 엑셀, Chart, Flask, 게임, 배포...)" oninput="handleLibrarySearch(this.value)">
+          <button id="search-clear-btn" class="search-clear-btn" style="display:none;" onclick="clearLibrarySearch()">✕</button>
         </div>
-        <div class="library-hero-stats">
-          <div class="stat-item">
-            <span class="stat-num" id="lib-stat-books">21</span>
-            <span class="stat-label">전체 도서</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-num" id="lib-stat-slides">237</span>
-            <span class="stat-label">총 슬라이드</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-num" style="color:#10b981;">100%</span>
-            <span class="stat-label">웹툰형 뷰어</span>
-          </div>
+        <div class="library-quick-stats">
+          <span class="quick-stat-badge">총 <b id="lib-stat-books" style="color:#38bdf8;">21</b>개 차시</span>
+          <span class="quick-stat-badge">총 <b id="lib-stat-slides" style="color:#a78bfa;">237</b>컷 수록</span>
         </div>
       </div>
 
-      <!-- 검색 & 카테고리 필터 탭 -->
-      <div class="library-filter-bar">
+      <div class="library-tabs-row">
         <div class="library-tabs">
           <button class="lib-tab active" onclick="filterLibraryCategory('all', this)">
-            <span>📚 전체 보기</span>
+            <span>전체 목차</span>
             <span class="tab-count" id="tab-count-all">21</span>
           </button>
           <button class="lib-tab" onclick="filterLibraryCategory('vibe', this)">
-            <span>🎓 바이브코딩 정규 (1~14편)</span>
+            <span>바이브코딩 정규 (01~14차시)</span>
             <span class="tab-count" id="tab-count-vibe">14</span>
           </button>
           <button class="lib-tab" onclick="filterLibraryCategory('gemini', this)">
-            <span>⚡ gemini cli 심화 (1~7편)</span>
+            <span>Gemini CLI 심화 (01~07차시)</span>
             <span class="tab-count" id="tab-count-gemini">7</span>
           </button>
         </div>
-
-        <div class="library-search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="library-search-input" class="library-search-input" placeholder="교재 제목이나 키워드 검색 (예: DB, 인증, 게임, Flask...)" oninput="handleLibrarySearch(this.value)">
-          <button id="search-clear-btn" class="search-clear-btn" style="display:none;" onclick="clearLibrarySearch()">✕</button>
+        <div style="font-size: 11.5px; color: var(--text-dim); display:flex; align-items:center; gap:6px;">
+          <span>💡 목차 행을 클릭하면 해당 차시 슬라이드가 즉시 열립니다</span>
         </div>
       </div>
     </section>
 
-    <!-- 📖 도서 카드 갤러리 그리드 -->
-    <section>
-      <div id="library-books-grid" class="library-grid">
-        <!-- JavaScript로 동적 렌더링 -->
-      </div>
+    <!-- 📋 교재 텍스트 목차 목록 (Row Table List) -->
+    <section class="library-table-container">
+      <table class="library-table" id="library-table">
+        <thead>
+          <tr>
+            <th style="width: 70px; text-align: center;">차시</th>
+            <th style="width: 140px;">구분</th>
+            <th>강의 교재 및 학습 내용</th>
+            <th style="width: 100px; text-align: center;">분량</th>
+            <th style="width: 110px; text-align: center;">열람</th>
+          </tr>
+        </thead>
+        <tbody id="library-table-body">
+          <!-- JavaScript로 동적 렌더링 -->
+        </tbody>
+      </table>
+
       <!-- 검색 결과 없음 안내 -->
-      <div id="library-no-results" style="display:none; text-align:center; padding:60px 20px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed var(--border);">
-        <div style="font-size:36px; margin-bottom:10px;">🔍</div>
-        <div style="font-size:15px; font-weight:700; color:#fff;">일치하는 교재를 찾을 수 없습니다.</div>
-        <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">검색어를 변경하거나 전체 보기 탭을 선택해보세요.</p>
+      <div id="library-no-results" style="display:none; text-align:center; padding:50px 20px; background:rgba(255,255,255,0.02); border-radius:10px;">
+        <div style="font-size:32px; margin-bottom:8px;">🔍</div>
+        <div style="font-size:14px; font-weight:700; color:#fff;">일치하는 교재 목차가 없습니다.</div>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">검색어를 변경하시거나 '전체 목차' 탭을 선택해주세요.</p>
       </div>
     </section>
 
@@ -576,14 +567,14 @@
         </div>
       </div>
 
-      <!-- 메인 바디 (좌측: 7개 챕터 리스트, 우측: 웹툰형 스크롤 뷰어) -->
+      <!-- 메인 바디 (좌측: 7개 챕터 리스트, 우측: 슬라이드 연속 뷰어) -->
       <div style="display:flex; gap:16px; flex:1; min-height:480px; max-height:80vh; height:78vh; overflow:hidden;">
         <!-- 좌측: 01~07차시 챕터 리스트 -->
         <div style="width:280px; flex-shrink:0; background:rgba(15,20,32,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:10px; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:6px;" id="gemini-deep-chapter-list">
           <!-- JS 동적 렌더링 -->
         </div>
 
-        <!-- 우측: 웹툰 세로 스크롤 영역 -->
+        <!-- 우측: 슬라이드 연속 세로 스크롤 영역 -->
         <div style="flex:1; display:flex; flex-direction:column; background:#040508; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); position:relative;">
           <div id="gemini-deep-scroll-container" style="flex:1; overflow-y:auto; padding:20px 14px; display:flex; flex-direction:column; align-items:center; gap:16px; background:#07090e;">
             <!-- JS 동적 생성 -->
@@ -698,7 +689,7 @@
     </div>
   </div>
 
-  <script src="data.js?v=1793002600"></script>
-  <script src="demo.js?v=1793002600"></script>
+  <script src="data.js?v=1793003000"></script>
+  <script src="demo.js?v=1793003000"></script>
 </body>
 </html>
