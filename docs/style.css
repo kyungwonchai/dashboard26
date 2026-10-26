@@ -794,3 +794,59 @@ body {
   gap: 16px;
   flex-wrap: wrap;
 }
+
+/* 직장인 실전 AI 활용 시리즈 뱃지 */
+.series-badge-worker {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+/* 시리즈 목록 우측 듀얼 액션 버튼 */
+.series-dual-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-viewer-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f1f3f9;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-viewer-select:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+.btn-viewer-all {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.85) 0%, rgba(139, 92, 246, 0.85) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.3);
+  white-space: nowrap;
+}
+.btn-viewer-all:hover {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.55);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .series-dual-actions {
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
+  }
+}

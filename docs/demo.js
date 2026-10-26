@@ -1202,17 +1202,19 @@ function renderGeminiDeepScrollView(partIdx = 0) {
 
 
 
+
 /* ========================================================
-   📚 바이브코딩 2대 시리즈 목록 & 아코디언 차시 전개 엔진 (#228)
+   📚 3대 시리즈 목록 & 듀얼 새창 뷰어 엔진 (#237)
    ======================================================== */
 let currentLibSearchQuery = '';
-// 시리즈별 아코디언 열림/닫힘 상태 (기본값: 둘 다 열림)
 const seriesOpenState = {
   vibe: true,
+  worker: true,
   gemini: true
 };
 
 const BOOK_HIDDEN_TAGS = {
+  // 1. 바이브코딩 정규 (14편)
   'vibe_1': 'AI 입문 바이브코딩 개념 기초 LLM ChatGPT Claude Gemini 모델 작동 원리 프롬프트 첫걸음',
   'vibe_2': '개발환경 설치 준비 venv 파이썬 가상환경 VSCode 터미널 CLI 패키지 설정 마법도구함',
   'vibe_3': '프롬프트 작성법 원칙 마법 주문 문맥 의도 엔지니어링 팁 지시문 명령 질문 템플릿',
@@ -1227,6 +1229,20 @@ const BOOK_HIDDEN_TAGS = {
   'vibe_12': 'Chart.js 차트 그래프 데이터 시각화 통계 바차트 라인차트 시각화 마법 2단계',
   'vibe_13': '보안 암호화 비밀번호 RBAC 인증 안전수칙 토큰 환경변수 API키 보호 방패',
   'vibe_14': '배포 포털 GitHub Pages 최종완성 퍼블리싱 완성작품 포트폴리오 바이브코더',
+
+  // 2. 직장인 실전 AI 활용 (10편)
+  'worker_1': '직장인 AI 정체 말문 트기 대화 프롬프트 입문 기초 업무 활용 실전',
+  'worker_2': '주말 여행 계획 일정 플래너 맞춤 가이드 프롬프트 개인 비서',
+  'worker_3': '냉장고 계란 양파 요리 레시피 일상 고민 해결사 생활 꿀팁',
+  'worker_4': '취미 과외선생님 악기 운동 언어 자습 독습 튜터링 개인 레슨',
+  'worker_5': '100페이지 보고서 요약 3줄 핵심 요약 서머리 문서 분석 정리',
+  'worker_6': '숫자 엑셀 데이터 10초 자동 분석 통계 피벗테이블 시각화 업무 자동화',
+  'worker_7': '코딩 한줄 몰라도 바이브코딩 신세계 노코드 개발 자동화 비전공자',
+  'worker_8': '30분 뚝딱 미니 자동화 도구 파이썬 스크립트 업무 효율화 칼퇴',
+  'worker_9': '터미널 명령어 제미나이 CLI Gemini CLI 콘솔 쉘 스마트 업무',
+  'worker_10': '미래 로드맵 AI 시대 설렘 커리어 성장 자기계발 인사이트',
+
+  // 3. Gemini CLI 심화 (7편)
   'gemini_1': '제미나이 CLI 아키텍처 양방향 커맨드 실행 엔진 설계 파이프라인 subprocess STDIN STDOUT 백엔드',
   'gemini_2': '엔터프라이즈 데이터베이스 DB 모델링 SQLite PostgreSQL SQLAlchemy 테이블 인덱스 연동 최적화',
   'gemini_3': '철통 보안 사용자 인증 Auth JWT 세션 RBAC 역할 기반 권한 제어 인가 비밀번호 해시 bcrypt',
@@ -1241,15 +1257,20 @@ const SERIES_META = [
     id: 'vibe',
     title: '바이브코딩 정규 시리즈',
     desc: '비전공자·초보자를 위한 컴퓨터 과학 비유 & 실전 웹/대시보드 제작 과정',
-    color: '#10b981',
     badgeClass: 'series-badge-vibe',
     icon: '🎓'
+  },
+  {
+    id: 'worker',
+    title: '직장인 실전 AI 활용 시리즈',
+    desc: '문서 요약, 엑셀 10초 분석, 자동화 도구 제작부터 제미나이 CLI 실무 활용까지',
+    badgeClass: 'series-badge-worker',
+    icon: '💼'
   },
   {
     id: 'gemini',
     title: 'Gemini CLI 심화 시리즈',
     desc: '엔터프라이즈 아키텍처, DB 모델링, 인증/RBAC, 대용량 엑셀 및 CI/CD 배포',
-    color: '#f59e0b',
     badgeClass: 'series-badge-gemini',
     icon: '⚡'
   }
@@ -1264,10 +1285,23 @@ function getAllSeriesData() {
         part: item.part,
         partStr: String(item.part).padStart(2, '0'),
         title: item.title,
-        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
+        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, ''),
         totalSlides: item.totalSlides,
-        tags: BOOK_HIDDEN_TAGS[`vibe_${item.part}`] || '',
-        onClick: () => openVibeCurriculumModal(idx)
+        tags: BOOK_HIDDEN_TAGS[`vibe_${item.part}`] || ''
+      }))
+    : [];
+
+  const workerItems = (typeof WORKER_AI_DATA !== 'undefined' && Array.isArray(WORKER_AI_DATA))
+    ? WORKER_AI_DATA.map((item, idx) => ({
+        id: `worker_${item.part}`,
+        seriesId: 'worker',
+        index: idx,
+        part: item.part,
+        partStr: String(item.part).padStart(2, '0'),
+        title: item.title,
+        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, ''),
+        totalSlides: item.totalSlides,
+        tags: BOOK_HIDDEN_TAGS[`worker_${item.part}`] || ''
       }))
     : [];
 
@@ -1279,19 +1313,23 @@ function getAllSeriesData() {
         part: item.part,
         partStr: String(item.part).padStart(2, '0'),
         title: item.title,
-        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, ''),
+        cleanTitle: item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, ''),
         totalSlides: item.totalSlides,
-        tags: BOOK_HIDDEN_TAGS[`gemini_${item.part}`] || '',
-        onClick: () => openGeminiDeepModal(idx)
+        tags: BOOK_HIDDEN_TAGS[`gemini_${item.part}`] || ''
       }))
     : [];
 
-  return { vibe: vibeItems, gemini: geminiItems };
+  return { vibe: vibeItems, worker: workerItems, gemini: geminiItems };
 }
 
 function toggleSeries(seriesId) {
   seriesOpenState[seriesId] = !seriesOpenState[seriesId];
   renderSeriesLibrary();
+}
+
+function openSeriesInViewer(seriesId, mode, partIdx = 0) {
+  const url = `./viewer.html?series=${seriesId}&mode=${mode}&part=${partIdx}`;
+  window.open(url, '_blank');
 }
 
 function renderSeriesLibrary() {
@@ -1302,9 +1340,14 @@ function renderSeriesLibrary() {
   const data = getAllSeriesData();
   const q = currentLibSearchQuery.trim().toLowerCase();
 
-  // 검색어가 있을 때는 검색어에 매칭되는 아이템만 필터링하고 강제로 아코디언 오픈
   const filteredData = {
     vibe: data.vibe.filter(item => !q || (
+      item.title.toLowerCase().includes(q) ||
+      item.cleanTitle.toLowerCase().includes(q) ||
+      item.partStr.includes(q) ||
+      item.tags.toLowerCase().includes(q)
+    )),
+    worker: data.worker.filter(item => !q || (
       item.title.toLowerCase().includes(q) ||
       item.cleanTitle.toLowerCase().includes(q) ||
       item.partStr.includes(q) ||
@@ -1318,9 +1361,11 @@ function renderSeriesLibrary() {
     ))
   };
 
-  const totalVisible = filteredData.vibe.length + filteredData.gemini.length;
-  const totalAll = data.vibe.length + data.gemini.length;
-  const totalSlides = data.vibe.reduce((s, x) => s + x.totalSlides, 0) + data.gemini.reduce((s, x) => s + x.totalSlides, 0);
+  const totalVisible = filteredData.vibe.length + filteredData.worker.length + filteredData.gemini.length;
+  const totalAll = data.vibe.length + data.worker.length + data.gemini.length;
+  const totalSlides = data.vibe.reduce((s, x) => s + x.totalSlides, 0) +
+                      data.worker.reduce((s, x) => s + x.totalSlides, 0) +
+                      data.gemini.reduce((s, x) => s + x.totalSlides, 0);
 
   const statBooks = document.getElementById('lib-stat-books');
   const statSlides = document.getElementById('lib-stat-slides');
@@ -1337,15 +1382,13 @@ function renderSeriesLibrary() {
 
   container.innerHTML = SERIES_META.map(meta => {
     const items = filteredData[meta.id];
-    // 검색어가 있을 땐 자동으로 열고, 없으면 사용자가 토글한 상태 사용
     const isOpen = q ? (items.length > 0) : seriesOpenState[meta.id];
-    const totalCount = (meta.id === 'vibe' ? data.vibe.length : data.gemini.length);
     const visibleCount = items.length;
     const seriesSlides = items.reduce((s, x) => s + x.totalSlides, 0);
 
     return `
       <div class="series-card ${isOpen ? 'open' : ''}">
-        <!-- 시리즈 메인 헤더 행 (클릭 시 하위 차시 전개/접기) -->
+        <!-- 시리즈 메인 헤더 행 -->
         <div class="series-header-row" onclick="toggleSeries('${meta.id}')">
           <div class="series-header-left">
             <span class="series-toggle-chevron">${isOpen ? '▼' : '▶'}</span>
@@ -1360,15 +1403,22 @@ function renderSeriesLibrary() {
               <p class="series-desc">${meta.desc}</p>
             </div>
           </div>
-          <div class="series-header-right">
+          
+          <!-- 우측 듀얼 액션 버튼 그룹 -->
+          <div class="series-header-right" onclick="event.stopPropagation()">
             <span class="series-stat-summary">${seriesSlides}p</span>
-            <button class="btn-series-toggle" onclick="event.stopPropagation(); toggleSeries('${meta.id}')">
-              ${isOpen ? '목록 접기 ▲' : '목록 열기 (' + visibleCount + '개) ▼'}
-            </button>
+            <div class="series-dual-actions">
+              <button class="btn btn-viewer-select" onclick="openSeriesInViewer('${meta.id}', 'select', 0)" title="새 창에서 원하는 편을 골라서 읽기">
+                <span>📖 편 고르고 보기 ↗</span>
+              </button>
+              <button class="btn btn-viewer-all" onclick="openSeriesInViewer('${meta.id}', 'all', 0)" title="새 창에서 1편부터 끝까지 세로로 한 번에 연속보기">
+                <span>⚡ 세로로 연속보기 (전편) ↗</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- 하위 차시 텍스트 목록 행 (Row List Table) -->
+        <!-- 하위 차시 목록 테이블 (아코디언 내부) -->
         ${isOpen ? `
           <div class="series-items-wrapper">
             <table class="series-items-table">
@@ -1377,12 +1427,12 @@ function renderSeriesLibrary() {
                   <th style="width: 70px; text-align: center;">차시</th>
                   <th>강의 교재 및 학습 내용</th>
                   <th style="width: 90px; text-align: center;">분량</th>
-                  <th style="width: 100px; text-align: center;">열람</th>
+                  <th style="width: 140px; text-align: center;">열람</th>
                 </tr>
               </thead>
               <tbody>
                 ${items.map(item => `
-                  <tr class="series-item-row" onclick="handleSeriesItemClick('${item.seriesId}', ${item.index})">
+                  <tr class="series-item-row" onclick="openSeriesInViewer('${item.seriesId}', 'select', ${item.index})">
                     <td style="text-align: center;">
                       <span class="item-part-badge">${item.partStr}</span>
                     </td>
@@ -1396,8 +1446,8 @@ function renderSeriesLibrary() {
                       <span class="item-slides-count">${item.totalSlides}p</span>
                     </td>
                     <td style="text-align: center;">
-                      <button class="btn-item-read" onclick="event.stopPropagation(); handleSeriesItemClick('${item.seriesId}', ${item.index})">
-                        열람 ↗
+                      <button class="btn-item-read" onclick="event.stopPropagation(); openSeriesInViewer('${item.seriesId}', 'select', ${item.index})">
+                        새 창 열람 ↗
                       </button>
                     </td>
                   </tr>
@@ -1409,14 +1459,6 @@ function renderSeriesLibrary() {
       </div>
     `;
   }).join('');
-}
-
-function handleSeriesItemClick(seriesId, index) {
-  if (seriesId === 'vibe') {
-    openVibeCurriculumModal(index);
-  } else if (seriesId === 'gemini') {
-    openGeminiDeepModal(index);
-  }
 }
 
 function handleLibrarySearch(val) {

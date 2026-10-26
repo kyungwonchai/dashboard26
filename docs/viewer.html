@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>슬라이드 뷰어 · dashboard26</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="style.css?v=1793047800">
+  <style>
+    body {
+      background: #07080d;
+      color: #f1f3f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    /* 뷰어 상단 바 */
+    .viewer-navbar {
+      height: 58px;
+      background: rgba(14, 16, 23, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(12px);
+      flex-shrink: 0;
+      z-index: 50;
+    }
+
+    .viewer-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .viewer-series-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .viewer-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 520px;
+    }
+
+    .viewer-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn-mode-toggle {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-mode-toggle:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+    .btn-mode-toggle.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: rgba(139, 92, 246, 0.6);
+      color: #a78bfa;
+      font-weight: 700;
+    }
+
+    /* 본체 레이아웃 */
+    .viewer-main-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 좌측 챕터 선택 사이드바 (select 모드에서 보임) */
+    .viewer-sidebar {
+      width: 320px;
+      background: #0a0c14;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+      transition: margin-left 0.25s ease;
+    }
+
+    .viewer-sidebar.hidden {
+      margin-left: -320px;
+    }
+
+    .sidebar-header {
+      padding: 14px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-list {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .chapter-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: #94a3b8;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .chapter-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+    .chapter-item.active {
+      background: rgba(99, 102, 241, 0.18);
+      border-color: rgba(139, 92, 246, 0.45);
+      color: #f1f3f9;
+      font-weight: 700;
+    }
+    .chapter-part-num {
+      font-family: monospace;
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .chapter-title-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chapter-page-count {
+      font-size: 10.5px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    /* 우측 스크롤 뷰어 본체 */
+    .viewer-content-container {
+      flex: 1;
+      overflow-y: auto;
+      background: #040508;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 80px;
+      scroll-behavior: smooth;
+    }
+
+    .viewer-scroll-box {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .viewer-slide-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #0d0f18;
+    }
+
+    /* 연속 전체보기 모드 전용 챕터 구분 구분선 */
+    .all-mode-chapter-divider {
+      width: 100%;
+      padding: 26px 20px 14px;
+      margin-top: 24px;
+      border-bottom: 2px solid rgba(99, 102, 241, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    /* 플로팅 탑 버튼 */
+    .btn-floating-top {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s ease;
+      z-index: 100;
+      font-size: 18px;
+    }
+    .btn-floating-top:hover {
+      transform: translateY(-2px);
+      background: #6366f1;
+    }
+
+    @media (max-width: 768px) {
+      .viewer-sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 40;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+      }
+      .viewer-title {
+        max-width: 180px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 네비게이션 헤더 -->
+  <header class="viewer-navbar">
+    <div class="viewer-nav-left">
+      <a href="./" class="btn btn-sub" style="text-decoration:none; padding:6px 10px;" title="홈으로 이동">
+        ← 목록
+      </a>
+      <span class="viewer-series-badge" id="viewer-series-badge">-</span>
+      <h2 class="viewer-title" id="viewer-title">슬라이드 뷰어</h2>
+    </div>
+
+    <div class="viewer-nav-right">
+      <button class="btn-mode-toggle" id="btn-toggle-sidebar" onclick="toggleSidebar()" title="목차 사이드바 여닫기">
+        📑 목차
+      </button>
+      <div style="display:flex; gap:4px; background:rgba(255,255,255,0.04); padding:3px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+        <button class="btn-mode-toggle" id="btn-mode-select" onclick="switchViewerMode('select')" title="원하는 편을 골라서 보기">
+          편 고르고 보기
+        </button>
+        <button class="btn-mode-toggle" id="btn-mode-all" onclick="switchViewerMode('all')" title="전체 편을 세로로 연속해서 한 번에 보기">
+          세로로 연속보기 (전편)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 바디 -->
+  <div class="viewer-main-body">
+    <!-- 좌측: 편 선택 사이드바 -->
+    <aside class="viewer-sidebar" id="viewer-sidebar">
+      <div class="sidebar-header">
+        <span id="sidebar-series-name">시리즈 목차</span>
+        <span id="sidebar-total-info">0개</span>
+      </div>
+      <div class="sidebar-list" id="sidebar-list">
+        <!-- JS 생성 -->
+      </div>
+    </aside>
+
+    <!-- 우측: 슬라이드 스크롤 영역 -->
+    <main class="viewer-content-container" id="viewer-content-container">
+      <div class="viewer-scroll-box" id="viewer-scroll-box">
+        <!-- JS 생성 -->
+      </div>
+    </main>
+  </div>
+
+  <button class="btn-floating-top" onclick="scrollToTop()" title="맨 위로 이동">
+    ▲
+  </button>
+
+  <script src="data.js?v=1793047800"></script>
+  <script>
+    let currentSeries = 'vibe'; // 'vibe', 'worker', 'gemini'
+    let currentMode = 'select'; // 'select' (편고르고 보기), 'all' (세로로 연속보기)
+    let currentPartIndex = 0;
+    let seriesData = [];
+
+    const SERIES_CONFIG = {
+      vibe: {
+        name: '바이브코딩 정규',
+        badgeClass: 'badge-vibe',
+        badgeBg: 'rgba(16,185,129,0.2)',
+        badgeColor: '#34d399',
+        badgeBorder: 'rgba(16,185,129,0.4)',
+        getData: () => (typeof VIBE_CURRICULUM_DATA !== 'undefined' ? VIBE_CURRICULUM_DATA : [])
+      },
+      worker: {
+        name: '직장인 실전 AI 활용',
+        badgeClass: 'badge-worker',
+        badgeBg: 'rgba(59,130,246,0.2)',
+        badgeColor: '#60a5fa',
+        badgeBorder: 'rgba(59,130,246,0.4)',
+        getData: () => (typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [])
+      },
+      gemini: {
+        name: 'Gemini CLI 심화',
+        badgeClass: 'badge-gemini',
+        badgeBg: 'rgba(245,158,11,0.2)',
+        badgeColor: '#fbbf24',
+        badgeBorder: 'rgba(245,158,11,0.4)',
+        getData: () => (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [])
+      }
+    };
+
+    function initViewer() {
+      const urlParams = new URLSearchParams(window.location.search);
+      currentSeries = urlParams.get('series') || 'vibe';
+      currentMode = urlParams.get('mode') || 'select';
+      currentPartIndex = parseInt(urlParams.get('part') || '0', 10);
+
+      const cfg = SERIES_CONFIG[currentSeries] || SERIES_CONFIG.vibe;
+      seriesData = cfg.getData();
+
+      // 상단 배지 스타일
+      const badgeEl = document.getElementById('viewer-series-badge');
+      badgeEl.textContent = cfg.name;
+      badgeEl.style.background = cfg.badgeBg;
+      badgeEl.style.color = cfg.badgeColor;
+      badgeEl.style.border = '1px solid ' + cfg.badgeBorder;
+
+      // 사이드바 헤더
+      document.getElementById('sidebar-series-name').textContent = cfg.name + ' 전편';
+      document.getElementById('sidebar-total-info').textContent = seriesData.length + '개 차시';
+
+      renderSidebarList();
+      applyModeUI();
+      renderContent();
+    }
+
+    function renderSidebarList() {
+      const listEl = document.getElementById('sidebar-list');
+      if (!listEl) return;
+      listEl.innerHTML = '';
+
+      seriesData.forEach((item, idx) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'chapter-item' + (currentMode === 'select' && idx === currentPartIndex ? ' active' : '');
+        itemEl.innerHTML = `
+          <span class="chapter-part-num">${String(item.part).padStart(2, '0')}</span>
+          <span class="chapter-title-text" title="${item.title}">${item.title.replace(/^0?\d+차시\.\s*/, '').replace(/^0?\d+편\.\s*/, '')}</span>
+          <span class="chapter-page-count">${item.totalSlides}p</span>
+        `;
+        itemEl.onclick = () => {
+          if (currentMode === 'all') {
+            // all 모드에서는 해당 챕터 위치로 스크롤
+            const targetEl = document.getElementById('chapter-anchor-' + idx);
+            if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            selectPart(idx);
+          }
+        };
+        listEl.appendChild(itemEl);
+      });
+    }
+
+    function selectPart(idx) {
+      if (idx < 0 || idx >= seriesData.length) return;
+      currentPartIndex = idx;
+      renderSidebarList();
+      renderContent();
+      document.getElementById('viewer-content-container').scrollTop = 0;
+      
+      // 모바일에서는 사이드바 자동 숨김
+      if (window.innerWidth <= 768) {
+        document.getElementById('viewer-sidebar').classList.add('hidden');
+      }
+    }
+
+    function switchViewerMode(mode) {
+      currentMode = mode;
+      applyModeUI();
+      renderContent();
+    }
+
+    function applyModeUI() {
+      const btnSelect = document.getElementById('btn-mode-select');
+      const btnAll = document.getElementById('btn-mode-all');
+      const sidebar = document.getElementById('viewer-sidebar');
+      const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+
+      if (currentMode === 'all') {
+        btnSelect.classList.remove('active');
+        btnAll.classList.add('active');
+        // all 모드에서는 전체보기이므로 사이드바를 기본 숨김 처리 (필요시 토글 가능)
+        if (sidebar && window.innerWidth <= 1024) sidebar.classList.add('hidden');
+      } else {
+        btnSelect.classList.add('active');
+        btnAll.classList.remove('active');
+        if (sidebar) sidebar.classList.remove('hidden');
+      }
+    }
+
+    function renderContent() {
+      const box = document.getElementById('viewer-scroll-box');
+      const titleEl = document.getElementById('viewer-title');
+      if (!box) return;
+      box.innerHTML = '';
+
+      if (currentMode === 'select') {
+        // [편 고르고 보기] - 선택된 단일 챕터의 슬라이드만 세로 렌더링
+        const part = seriesData[currentPartIndex];
+        if (!part) return;
+
+        titleEl.textContent = `${String(part.part).padStart(2, '0')}. ${part.title}`;
+
+        part.slides.forEach((src, pIdx) => {
+          const img = document.createElement('img');
+          img.className = 'viewer-slide-img';
+          img.src = src;
+          img.alt = `${part.title} - ${pIdx + 1}p`;
+          img.loading = pIdx < 3 ? 'eager' : 'lazy';
+          box.appendChild(img);
+        });
+
+        // 하단 이전화/다음화 네비게이터
+        const nav = document.createElement('div');
+        nav.style.cssText = 'width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-top:1px solid rgba(255,255,255,0.08); margin-top:20px;';
+        
+        const hasPrev = currentPartIndex > 0;
+        const hasNext = currentPartIndex < seriesData.length - 1;
+
+        nav.innerHTML = `
+          <div>
+            ${hasPrev ? `<button class="btn btn-sub" onclick="selectPart(${currentPartIndex - 1})">◀ 이전 편</button>` : '<span style="color:#64748b; font-size:12px;">첫 번째 편입니다</span>'}
+          </div>
+          <div style="font-size:12.5px; color:#94a3b8; font-weight:700;">
+            ${currentPartIndex + 1} / ${seriesData.length} 편
+          </div>
+          <div>
+            ${hasNext ? `<button class="btn btn-tool" onclick="selectPart(${currentPartIndex + 1})">다음 편 보기 ▶</button>` : '<span style="color:#10b981; font-size:12px; font-weight:700;">🎉 완독을 축하합니다!</span>'}
+          </div>
+        `;
+        box.appendChild(nav);
+
+      } else {
+        // [세로로 연속보기 (전편)] - 1화부터 끝화까지 모든 슬라이드를 한 번에 연속 렌더링
+        titleEl.textContent = `${SERIES_CONFIG[currentSeries].name} 전편 연속보기 (총 ${seriesData.length}개 차시)`;
+
+        seriesData.forEach((part, cIdx) => {
+          // 챕터 구분 배너
+          const div = document.createElement('div');
+          div.className = 'all-mode-chapter-divider';
+          div.id = 'chapter-anchor-' + cIdx;
+          div.innerHTML = `
+            <span>제 ${String(part.part).padStart(2, '0')}편 · ${part.title}</span>
+            <span style="font-size:12px; font-weight:500; opacity:0.7;">${part.totalSlides}컷</span>
+          `;
+          box.appendChild(div);
+
+          part.slides.forEach((src, pIdx) => {
+            const img = document.createElement('img');
+            img.className = 'viewer-slide-img';
+            img.src = src;
+            img.alt = `${part.title} - ${pIdx + 1}p`;
+            img.loading = (cIdx === 0 && pIdx < 3) ? 'eager' : 'lazy';
+            box.appendChild(img);
+          });
+        });
+
+        const footer = document.createElement('div');
+        footer.style.cssText = 'padding:40px 0; text-align:center; color:#10b981; font-weight:800; font-size:15px;';
+        footer.textContent = `🎉 ${SERIES_CONFIG[currentSeries].name} 전편을 모두 열람하셨습니다!`;
+        box.appendChild(footer);
+      }
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('viewer-sidebar');
+      if (sidebar) sidebar.classList.toggle('hidden');
+    }
+
+    function scrollToTop() {
+      document.getElementById('viewer-content-container').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('DOMContentLoaded', initViewer);
+  </script>
+</body>
+</html>
