@@ -868,7 +868,10 @@ function openVibeCurriculumModal(partIndex = 0) {
   if (modal) {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
-    setVibeViewMode('scroll'); // 기본적으로 웹툰 세로 스크롤 모드로 활성화
+    const scrollContainer = document.getElementById('vibe-scroll-mode-container');
+    if (scrollContainer) {
+      scrollContainer.style.display = 'flex';
+    }
     selectVibePart(partIndex);
   }
 }
@@ -920,39 +923,11 @@ function selectVibePart(idx) {
 }
 
 function setVibeViewMode(mode) {
-  vibeViewMode = mode;
-  const slideBtn = document.getElementById('vibe-viewmode-slide');
-  const scrollBtn = document.getElementById('vibe-viewmode-scroll');
-  const slideContainer = document.getElementById('vibe-slide-mode-container');
   const scrollContainer = document.getElementById('vibe-scroll-mode-container');
-  const thumbBar = document.getElementById('vibe-thumbnail-bar');
-
-  if (mode === 'slide') {
-    slideBtn.style.background = 'rgba(16,185,129,0.3)';
-    slideBtn.style.color = '#fff';
-    slideBtn.style.fontWeight = '700';
-    scrollBtn.style.background = 'transparent';
-    scrollBtn.style.color = '#94a3b8';
-    scrollBtn.style.fontWeight = '500';
-
-    slideContainer.style.display = 'flex';
-    scrollContainer.style.display = 'none';
-    if (thumbBar) thumbBar.style.display = 'flex';
-    renderVibeSlideView();
-    renderVibeThumbnails();
-  } else {
-    scrollBtn.style.background = 'rgba(16,185,129,0.3)';
-    scrollBtn.style.color = '#fff';
-    scrollBtn.style.fontWeight = '700';
-    slideBtn.style.background = 'transparent';
-    slideBtn.style.color = '#94a3b8';
-    slideBtn.style.fontWeight = '500';
-
-    slideContainer.style.display = 'none';
+  if (scrollContainer) {
     scrollContainer.style.display = 'flex';
-    if (thumbBar) thumbBar.style.display = 'none';
-    renderVibeScrollView();
   }
+  renderVibeScrollView();
 }
 
 function renderVibeSlideView() {
