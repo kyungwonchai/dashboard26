@@ -1205,12 +1205,14 @@ function renderGeminiDeepScrollView(partIdx = 0) {
 
 
 
+
 /* ========================================================
-   📚 3대 시리즈 목록 & 전체 고유번호(1~352) 단일 채번 검색 엔진 (#240)
+   📚 4대 시리즈 목록 & 전체 고유번호(1~453) 정밀 검색 엔진 (#241)
    ======================================================== */
 let currentLibSearchQuery = '';
 const seriesOpenState = {
   vibe: false,
+  coder: false,
   worker: false,
   gemini: false
 };
@@ -1232,7 +1234,17 @@ const BOOK_HIDDEN_TAGS = {
   'vibe_13': '보안 암호화 비밀번호 RBAC 인증 안전수칙 토큰 환경변수 API키 보호 방패',
   'vibe_14': '배포 포털 GitHub Pages 최종완성 퍼블리싱 완성작품 포트폴리오 바이브코더',
 
-  // 2. 직장인 실전 AI 활용 (10편)
+  // 2. AI 코더 숙련도 마스터 (8편)
+  'coder_1': '초보 중급 고급자 차이 결정적 한끗 AI 코딩 실력 격차 숙련도 마스터 유스케이스',
+  'coder_2': '100% 한번에 10% 분할 토큰 절감 제작 시간 딜레마 프롬프트 분할 전략 비용 효율',
+  'coder_3': '상황별 유스케이스 최적 전략 언제 통째로 언제 쪼갤까 아키텍처 판단 기준',
+  'coder_4': '초보 탈출 에러 났어요 벗어나기 디버깅 프롬프트 3법칙 트러블슈팅 스택트레이스',
+  'coder_5': '중급 도약 맥락 유지 Context 파일 구조화 비결 컨텍스트 윈도우 모듈화',
+  'coder_6': '고급 완성 설계 규칙 Rules Spec 사전 주입 프롬프트 명세서 코딩 스펙 주입',
+  'coder_7': '실전 시간 비용 10배 절감 토큰 최적화 롤백 Git 버전관리 기술 안전망',
+  'coder_8': '완성 로드맵 1인 개발 관제탑 구축 셀프 엔지니어링 풀스택 파이프라인 마스터',
+
+  // 3. 직장인 실전 AI 활용 (10편)
   'worker_1': '직장인 AI 정체 말문 트기 대화 프롬프트 입문 기초 업무 활용 실전',
   'worker_2': '주말 여행 계획 일정 플래너 맞춤 가이드 프롬프트 개인 비서',
   'worker_3': '냉장고 계란 양파 요리 레시피 일상 고민 해결사 생활 꿀팁',
@@ -1244,7 +1256,7 @@ const BOOK_HIDDEN_TAGS = {
   'worker_9': '터미널 명령어 제미나이 CLI Gemini CLI 콘솔 쉘 스마트 업무',
   'worker_10': '미래 로드맵 AI 시대 설렘 커리어 성장 자기계발 인사이트',
 
-  // 3. Gemini CLI 심화 (7편)
+  // 4. Gemini CLI 심화 (7편)
   'gemini_1': '제미나이 CLI 아키텍처 양방향 커맨드 실행 엔진 설계 파이프라인 subprocess STDIN STDOUT 백엔드',
   'gemini_2': '엔터프라이즈 데이터베이스 DB 모델링 SQLite PostgreSQL SQLAlchemy 테이블 인덱스 연동 최적화',
   'gemini_3': '철통 보안 사용자 인증 Auth JWT 세션 RBAC 역할 기반 권한 제어 인가 비밀번호 해시 bcrypt',
@@ -1264,6 +1276,14 @@ const SERIES_META = [
     icon: '🎓'
   },
   {
+    id: 'coder',
+    code: 'CODER',
+    title: 'AI 코더 숙련도 마스터 시리즈 (신규)',
+    desc: '초보·중급·고급자를 가르는 결정적 한 끗 & 토큰/시간 10배 절감 설계 전략',
+    badgeClass: 'series-badge-coder',
+    icon: '🚀'
+  },
+  {
     id: 'worker',
     code: 'WORKER',
     title: '직장인 실전 AI 활용 시리즈',
@@ -1281,7 +1301,7 @@ const SERIES_META = [
   }
 ];
 
-// 대시보드26 전체에 대해 1번부터 352번까지 단일 누적 고유번호(Global ID) 부여
+// 대시보드26 전체에 대해 1번부터 453번까지 단일 누적 고유번호(Global ID) 부여
 function getAllSeriesData() {
   let globalRunningNumber = 0;
 
@@ -1294,7 +1314,6 @@ function getAllSeriesData() {
       const endGlobal = globalRunningNumber + item.totalSlides;
       globalRunningNumber += item.totalSlides;
 
-      // 이 차시가 포함하는 전체 고유번호들 배열
       const slideGlobalNumbers = [];
       const slideKeys = [];
       for (let g = startGlobal; g <= endGlobal; g++) {
@@ -1329,11 +1348,13 @@ function getAllSeriesData() {
   };
 
   const vibeItems = mapSeries(typeof VIBE_CURRICULUM_DATA !== 'undefined' ? VIBE_CURRICULUM_DATA : [], 'vibe', 'VIBE');
+  const coderItems = mapSeries(typeof CODER_LEVEL_DATA !== 'undefined' ? CODER_LEVEL_DATA : [], 'coder', 'CODER');
   const workerItems = mapSeries(typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [], 'worker', 'WORKER');
   const geminiItems = mapSeries(typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [], 'gemini', 'GEMINI');
 
   return {
     vibe: vibeItems,
+    coder: coderItems,
     worker: workerItems,
     gemini: geminiItems,
     totalSlides: globalRunningNumber
@@ -1353,21 +1374,6 @@ function openSeriesInViewer(seriesId, mode, partIdx = 0, slideIdx = -1) {
   window.open(url, '_blank');
 }
 
-// 전체 고유번호로 바로 뷰어 열기
-function openByGlobalNumber(targetGlobalNum) {
-  const data = getAllSeriesData();
-  const allItems = [...data.vibe, ...data.worker, ...data.gemini];
-
-  for (const item of allItems) {
-    if (targetGlobalNum >= item.startGlobal && targetGlobalNum <= item.endGlobal) {
-      const pageInPart = targetGlobalNum - item.startGlobal + 1;
-      openSeriesInViewer(item.seriesId, 'select', item.index, pageInPart);
-      return;
-    }
-  }
-  alert(`고유번호 #${targetGlobalNum}에 해당하는 슬라이드를 찾을 수 없습니다. (범위: 1~352)`);
-}
-
 function renderSeriesLibrary() {
   const container = document.getElementById('series-library-container');
   const noResults = document.getElementById('library-no-results');
@@ -1377,19 +1383,14 @@ function renderSeriesLibrary() {
   const rawQ = currentLibSearchQuery.trim();
   const q = rawQ.toLowerCase();
 
-  // 검색어가 순수 숫자인지 판별 (예: "2" 또는 "#2")
   const isPureNumber = /^#?\d+$/.test(rawQ);
   const searchNum = isPureNumber ? parseInt(rawQ.replace('#', ''), 10) : null;
 
   const filterItem = (item) => {
     if (!q) return true;
-    
-    // 1. 순수 숫자 검색 시: 해당 고유번호가 이 차시의 범위(startGlobal ~ endGlobal)에 속하는지 엄격 검사
     if (searchNum !== null) {
       return searchNum >= item.startGlobal && searchNum <= item.endGlobal;
     }
-
-    // 2. 텍스트 검색 시: 제목, 차시번호, 키워드태그 매칭
     return (
       item.title.toLowerCase().includes(q) ||
       item.cleanTitle.toLowerCase().includes(q) ||
@@ -1401,12 +1402,13 @@ function renderSeriesLibrary() {
 
   const filteredData = {
     vibe: data.vibe.filter(filterItem),
+    coder: data.coder.filter(filterItem),
     worker: data.worker.filter(filterItem),
     gemini: data.gemini.filter(filterItem)
   };
 
-  const totalVisible = filteredData.vibe.length + filteredData.worker.length + filteredData.gemini.length;
-  const totalAll = data.vibe.length + data.worker.length + data.gemini.length;
+  const totalVisible = filteredData.vibe.length + filteredData.coder.length + filteredData.worker.length + filteredData.gemini.length;
+  const totalAll = data.vibe.length + data.coder.length + data.worker.length + data.gemini.length;
   const totalSlides = data.totalSlides;
 
   const statBooks = document.getElementById('lib-stat-books');
@@ -1424,7 +1426,6 @@ function renderSeriesLibrary() {
 
   container.innerHTML = SERIES_META.map(meta => {
     const items = filteredData[meta.id];
-    // 검색어가 있을 땐 검색결과가 있는 시리즈를 자동으로 열고, 없으면 사용자가 토글한 상태 사용
     const isOpen = q ? (items.length > 0) : seriesOpenState[meta.id];
     const visibleCount = items.length;
     const seriesSlides = items.reduce((s, x) => s + x.totalSlides, 0);
@@ -1476,7 +1477,6 @@ function renderSeriesLibrary() {
               </thead>
               <tbody>
                 ${items.map(item => {
-                  // 만약 특정 번호 검색 중이라면 그 번호의 페이지를 직접 열 수 있게 계산
                   const targetPage = (searchNum !== null && searchNum >= item.startGlobal && searchNum <= item.endGlobal)
                     ? (searchNum - item.startGlobal + 1)
                     : -1;

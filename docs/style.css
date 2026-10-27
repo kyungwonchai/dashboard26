@@ -860,3 +860,9 @@ body {
   padding: 2px 7px;
   border-radius: 4px;
 }
+
+/* AI 코더 숙련도 마스터 시리즈 뱃지 */
+.series-badge-coder {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
