@@ -3,466 +3,901 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>바이브코딩 직장인 활용사례 35선 & 제작 스크립트 전문 뷰어</title>
+  <title>바이브코딩 직장인 활용사례 35선 & 프롬프트 북</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=1793115300">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    body {
-      background: #07080d;
-      color: #f1f3f9;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-      font-family: 'Pretendard', sans-serif;
+    :root {
+      --bg: #07080d;
+      --card-bg: rgba(15, 18, 28, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.16);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #6366f1;
+      --accent: #f59e0b;
+      --sidebar-w: 360px;
     }
 
-    .viewer-navbar {
-      height: 60px;
-      background: rgba(14, 16, 23, 0.95);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 상단 네비게이션 헤더 */
+    .top-navbar {
+      height: 64px;
+      background: rgba(10, 12, 20, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
-      backdrop-filter: blur(12px);
+      padding: 0 24px;
       flex-shrink: 0;
-      z-index: 50;
+      z-index: 100;
     }
 
-    .btn-download-pptx {
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-back-home:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title h1 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-title p {
+      font-size: 11.5px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-pptx-dl {
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: #ffffff;
-      font-size: 12.5px;
+      color: #fff;
+      font-size: 13px;
       font-weight: 700;
-      padding: 6px 14px;
+      padding: 7px 16px;
       border-radius: 8px;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+      gap: 7px;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
-    .btn-download-pptx:hover {
+    .btn-pptx-dl:hover {
       transform: translateY(-1px);
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
     }
 
-    .usecase-layout {
+    /* 본문 레이아웃 */
+    .app-layout {
       flex: 1;
       display: flex;
       overflow: hidden;
     }
 
-    .usecase-sidebar {
-      width: 340px;
-      background: #0a0c14;
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    /* 좌측 사이드바 */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: rgba(11, 13, 22, 0.98);
+      border-right: 1px solid var(--card-border);
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
       flex-shrink: 0;
+      overflow: hidden;
     }
 
-    .usecase-sidebar-search {
-      padding: 12px 14px;
-      background: rgba(7, 8, 13, 0.9);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    .sidebar-search-box {
+      padding: 14px 16px;
+      background: rgba(8, 9, 15, 0.95);
+      border-bottom: 1px solid var(--card-border);
     }
-
-    .usecase-sidebar-search input {
+    .search-input-wrapper {
+      position: relative;
+    }
+    .search-input-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .search-input {
       width: 100%;
-      background: #141722;
+      background: #141726;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      padding: 7px 10px;
+      border-radius: 8px;
+      padding: 8px 12px 8px 34px;
       color: #fff;
-      font-size: 12px;
+      font-size: 13px;
       outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
     }
 
-    .usecase-sidebar-list {
-      padding: 8px;
+    /* 테마 필터 칩 탭 */
+    .theme-filter-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(14, 17, 27, 0.5);
+      scrollbar-width: none;
+    }
+    .theme-filter-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .filter-tab {
+      flex-shrink: 0;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-tab:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .filter-tab.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.5);
+      color: #a5b4fc;
+    }
+
+    /* 사이드바 목록 */
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
     }
 
-    .usecase-nav-item {
-      padding: 9px 12px;
-      border-radius: 7px;
+    .case-nav-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 12.5px;
-      color: #94a3b8;
-      transition: all 0.15s ease;
-      border: 1px solid transparent;
+      gap: 12px;
+      transition: all 0.15s;
     }
-    .usecase-nav-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-    }
-    .usecase-nav-item.active {
-      background: rgba(245, 158, 11, 0.15);
-      border-color: rgba(245, 158, 11, 0.4);
-      color: #fde68a;
-      font-weight: 700;
-    }
-    .usecase-num-pill {
-      font-family: monospace;
-      font-size: 11px;
+    .case-nav-item:hover {
       background: rgba(255, 255, 255, 0.06);
-      padding: 2px 6px;
-      border-radius: 4px;
-      flex-shrink: 0;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .case-nav-item.active {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.4);
     }
 
-    .usecase-content-area {
+    .nav-badge-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+    .case-nav-item.active .nav-badge-num {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .nav-text-col {
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-theme-name {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+      display: block;
+    }
+    .nav-case-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .case-nav-item.active .nav-case-title {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* 우측 본문 상세 영역 */
+    .main-content {
       flex: 1;
       overflow-y: auto;
-      padding: 30px 24px 80px;
-      background: #040508;
+      padding: 32px 36px 80px;
+      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, rgba(7, 8, 13, 1) 70%);
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    .usecase-card-container {
+    .content-max-box {
       width: 100%;
-      max-width: 900px;
+      max-width: 960px;
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 28px;
     }
 
-    .case-card {
-      background: rgba(14, 16, 23, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 14px;
+    /* 인트로 카드 배너 */
+    .intro-guide-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
       padding: 24px 28px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      transition: border-color 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .intro-guide-banner h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .intro-guide-banner p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .golden-rules {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .rule-chip {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .rule-chip-num {
+      font-size: 11px;
+      font-weight: 800;
+      color: #fbbf24;
+      margin-bottom: 3px;
+    }
+    .rule-chip-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 2px;
+    }
+    .rule-chip-desc {
+      font-size: 11.5px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    /* 케이스 카드 스타일 */
+    .case-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+      position: relative;
+      transition: all 0.25s ease;
     }
     .case-card:hover {
-      border-color: rgba(245, 158, 11, 0.4);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+    }
+    .case-card.highlight {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.25) !important;
     }
 
-    .case-header {
+    .card-top-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      padding-bottom: 14px;
-      gap: 12px;
-      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 12px;
     }
 
-    .case-theme-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: #fbbf24;
-      background: rgba(245, 158, 11, 0.12);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 3px 9px;
+    .theme-pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 10px;
       border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .case-title {
-      font-size: 19px;
+    .case-id-badge {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-dim);
+    }
+
+    .card-main-title {
+      font-size: 21px;
       font-weight: 800;
       color: #ffffff;
-      margin: 8px 0 0 0;
+      margin-bottom: 20px;
       letter-spacing: -0.02em;
     }
 
-    .info-section {
-      margin-bottom: 14px;
+    /* 의도 & 노하우 2컬럼 레이아웃 */
+    .intent-knowhow-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 22px;
     }
-    .info-label {
+    @media (max-width: 768px) {
+      .intent-knowhow-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .intent-box, .knowhow-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .box-header-title {
       font-size: 12px;
       font-weight: 800;
-      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .label-intent { color: #38bdf8; }
-    .label-knowhow { color: #34d399; }
-    .label-prompt { color: #c084fc; }
+    .box-header-title.intent-color { color: #38bdf8; }
+    .box-header-title.knowhow-color { color: #34d399; }
 
-    .info-box {
-      background: #090b12;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 13px;
-      line-height: 1.6;
+    .box-content-text {
+      font-size: 13.5px;
       color: #cbd5e1;
+      line-height: 1.65;
+      font-weight: 400;
     }
 
-    .prompt-box {
-      background: #080a10;
-      border: 1px solid rgba(168, 85, 247, 0.3);
-      border-radius: 10px;
-      padding: 16px;
-      position: relative;
+    /* 실전 프롬프트 섹션 (가장 중요) */
+    .prompt-section-wrapper {
+      margin-top: 10px;
     }
 
-    .prompt-pre {
-      font-family: 'Pretendard', sans-serif;
-      font-size: 13px;
-      line-height: 1.7;
-      color: #f1f5f9;
-      white-space: pre-wrap;
-      margin: 0;
+    .prompt-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .prompt-title-tag {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #c084fc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .btn-copy-prompt {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(168, 85, 247, 0.2);
-      border: 1px solid rgba(168, 85, 247, 0.5);
+    .btn-copy-action {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.4);
       color: #e9d5ff;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
     }
-    .btn-copy-prompt:hover {
-      background: rgba(168, 85, 247, 0.4);
-      color: #fff;
+    .btn-copy-action:hover {
+      background: rgba(168, 85, 247, 0.35);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .btn-copy-action.copied {
+      background: #10b981;
+      border-color: #10b981;
+      color: #ffffff;
     }
 
-    .terms-box {
-      margin-top: 12px;
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.02);
-      border-left: 3px solid rgba(255, 255, 255, 0.2);
+    .prompt-code-container {
+      background: #090a10;
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+    .prompt-text-body {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: #f8fafc;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* 하단 용어 해설 칩스 */
+    .terms-chips-area {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .terms-label-icon {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-dim);
+      margin-right: 4px;
+    }
+    .term-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 4px 10px;
       font-size: 11.5px;
       color: #94a3b8;
-      line-height: 1.5;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .term-pill strong {
+      color: #e2e8f0;
+      font-weight: 700;
     }
 
     /* 플로팅 탑 버튼 */
-    .btn-floating-top {
+    .floating-top-btn {
       position: fixed;
-      bottom: 24px;
-      right: 28px;
+      bottom: 28px;
+      right: 32px;
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: rgba(245, 158, 11, 0.85);
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-      z-index: 100;
-      font-size: 18px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      z-index: 90;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+    .floating-top-btn:hover {
+      background: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 900px) {
+      .app-layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: 220px;
+        border-right: none;
+        border-bottom: 1px solid var(--card-border);
+      }
+      .main-content {
+        padding: 20px 16px 60px;
+      }
+      .case-card {
+        padding: 20px;
+      }
     }
   </style>
 </head>
 <body>
+
   <!-- 헤더 -->
-  <header class="viewer-navbar">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <a href="./" class="btn btn-sub" style="text-decoration:none; padding:6px 10px;" title="홈으로 이동">
-        ← 메인 목록
+  <header class="top-navbar">
+    <div class="brand-section">
+      <a href="./" class="btn-back-home" title="메인 대시보드로 돌아가기">
+        <i class="fa-solid fa-arrow-left"></i> 대시보드
       </a>
-      <span style="font-size:11px; font-weight:800; padding:3px 9px; border-radius:6px; background:rgba(245,158,11,0.2); color:#fbbf24; border:1px solid rgba(245,158,11,0.4);">
-        💼 직장인 실전 활용집
-      </span>
-      <h2 style="font-size:15px; font-weight:700; margin:0; color:#fff;" id="page-header-title">
-        바이브코딩 직장인 활용사례 35선 & 제작 스크립트
-      </h2>
+      <div class="brand-title">
+        <h1>
+          <span>💼</span> 바이브코딩 직장인 활용사례 35선 & 프롬프트 북
+        </h1>
+        <p>복사해서 즉시 써먹는 업무 자동화·사내앱·데이터 수집 실전 가이드</p>
+      </div>
     </div>
 
-    <div style="display:flex; align-items:center; gap:10px;">
-      <a href="./바이브코딩_직장인_활용사례35.pptx" download="바이브코딩_직장인_활용사례35.pptx" class="btn-download-pptx" title="원본 PPTX 파일 다운로드">
-        📥 원본 PPTX 다운로드 (249KB)
+    <div class="header-actions">
+      <a href="./바이브코딩_직장인_활용사례35.pptx" download="바이브코딩_직장인_활용사례35.pptx" class="btn-pptx-dl" title="원본 PPTX 파일 다운로드">
+        <i class="fa-solid fa-file-powerpoint"></i> PPTX 다운로드 (249KB)
       </a>
     </div>
   </header>
 
-  <!-- 메인 2단 -->
-  <div class="usecase-layout">
-    <!-- 좌측 사이드바: 35개 사례 목록 -->
-    <aside class="usecase-sidebar">
-      <div class="usecase-sidebar-search">
-        <input type="text" id="sidebar-search-input" placeholder="사례명·키워드 빠른 검색 (예: 엑셀, 이메일...)" oninput="filterCases(this.value)">
+  <!-- 본문 2단 구성 -->
+  <div class="app-layout">
+    
+    <!-- 좌측 목차 및 실시간 필터 사이드바 -->
+    <aside class="sidebar">
+      <div class="sidebar-search-box">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-input" class="search-input" placeholder="사례명 또는 키워드 검색 (예: 엑셀, 이메일, 회의록...)" oninput="handleSearch(this.value)">
+        </div>
       </div>
-      <div class="usecase-sidebar-list" id="usecase-sidebar-list">
-        <!-- JS 동적 생성 -->
+
+      <!-- 테마 탭 필터 -->
+      <div class="theme-filter-tabs" id="theme-tabs-container">
+        <button class="filter-tab active" data-theme="ALL" onclick="filterByTheme('ALL')">전체 (35)</button>
+        <button class="filter-tab" data-theme="A" onclick="filterByTheme('A')">A · 자동화</button>
+        <button class="filter-tab" data-theme="B" onclick="filterByTheme('B')">B · 미니앱</button>
+        <button class="filter-tab" data-theme="C" onclick="filterByTheme('C')">C · 데이터</button>
+        <button class="filter-tab" data-theme="D" onclick="filterByTheme('D')">D · 콘텐츠</button>
+        <button class="filter-tab" data-theme="E" onclick="filterByTheme('E')">E · 재테크</button>
+        <button class="filter-tab" data-theme="F" onclick="filterByTheme('F')">F · 부업</button>
+        <button class="filter-tab" data-theme="G" onclick="filterByTheme('G')">G · 크롤링</button>
+      </div>
+
+      <!-- 목록 리스트 -->
+      <div class="sidebar-list" id="sidebar-list">
+        <!-- JS 동적 렌더링 -->
       </div>
     </aside>
 
-    <!-- 우측 본문: 사례 카드 목록 -->
-    <main class="usecase-content-area" id="usecase-content-area">
-      <div class="usecase-card-container" id="usecase-card-container">
-        <!-- JS 동적 생성 -->
+    <!-- 우측 본문 카드 영역 -->
+    <main class="main-content" id="main-content-scroll">
+      <div class="content-max-box">
+        
+        <!-- 상단 바이브코딩 5대 성공 법칙 배너 -->
+        <div class="intro-guide-banner">
+          <h2>🎯 바이브코딩, 이렇게 시키면 잘 됩니다</h2>
+          <p>
+            만들고 싶은 것을 말로 설명하면 AI가 프로그램을 만들어줍니다. 아래 5가지만 지켜도 결과가 확 달라집니다.
+          </p>
+          <div class="golden-rules">
+            <div class="rule-chip">
+              <div class="rule-chip-num">01</div>
+              <div class="rule-chip-title">결과물을 구체적으로</div>
+              <div class="rule-chip-desc">무엇을 넣으면 무엇이 나오는지 명확히 적기</div>
+            </div>
+            <div class="rule-chip">
+              <div class="rule-chip-num">02</div>
+              <div class="rule-chip-title">예시(Sample) 붙이기</div>
+              <div class="rule-chip-desc">실제 양식을 주면 서식을 그대로 재현</div>
+            </div>
+            <div class="rule-chip">
+              <div class="rule-chip-num">03</div>
+              <div class="rule-chip-title">작게 시작, 한 겹씩</div>
+              <div class="rule-chip-desc">핵심 1개부터 만들고 기능을 덧붙이기</div>
+            </div>
+            <div class="rule-chip">
+              <div class="rule-chip-num">04</div>
+              <div class="rule-chip-title">안전장치 명시하기</div>
+              <div class="rule-chip-desc">'미리보기 먼저', '원본 수정 금지' 적기</div>
+            </div>
+            <div class="rule-chip">
+              <div class="rule-chip-num">05</div>
+              <div class="rule-chip-title">민감정보 가짜로</div>
+              <div class="rule-chip-desc">고객·금융 정보는 가짜 샘플로 테스트</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 35개 사례 카드 컨테이너 -->
+        <div id="cases-cards-wrapper" style="display:flex; flex-direction:column; gap:24px;">
+          <!-- JS 동적 생성 -->
+        </div>
+
       </div>
     </main>
+
   </div>
 
-  <button class="btn-floating-top" onclick="scrollToTop()" title="맨 위로 이동">
-    ▲
+  <button class="floating-top-btn" onclick="scrollToTop()" title="맨 위로 가기">
+    <i class="fa-solid fa-arrow-up"></i>
   </button>
 
-  <script src="data.js?v=1793115300"></script>
+  <script src="data.js?v=1793181000"></script>
   <script>
-    let casesData = [];
+    let casesList = [];
+    let currentThemeFilter = 'ALL';
+    let searchQuery = '';
 
-    function initUsecaseViewer() {
+    function init() {
       if (typeof USECASE35_DATA !== 'undefined' && Array.isArray(USECASE35_DATA)) {
-        casesData = USECASE35_DATA;
+        casesList = USECASE35_DATA;
       }
       renderSidebar();
-      renderContent();
+      renderCards();
+    }
+
+    function getFilteredCases() {
+      return casesList.filter(item => {
+        const matchTheme = (currentThemeFilter === 'ALL' || item.theme_code === currentThemeFilter);
+        if (!matchTheme) return false;
+
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return item.full_title.toLowerCase().includes(q) ||
+               (item.intent && item.intent.toLowerCase().includes(q)) ||
+               (item.knowhow && item.knowhow.toLowerCase().includes(q)) ||
+               (item.prompt && item.prompt.toLowerCase().includes(q)) ||
+               (item.terms && item.terms.some(t => t.toLowerCase().includes(q)));
+      });
     }
 
     function renderSidebar() {
-      const listEl = document.getElementById('usecase-sidebar-list');
-      if (!listEl) return;
-      listEl.innerHTML = '';
-
-      casesData.forEach((item, idx) => {
-        // Only show case slides or intro
-        const itemEl = document.createElement('div');
-        itemEl.className = 'usecase-nav-item';
-        itemEl.id = 'nav-item-' + item.slideIndex;
-
-        const isCase = item.caseNum !== '';
-        itemEl.innerHTML = `
-          <span class="usecase-num-pill">${isCase ? item.caseNum : String(item.slideIndex).padStart(2, '0')}</span>
-          <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-            ${item.caseName ? item.caseName : item.title}
-          </span>
-        `;
-        itemEl.onclick = () => {
-          scrollToCard(item.slideIndex);
-        };
-        listEl.appendChild(itemEl);
-      });
-    }
-
-    function renderContent() {
-      const container = document.getElementById('usecase-card-container');
+      const container = document.getElementById('sidebar-list');
       if (!container) return;
       container.innerHTML = '';
 
-      casesData.forEach((item) => {
+      const filtered = getFilteredCases();
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding:24px 12px; text-align:center; color:var(--text-dim); font-size:12.5px;">검색 결과가 없습니다.</div>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'case-nav-item';
+        itemEl.id = `nav-case-${item.num}`;
+        itemEl.innerHTML = `
+          <div class="nav-badge-num">${item.num}</div>
+          <div class="nav-text-col">
+            <span class="nav-theme-name" style="color:${item.theme_color};">${item.theme_icon} ${item.theme_name}</span>
+            <div class="nav-case-title">${item.title}</div>
+          </div>
+        `;
+        itemEl.onclick = () => {
+          scrollToCase(item.num);
+        };
+        container.appendChild(itemEl);
+      });
+    }
+
+    function renderCards() {
+      const wrapper = document.getElementById('cases-cards-wrapper');
+      if (!wrapper) return;
+      wrapper.innerHTML = '';
+
+      const filtered = getFilteredCases();
+      if (filtered.length === 0) {
+        wrapper.innerHTML = `
+          <div style="background:var(--card-bg); border:1px dashed var(--card-border); border-radius:16px; padding:60px 20px; text-align:center;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:32px; color:var(--text-dim); margin-bottom:12px;"></i>
+            <h3 style="font-size:16px; font-weight:700; color:#fff;">일치하는 사례가 없습니다</h3>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">다른 검색어나 테마 필터를 선택해보세요.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
         const card = document.createElement('div');
         card.className = 'case-card';
-        card.id = 'case-card-' + item.slideIndex;
+        card.id = `card-case-${item.num}`;
 
-        if (item.caseNum) {
-          // 정식 사례 카드
-          card.innerHTML = `
-            <div class="case-header">
-              <div>
-                <span class="case-theme-tag">${item.theme || '업무 활용'}</span>
-                <h3 class="case-title">${item.title}</h3>
-              </div>
-              <span style="font-family:monospace; font-size:12px; color:#f59e0b; font-weight:700;">#사례 ${item.caseNum} / 35</span>
-            </div>
-
-            ${item.intent ? `
-              <div class="info-section">
-                <div class="info-label label-intent">🎯 기획 의도</div>
-                <div class="info-box">${item.intent}</div>
-              </div>
-            ` : ''}
-
-            ${item.knowhow ? `
-              <div class="info-section">
-                <div class="info-label label-knowhow">💡 강사 실무 노하우</div>
-                <div class="info-box">${item.knowhow}</div>
-              </div>
-            ` : ''}
-
-            ${item.prompt ? `
-              <div class="info-section">
-                <div class="info-label label-prompt">🤖 AI에게 이렇게 시키세요 (실전 프롬프트)</div>
-                <div class="prompt-box">
-                  <button class="btn-copy-prompt" onclick="copyPromptText(${item.slideIndex})">복사</button>
-                  <pre class="prompt-pre" id="prompt-text-${item.slideIndex}">${escapeHtml(item.prompt)}</pre>
-                </div>
-              </div>
-            ` : ''}
-
-            ${item.terms ? `
-              <div class="terms-box">${escapeHtml(item.terms)}</div>
-            ` : ''}
-          `;
-        } else {
-          // 인트로 / 가이드 슬라이드
-          card.innerHTML = `
-            <div class="case-header">
-              <div>
-                <span class="case-theme-tag">가이드 & 요약</span>
-                <h3 class="case-title">${item.title}</h3>
-              </div>
-              <span style="font-family:monospace; font-size:12px; color:#94a3b8;">Slide ${item.slideIndex}</span>
-            </div>
-            <div style="font-size:13.5px; line-height:1.8; color:#cbd5e1; white-space:pre-wrap;">
-              ${item.rawTexts.slice(1).join('\n\n')}
+        // 용어 칩 HTML 생성
+        let termsHtml = '';
+        if (item.terms && item.terms.length > 0) {
+          const chips = item.terms.map(t => {
+            const parts = t.split('=');
+            if (parts.length === 2) {
+              return `<span class="term-pill"><strong>${escapeHtml(parts[0].trim())}</strong>: ${escapeHtml(parts[1].trim())}</span>`;
+            }
+            return `<span class="term-pill">${escapeHtml(t)}</span>`;
+          }).join('');
+          termsHtml = `
+            <div class="terms-chips-area">
+              <span class="terms-label-icon"><i class="fa-solid fa-book-bookmark"></i> 용어 풀이</span>
+              ${chips}
             </div>
           `;
         }
-        container.appendChild(card);
+
+        card.innerHTML = `
+          <div class="card-top-row">
+            <span class="theme-pill-tag" style="border-color:${item.theme_color}55; color:${item.theme_color}; background:${item.theme_color}18;">
+              <span>${item.theme_icon}</span> ${item.theme_tag}
+            </span>
+            <span class="case-id-badge">CASE #${item.num} / 35</span>
+          </div>
+
+          <h3 class="card-main-title">사례 ${item.num}. ${item.title}</h3>
+
+          <div class="intent-knowhow-grid">
+            <div class="intent-box">
+              <div class="box-header-title intent-color">
+                <i class="fa-solid fa-bullseye"></i> 기획 의도
+              </div>
+              <div class="box-content-text">${escapeHtml(item.intent)}</div>
+            </div>
+
+            <div class="knowhow-box">
+              <div class="box-header-title knowhow-color">
+                <i class="fa-solid fa-lightbulb"></i> 실무자 노하우
+              </div>
+              <div class="box-content-text">${escapeHtml(item.knowhow)}</div>
+            </div>
+          </div>
+
+          <div class="prompt-section-wrapper">
+            <div class="prompt-section-header">
+              <div class="prompt-title-tag">
+                <i class="fa-solid fa-robot"></i> AI에게 이렇게 시키세요 (실전 프롬프트)
+              </div>
+              <button class="btn-copy-action" id="btn-copy-${item.num}" onclick="copyPrompt('${item.num}')">
+                <i class="fa-regular fa-copy"></i> 프롬프트 복사
+              </button>
+            </div>
+            <div class="prompt-code-container">
+              <div class="prompt-text-body" id="prompt-content-${item.num}">${escapeHtml(item.prompt)}</div>
+            </div>
+          </div>
+
+          ${termsHtml}
+        `;
+
+        wrapper.appendChild(card);
       });
     }
 
-    function scrollToCard(slideIdx) {
-      const card = document.getElementById('case-card-' + slideIdx);
+    function scrollToCase(num) {
+      const card = document.getElementById(`card-case-${num}`);
       if (card) {
         card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        card.style.borderColor = '#f59e0b';
-        setTimeout(() => { card.style.borderColor = ''; }, 1500);
+        card.classList.add('highlight');
+        setTimeout(() => card.classList.remove('highlight'), 1800);
       }
-      document.querySelectorAll('.usecase-nav-item').forEach(el => el.classList.remove('active'));
-      const navItem = document.getElementById('nav-item-' + slideIdx);
+      document.querySelectorAll('.case-nav-item').forEach(el => el.classList.remove('active'));
+      const navItem = document.getElementById(`nav-case-${num}`);
       if (navItem) navItem.classList.add('active');
     }
 
-    function copyPromptText(slideIdx) {
-      const el = document.getElementById('prompt-text-' + slideIdx);
-      if (!el) return;
-      navigator.clipboard.writeText(el.textContent).then(() => {
-        alert('📋 실전 프롬프트가 복사되었습니다!\nAI에게 그대로 붙여넣어 실행하세요.');
+    function copyPrompt(num) {
+      const textEl = document.getElementById(`prompt-content-${num}`);
+      const btn = document.getElementById(`btn-copy-${num}`);
+      if (!textEl || !btn) return;
+
+      const raw = textEl.textContent;
+      navigator.clipboard.writeText(raw).then(() => {
+        const origHtml = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> 복사 완료!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = origHtml;
+        }, 2000);
+      }).catch(() => {
+        alert('복사에 실패했습니다. 수동으로 선택해 복사해주세요.');
       });
     }
 
-    function filterCases(query) {
-      const q = query.trim().toLowerCase();
-      document.querySelectorAll('.usecase-nav-item').forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(q) ? 'flex' : 'none';
+    function filterByTheme(themeCode) {
+      currentThemeFilter = themeCode;
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        if (tab.getAttribute('data-theme') === themeCode) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
       });
+      renderSidebar();
+      renderCards();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.trim();
+      renderSidebar();
+      renderCards();
     }
 
     function scrollToTop() {
-      document.getElementById('usecase-content-area').scrollTo({ top: 0, behavior: 'smooth' });
+      const scrollEl = document.getElementById('main-content-scroll');
+      if (scrollEl) {
+        scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
     function escapeHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
-    window.addEventListener('DOMContentLoaded', initUsecaseViewer);
+    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
