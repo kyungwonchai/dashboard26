@@ -577,6 +577,231 @@
         padding: 20px;
       }
     }
+  
+    /* 아키텍처 & 설계 스펙 그리드 */
+    .arch-spec-card {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(20, 24, 38, 0.95) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    }
+    .arch-spec-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .arch-spec-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #818cf8;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .arch-port-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      padding: 3px 10px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .spec-item {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .spec-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .spec-val {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #e2e8f0;
+      word-break: break-all;
+    }
+    .spec-val-highlight {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .spec-impl-box {
+      background: rgba(0, 0, 0, 0.45);
+      border-left: 3px solid #6366f1;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+    .spec-impl-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #a5b4fc;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 소프트웨어 용어 사전 모달 스타일 */
+    .btn-glossary-open {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-glossary-open:hover {
+      background: rgba(99, 102, 241, 0.3);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 4, 8, 0.82);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-card {
+      background: #0d101a;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 840px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+    .glossary-search-bar {
+      padding: 14px 24px;
+      background: rgba(0, 0, 0, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glossary-search-input {
+      width: 100%;
+      background: #06080e;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: #fff;
+      font-size: 13.5px;
+      outline: none;
+    }
+    .glossary-search-input:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    .modal-body {
+      padding: 20px 24px;
+      overflow-y: auto;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 680px) {
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    .glossary-item-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: all 0.2s;
+    }
+    .glossary-item-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(99, 102, 241, 0.05);
+    }
+    .glossary-term-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #a5b4fc;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .glossary-term-desc {
+      font-size: 12.5px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
   </style>
 </head>
 <body>
@@ -596,6 +821,11 @@
     </div>
 
     <div class="header-actions">
+
+      <button class="btn-glossary-open" onclick="openGlossaryModal()" title="SW 핵심 용어집 열기">
+        <i class="fa-solid fa-book"></i> SW 용어사전
+      </button>
+
       <a href="./바이브코딩_직장인_활용사례35.pptx" download="바이브코딩_직장인_활용사례35.pptx" class="btn-pptx-dl" title="원본 PPTX 파일 다운로드">
         <i class="fa-solid fa-file-powerpoint"></i> PPTX 다운로드 (249KB)
       </a>
@@ -685,7 +915,7 @@
     <i class="fa-solid fa-arrow-up"></i>
   </button>
 
-  <script src="usecase35_data.js?v=1793184300"></script>
+  <script src="usecase35_data.js?v=1793185900"></script>
   <script>
     let casesList = [];
     let currentThemeFilter = 'ALL';
@@ -706,11 +936,19 @@
 
         if (!searchQuery) return true;
         const q = searchQuery.toLowerCase();
+        const spec = item.spec || {};
         return item.full_title.toLowerCase().includes(q) ||
                (item.intent && item.intent.toLowerCase().includes(q)) ||
                (item.knowhow && item.knowhow.toLowerCase().includes(q)) ||
                (item.prompt && item.prompt.toLowerCase().includes(q)) ||
-               (item.terms && item.terms.some(t => t.toLowerCase().includes(q)));
+               (item.terms && item.terms.some(t => t.toLowerCase().includes(q))) ||
+               (spec.arch_type && spec.arch_type.toLowerCase().includes(q)) ||
+               (spec.tech_stack && spec.tech_stack.toLowerCase().includes(q)) ||
+               (spec.port && spec.port.toLowerCase().includes(q)) ||
+               (spec.service_mode && spec.service_mode.toLowerCase().includes(q)) ||
+               (spec.db_mode && spec.db_mode.toLowerCase().includes(q)) ||
+               (spec.api_spec && spec.api_spec.toLowerCase().includes(q)) ||
+               (spec.impl_detail && spec.impl_detail.toLowerCase().includes(q));
       });
     }
 
@@ -809,6 +1047,50 @@
             </div>
           </div>
 
+          <!-- 🏗️ 실전 아키텍처 & 엔지니어링 설계 스펙 -->
+          ${item.spec ? `
+          <div class="arch-spec-card">
+            <div class="arch-spec-header">
+              <div class="arch-spec-title">
+                <i class="fa-solid fa-cubes-stacked"></i> ${escapeHtml(item.spec.arch_type || '아키텍처 설계 스펙')}
+              </div>
+              <div class="arch-port-badge">
+                <i class="fa-solid fa-network-wired"></i> PORT: ${escapeHtml(item.spec.port || '10000')}
+              </div>
+            </div>
+
+            <div class="spec-grid">
+              <div class="spec-item">
+                <span class="spec-label"><i class="fa-solid fa-layer-group"></i> 설계 수준 & 형태</span>
+                <span class="spec-val spec-val-highlight">${escapeHtml(item.spec.design_level || 'Lv.2 경량 웹앱')}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label"><i class="fa-solid fa-microchip"></i> 핵심 기술 스택</span>
+                <span class="spec-val">${escapeHtml(item.spec.tech_stack || '-')}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label"><i class="fa-solid fa-server"></i> 서비스 운영 형태</span>
+                <span class="spec-val">${escapeHtml(item.spec.service_mode || '로컬 웹 구동')}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label"><i class="fa-solid fa-database"></i> 데이터베이스 (DB)</span>
+                <span class="spec-val spec-val-highlight">${escapeHtml(item.spec.db_mode || '로컬 파일 / SQLite')}</span>
+              </div>
+              <div class="spec-item" style="grid-column: 1 / -1;">
+                <span class="spec-label"><i class="fa-solid fa-plug"></i> 통신 & API 구현 규격</span>
+                <span class="spec-val" style="font-family:ui-monospace, monospace; font-size:12px; color:#a78bfa;">${escapeHtml(item.spec.api_spec || 'None')}</span>
+              </div>
+            </div>
+
+            <div class="spec-impl-box">
+              <div class="spec-impl-title">
+                <i class="fa-solid fa-screwdriver-wrench"></i> 구체적 구현 상세 & 처리 파이프라인
+              </div>
+              <div>${escapeHtml(item.spec.impl_detail || '')}</div>
+            </div>
+          </div>
+          ` : ''}
+
           <div class="prompt-section-wrapper">
             <div class="prompt-section-header">
               <div class="prompt-title-tag">
@@ -897,7 +1179,87 @@
         .replace(/'/g, '&#039;');
     }
 
+    
+    // 용어사전 모달 관련 함수
+    let glossaryFilterQuery = '';
+
+    function openGlossaryModal() {
+      const modal = document.getElementById('glossary-modal');
+      if (!modal) return;
+      modal.style.display = 'flex';
+      renderGlossary();
+      const input = document.getElementById('glossary-search-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function closeGlossaryModal() {
+      const modal = document.getElementById('glossary-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function filterGlossary(q) {
+      glossaryFilterQuery = (q || '').trim().toLowerCase();
+      renderGlossary();
+    }
+
+    function renderGlossary() {
+      const container = document.getElementById('glossary-container');
+      if (!container) return;
+      
+      const items = (typeof TECH_GLOSSARY_DATA !== 'undefined' && Array.isArray(TECH_GLOSSARY_DATA)) 
+        ? TECH_GLOSSARY_DATA 
+        : [];
+
+      const filtered = items.filter(g => {
+        if (!glossaryFilterQuery) return true;
+        return g.term.toLowerCase().includes(glossaryFilterQuery) || 
+               g.desc.toLowerCase().includes(glossaryFilterQuery);
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1; padding:30px; text-align:center; color:var(--text-dim);">일치하는 용어가 없습니다.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(g => `
+        <div class="glossary-item-card">
+          <div class="glossary-term-name">
+            <i class="fa-solid fa-bookmark" style="font-size:12px; color:#818cf8;"></i>
+            <span>${escapeHtml(g.term)}</span>
+          </div>
+          <div class="glossary-term-desc">${escapeHtml(g.desc)}</div>
+        </div>
+      `).join('');
+    }
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeGlossaryModal();
+      }
+    });
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
+
+  <!-- SW 핵심 용어사전 모달 -->
+  <div class="modal-overlay" id="glossary-modal" onclick="if(event.target===this)closeGlossaryModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-code"></i> SW & 바이브코딩 핵심 용어집</h3>
+        <button class="modal-close-btn" onclick="closeGlossaryModal()">✕</button>
+      </div>
+      <div class="glossary-search-bar">
+        <input type="text" id="glossary-search-input" class="glossary-search-input" placeholder="용어 또는 키워드 검색 (예: API, 포트, SQLite, RAG, SPA...)" oninput="filterGlossary(this.value)">
+      </div>
+      <div class="modal-body" id="glossary-container">
+        <!-- JS 동적 생성 -->
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
