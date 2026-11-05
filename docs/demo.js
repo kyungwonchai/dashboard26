@@ -464,15 +464,74 @@ let currentLecturerNote = (window.DASH26_SYNC_DATA && window.DASH26_SYNC_DATA.no
 };
 
 // 📱 QR코드 모달 제어
-// 🎬 데모 영상 모달 제어
-function openVideoModal() {
+// 🎬 데모 영상 모달 제어 (영상 1 & 영상 2 멀티 영상 지원)
+const VIDEO_LIST = {
+  1: {
+    src: 'demo1.mp4',
+    title: 'AI 학습곡선 & 성장 로드맵 (1편 · 10초 요약)',
+    desc: '브라우저 내장 HTML5 비디오 플레이어로 즉시 시청할 수 있습니다. (10초 요약 버전)',
+    badge: '10초 요약',
+    downloadName: 'AI_학습곡선_1편_10초요약.mp4'
+  },
+  2: {
+    src: 'demo2.mp4',
+    title: 'AI 학습곡선 & 성장 로드맵 (2편 · 40초 풀버전)',
+    desc: '브라우저 내장 HTML5 비디오 플레이어로 즉시 시청할 수 있습니다. (40초 확장 버전)',
+    badge: '40초 풀버전',
+    downloadName: 'AI_학습곡선_2편_40초풀버전.mp4'
+  }
+};
+
+let currentVideoId = 1;
+
+function switchVideo(id, autoplay = true) {
+  currentVideoId = id;
+  const item = VIDEO_LIST[id];
+  if (!item) return;
+
+  const titleEl = document.getElementById('demo-video-title');
+  const descEl = document.getElementById('demo-video-desc');
+  const player = document.getElementById('demo-video-player');
+  const downloadLink = document.getElementById('demo-video-download');
+
+  if (titleEl) titleEl.textContent = item.title;
+  if (descEl) descEl.textContent = item.desc;
+  if (downloadLink) {
+    downloadLink.href = item.src;
+    downloadLink.download = item.downloadName;
+  }
+
+  // 탭 버튼 스타일 갱신
+  document.querySelectorAll('.video-tab-btn').forEach(btn => {
+    const btnId = Number(btn.getAttribute('data-video-id'));
+    if (btnId === id) {
+      btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      btn.style.color = '#ffffff';
+      btn.style.borderColor = '#10b981';
+      btn.style.fontWeight = '700';
+    } else {
+      btn.style.background = 'rgba(255, 255, 255, 0.05)';
+      btn.style.color = 'var(--text-muted)';
+      btn.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+      btn.style.fontWeight = '500';
+    }
+  });
+
+  if (player) {
+    player.pause();
+    player.src = item.src;
+    player.load();
+    if (autoplay) {
+      player.play().catch(e => console.log('Autoplay blocked, user click needed:', e));
+    }
+  }
+}
+
+function openVideoModal(defaultId = 1) {
   const modal = document.getElementById('video-modal');
   if (modal) {
     modal.classList.add('active');
-    const player = document.getElementById('demo-video-player');
-    if (player) {
-      player.play().catch(e => console.log('Autoplay blocked, user click needed:', e));
-    }
+    switchVideo(defaultId, true);
   }
 }
 

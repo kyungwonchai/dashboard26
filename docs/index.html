@@ -633,23 +633,33 @@
   </div>
 
   <!-- 📱 수강생 접속 QR코드 모달 -->
-    <!-- 🎬 모달: 데모 영상 모달 (누구나 재생 가능) -->
+  <!-- 🎬 모달: 데모 영상 모달 (1편 요약 / 2편 풀버전 탭 지원) -->
   <div class="modal-overlay" id="video-modal" onclick="if(event.target===this)closeVideoModal()">
     <div class="glass-card modal-card" style="width:94%; max-width:880px; padding:24px; background:#0c0e14; border:1px solid rgba(16,185,129,0.4); box-shadow:0 20px 60px rgba(0,0,0,0.85);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div style="display:flex; align-items:center; gap:10px;">
           <span style="font-size:24px;">🎬</span>
           <div>
-            <h3 style="font-size:18px; font-weight:800; color:#f1f3f9;">AI 학습곡선 & 성장 로드맵 참고영상</h3>
-            <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">브라우저 내장 HTML5 비디오 플레이어로 누구나 즉시 고화질로 시청할 수 있습니다.</p>
+            <h3 id="demo-video-title" style="font-size:18px; font-weight:800; color:#f1f3f9;">AI 학습곡선 & 성장 로드맵 (1편 · 10초 요약)</h3>
+            <p id="demo-video-desc" style="font-size:11px; color:var(--text-muted); margin-top:2px;">브라우저 내장 HTML5 비디오 플레이어로 누구나 즉시 고화질로 시청할 수 있습니다.</p>
           </div>
         </div>
         <button class="btn btn-secondary" onclick="closeVideoModal()" style="padding:6px 14px; font-size:12px;">✕ 닫기</button>
       </div>
 
+      <!-- 영상 선택 탭 -->
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <button class="btn video-tab-btn" data-video-id="1" onclick="switchVideo(1)" style="padding:8px 16px; font-size:13px; border-radius:8px; border:1px solid #10b981; background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-weight:700; cursor:pointer;">
+          🎬 1편 · 기존 요약 (10초)
+        </button>
+        <button class="btn video-tab-btn" data-video-id="2" onclick="switchVideo(2)" style="padding:8px 16px; font-size:13px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.05); color:var(--text-muted); font-weight:500; cursor:pointer;">
+          ✨ 2편 · 신규 풀버전 (40초)
+        </button>
+      </div>
+
       <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; background:#000; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.6);">
         <video id="demo-video-player" controls preload="metadata" style="width:100%; height:auto; display:block; max-height:68vh; outline:none;" poster="">
-          <source src="demo.mp4" type="video/mp4">
+          <source src="demo1.mp4" type="video/mp4">
           현재 브라우저가 비디오 태그를 지원하지 않습니다.
         </video>
       </div>
@@ -659,7 +669,7 @@
           <span>⚡ 형식: MP4 (H.264 / AAC)</span>
           <span>📐 해상도: 1280x720 (720p HD)</span>
         </div>
-        <a href="demo.mp4" download="AI_학습곡선_참고영상.mp4" class="btn btn-secondary" style="font-size:11px; padding:4px 12px; text-decoration:none;">
+        <a id="demo-video-download" href="demo1.mp4" download="AI_학습곡선_1편_10초요약.mp4" class="btn btn-secondary" style="font-size:11px; padding:4px 12px; text-decoration:none;">
           💾 영상 직접 다운로드
         </a>
       </div>
@@ -689,6 +699,6 @@
   </div>
 
   <script src="data.js?v=1793184800"></script>
-  <script src="demo.js?v=1793184800"></script>
+  <script src="demo.js?v=1793847300"></script>
 </body>
 </html>
