@@ -455,17 +455,28 @@ select:focus, input:focus, textarea:focus {
     min-width: 100%;
     height: auto;
     position: relative;
-    padding: 16px;
+    padding: 12px 14px;
+    padding-top: max(12px, env(safe-area-inset-top, 12px));
   }
   #main-content {
-    padding: 20px 16px;
+    padding: 16px 12px calc(32px + env(safe-area-inset-bottom, 0px));
   }
   .nav-menu {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+  }
+  .nav-menu::-webkit-scrollbar {
+    display: none;
   }
   .nav-item {
     padding: 8px 12px;
     font-size: 13px;
+    min-height: 40px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 }
