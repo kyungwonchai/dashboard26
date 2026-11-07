@@ -212,7 +212,12 @@ def init_db():
 @app.route('/')
 @app.route('/dashboard26/')
 def index():
-    return render_template('index.html')
+    prefix = '/dashboard26' if request.path.startswith('/dashboard26') or request.headers.get('X-Forwarded-Prefix') == '/dashboard26' else ''
+    return render_template('index.html', prefix=prefix)
+
+@app.route('/dashboard26/static/<path:filename>')
+def serve_dashboard26_static(filename):
+    return send_from_directory(app.static_folder, filename)
 
 @app.route('/uploads/<path:filename>')
 @app.route('/dashboard26/uploads/<path:filename>')
