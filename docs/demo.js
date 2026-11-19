@@ -1357,6 +1357,22 @@ const SERIES_META = [
     desc: '엔터프라이즈 아키텍처, DB 모델링, 인증/RBAC, 대용량 엑셀 및 CI/CD 배포',
     badgeClass: 'series-badge-gemini',
     icon: '⚡'
+  },
+  {
+    id: 'cli_infra',
+    code: 'CLI-IT',
+    title: '제미나이 CLI & IT 인프라 기초 (4부작 + 만화 카드북)',
+    desc: 'CMD·파워쉘·IP·포트·방화벽·API·DB·서비스 자동실행 & 10장 만화 요약 카드북',
+    badgeClass: 'series-badge-cli_infra',
+    icon: '💻'
+  },
+  {
+    id: 'agy',
+    code: 'AGY',
+    title: '개인 제미나이 CLI (AGY) 소개 · Gemini 4 & 오케스트라 (신규)',
+    desc: '아르곤·카본·하이드로젠·네온·오케스트라 + TPU & RSI 팩트체크 + 실전 스크립트 K-웹툰 3부작',
+    badgeClass: 'series-badge-agy',
+    icon: '⚛️'
   }
 ];
 
@@ -1410,12 +1426,16 @@ function getAllSeriesData() {
   const coderItems = mapSeries(typeof CODER_LEVEL_DATA !== 'undefined' ? CODER_LEVEL_DATA : [], 'coder', 'CODER');
   const workerItems = mapSeries(typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [], 'worker', 'WORKER');
   const geminiItems = mapSeries(typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [], 'gemini', 'GEMINI');
+  const cliInfraItems = mapSeries(typeof CLI_INFRA_DATA !== 'undefined' ? CLI_INFRA_DATA : [], 'cli_infra', 'CLI-IT');
+  const agyItems = mapSeries(typeof AGY_GEMINI4_DATA !== 'undefined' ? AGY_GEMINI4_DATA : [], 'agy', 'AGY');
 
   return {
     vibe: vibeItems,
     coder: coderItems,
     worker: workerItems,
     gemini: geminiItems,
+    cli_infra: cliInfraItems,
+    agy: agyItems,
     totalSlides: globalRunningNumber
   };
 }
