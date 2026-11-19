@@ -1359,10 +1359,18 @@ const SERIES_META = [
     icon: '⚡'
   },
   {
+    id: 'kw_cards',
+    code: 'CARD',
+    title: 'IT 기초 키워드 만화 카드북 (10장)',
+    desc: 'CMD·PowerShell·IP·포트·방화벽·API·기술스택·DB·서비스·화면공유 공부법 10장 핵심 요약 카드',
+    badgeClass: 'series-badge-kw_cards',
+    icon: '🃏'
+  },
+  {
     id: 'cli_infra',
     code: 'CLI-IT',
-    title: '제미나이 CLI & IT 인프라 기초 (4부작 + 만화 카드북)',
-    desc: 'CMD·파워쉘·IP·포트·방화벽·API·DB·서비스 자동실행 & 10장 만화 요약 카드북',
+    title: '제미나이 CLI & IT 인프라 기초 (4부작 · 80p)',
+    desc: 'CMD·파워쉘·IP·포트·방화벽·API·DB·윈도우 서비스 자동실행 20p 화이트보드 4부작',
     badgeClass: 'series-badge-cli_infra',
     icon: '💻'
   },
@@ -1426,6 +1434,7 @@ function getAllSeriesData() {
   const coderItems = mapSeries(typeof CODER_LEVEL_DATA !== 'undefined' ? CODER_LEVEL_DATA : [], 'coder', 'CODER');
   const workerItems = mapSeries(typeof WORKER_AI_DATA !== 'undefined' ? WORKER_AI_DATA : [], 'worker', 'WORKER');
   const geminiItems = mapSeries(typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [], 'gemini', 'GEMINI');
+  const kwCardsItems = mapSeries(typeof KEYWORD_CARDS_DATA !== 'undefined' ? KEYWORD_CARDS_DATA : [], 'kw_cards', 'CARD');
   const cliInfraItems = mapSeries(typeof CLI_INFRA_DATA !== 'undefined' ? CLI_INFRA_DATA : [], 'cli_infra', 'CLI-IT');
   const agyItems = mapSeries(typeof AGY_GEMINI4_DATA !== 'undefined' ? AGY_GEMINI4_DATA : [], 'agy', 'AGY');
 
@@ -1434,6 +1443,7 @@ function getAllSeriesData() {
     coder: coderItems,
     worker: workerItems,
     gemini: geminiItems,
+    kw_cards: kwCardsItems,
     cli_infra: cliInfraItems,
     agy: agyItems,
     totalSlides: globalRunningNumber
@@ -1484,12 +1494,13 @@ function renderSeriesLibrary() {
     coder: data.coder.filter(filterItem),
     worker: data.worker.filter(filterItem),
     gemini: data.gemini.filter(filterItem),
+    kw_cards: (data.kw_cards || []).filter(filterItem),
     cli_infra: (data.cli_infra || []).filter(filterItem),
     agy: (data.agy || []).filter(filterItem)
   };
 
-  const totalVisible = filteredData.vibe.length + filteredData.coder.length + filteredData.worker.length + filteredData.gemini.length + filteredData.cli_infra.length + filteredData.agy.length;
-  const totalAll = data.vibe.length + data.coder.length + data.worker.length + data.gemini.length + (data.cli_infra || []).length + (data.agy || []).length;
+  const totalVisible = filteredData.vibe.length + filteredData.coder.length + filteredData.worker.length + filteredData.gemini.length + filteredData.kw_cards.length + filteredData.cli_infra.length + filteredData.agy.length;
+  const totalAll = data.vibe.length + data.coder.length + data.worker.length + data.gemini.length + (data.kw_cards || []).length + (data.cli_infra || []).length + (data.agy || []).length;
   const totalSlides = data.totalSlides;
 
   const statBooks = document.getElementById('lib-stat-books');

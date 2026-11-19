@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link rel="stylesheet" href="style.css?v=1795098734">
+  <link rel="stylesheet" href="style.css?v=1795098973">
   <style>
     body {
       background: #07080d;
@@ -392,7 +392,7 @@
     ▲
   </button>
 
-  <script src="data.js?v=1795098734"></script>
+  <script src="data.js?v=1795098973"></script>
   <script>
     let currentSeries = 'vibe';
     let currentMode = 'select';
@@ -442,13 +442,22 @@
         globalStart: 386,
         getData: () => (typeof GEMINI_CLI_DEEP_DATA !== 'undefined' ? GEMINI_CLI_DEEP_DATA : [])
       },
+      kw_cards: {
+        code: 'CARD',
+        name: 'IT 기초 키워드 만화 카드북 (10장)',
+        badgeBg: 'rgba(236,72,153,0.2)',
+        badgeColor: '#f472b6',
+        badgeBorder: 'rgba(236,72,153,0.45)',
+        globalStart: 454,
+        getData: () => (typeof KEYWORD_CARDS_DATA !== 'undefined' ? KEYWORD_CARDS_DATA : [])
+      },
       cli_infra: {
         code: 'CLI-IT',
         name: '제미나이 CLI & IT 인프라 기초',
         badgeBg: 'rgba(59,130,246,0.2)',
         badgeColor: '#93c5fd',
         badgeBorder: 'rgba(59,130,246,0.45)',
-        globalStart: 454,
+        globalStart: 464,
         getData: () => (typeof CLI_INFRA_DATA !== 'undefined' ? CLI_INFRA_DATA : [])
       },
       agy: {
