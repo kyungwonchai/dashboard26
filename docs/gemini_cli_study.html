@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>제미나이 CLI 엔터프라이즈 마스터스 & 한눈에 보는 IT 기초 카드북</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .snap-y-mandatory {
+      scroll-snap-type: y mandatory;
+    }
+    .snap-start {
+      scroll-snap-align: start;
+    }
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    /* S24 Ultra & Fold portrait custom ratio */
+    .card-container {
+      height: calc(100vh - 60px);
+      height: calc(100dvh - 60px);
+    }
+    /* Hide scrollbar for clean UI */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="glass-nav h-[60px] flex items-center justify-between px-4 z-50 shrink-0">
+    <div class="flex items-center space-x-2">
+      <span class="text-blue-400 text-xl font-black tracking-tight"><i class="fa-solid fa-terminal mr-1.5"></i>GEMINI CLI</span>
+      <span class="text-xs bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded-full border border-blue-500/30">IT 특강</span>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button onclick="toggleView('cards')" id="btn-cards" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition">
+        <i class="fa-solid fa-mobile-screen-button mr-1"></i>카드북 (10장)
+      </button>
+      <button onclick="toggleView('slides')" id="btn-slides" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+        <i class="fa-solid fa-book-open mr-1"></i>4부작 PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Main View 1: 10 Mobile Snap Cards (Full Screen Vertical Scroll for S24U & Screen Sharing) -->
+  <main id="view-cards" class="flex-1 overflow-y-auto snap-y-mandatory no-scrollbar bg-black">
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          1 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          작업 환경
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/01_card_01_cmd_workspace.png" alt="CMD창 &amp; 워크스페이스 (나만의 작업 책상)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>CMD창 &amp; 워크스페이스 (나만의 작업 책상)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          명령 프롬프트(CMD)는 컴퓨터와 직접 대화하는 가장 오래된 창입니다. 전용 워크스페이스 폴더 안에서 제미나이 CLI를 호출해 첫 작업을 시작합니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          2 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          권한 &amp; 보안
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/02_card_02_powershell_admin.png" alt="파워쉘 &amp; 관리자 권한 (시스템 마스터키)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>파워쉘 &amp; 관리자 권한 (시스템 마스터키)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          시스템 설정이나 서버 프로그램을 설치할 때 꼭 필요한 &#39;관리자 권한으로 실행&#39;. 권한 부족 에러를 해결하는 황금 열쇠입니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          3 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          네트워크
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/03_card_03_ip_address.png" alt="아이피(IP) 주소 (디지털 우리 집 좌표)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>아이피(IP) 주소 (디지털 우리 집 좌표)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          인터넷에 연결된 모든 기기가 부여받는 고유한 주소. 사설 IP(공유기 안)와 공인 IP의 차이 및 localhost(나 자신)를 완벽 이해합니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          4 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          네트워크 보안
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/04_card_04_port_firewall.png" alt="포트 &amp; 방화벽 (아파트 출입문과 경비원)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>포트 &amp; 방화벽 (아파트 출입문과 경비원)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          IP가 아파트 건물이라면 포트(Port 8080)는 동호수 출입문! 수상한 손님을 차단하는 방화벽의 문을 여는 인바운드 규칙을 배웁니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          5 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          웹 통신
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/05_card_05_api_json.png" alt="API &amp; JSON (식당의 친절한 웨이터)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>API &amp; JSON (식당의 친절한 웨이터)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          손님(프론트엔드)과 주방(백엔드) 사이에서 JSON 주문서를 나르는 웨이터! GET, POST 요청으로 데이터를 실시간 교환합니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          6 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          소프트웨어
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/06_card_06_tech_stack.png" alt="웹앱의 기술 스택 (레고 블록 조립)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>웹앱의 기술 스택 (레고 블록 조립)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          HTML/CSS/JS(화면) + FastAPI(서버) + SQLite(DB). 레고 블록처럼 쌓아 올려 내 손으로 완성하는 풀스택 아키텍처.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          7 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          데이터
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/07_card_07_database_sqlite.png" alt="데이터베이스 DB (초고속 전자 금고)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>데이터베이스 DB (초고속 전자 금고)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          서버를 껐다 켜도 데이터가 영원히 보존되는 SQLite 금고! 파일 하나로 복잡한 서버 설치 없이 ACID 무결성을 보장합니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          8 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          무인 운영
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/08_card_08_windows_service.png" alt="윈도우 서비스 자동실행 (보이지 않는 그림자 일꾼)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>윈도우 서비스 자동실행 (보이지 않는 그림자 일꾼)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          퇴근해도 컴퓨터 전원만 켜지면 스스로 작동하는 윈도우 백그라운드 서비스(NSSM). 장애 시 자동 재기동(Self-Healing)을 갖춥니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          9 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          실시간 학습
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/09_card_09_gemini_screenshare_ask.png" alt="제미나이 화면공유 실시간 질의 (스마트폰 학습 현장)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>제미나이 화면공유 실시간 질의 (스마트폰 학습 현장)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          스마트폰에서 이 자료를 열어두고 제미나이 화면공유를 켠 채 &#39;이 다이어그램에서 포트가 무슨 뜻이야?&#39;라고 실시간 음성/화면으로 묻고 배웁니다.
+        </p>
+      </div>
+    </section>
+    
+    <section class="card-container snap-start w-full max-w-md mx-auto flex flex-col justify-between p-4 relative">
+      <!-- Top Info Badge -->
+      <div class="flex items-center justify-between z-10 shrink-0 mb-2">
+        <span class="bg-blue-600/90 text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow">
+          10 / 10
+        </span>
+        <span class="text-xs font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">
+          AX 혁신
+        </span>
+        <span class="text-[11px] text-blue-400 font-semibold flex items-center">
+          <i class="fa-solid fa-expand mr-1"></i>화면공유 최적화
+        </span>
+      </div>
+
+      <!-- Main Comic Card Image (Vertical 9:16) -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 flex items-center justify-center relative group">
+        <img src="./gemini-cli-study/cards/10_card_10_ax_transformation.png" alt="사내 AX 혁신 완성 (작은 웹앱이 만드는 미래)" class="w-full h-full object-contain" loading="lazy">
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[10px] text-slate-400 px-2 py-0.5 rounded">
+          Nano-Banana 2.1
+        </div>
+      </div>
+
+      <!-- Bottom Caption Card -->
+      <div class="glass-card mt-2.5 p-3 rounded-xl shrink-0">
+        <h3 class="text-sm font-black text-white flex items-center">
+          <i class="fa-solid fa-circle-check text-blue-400 mr-1.5 text-xs"></i>사내 AX 혁신 완성 (작은 웹앱이 만드는 미래)
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          내가 만든 작은 웹앱으로 팀의 반복 업무를 없애고, 소스코드와 지식을 공유하며 사내 AI 전환의 진정한 주역이 됩니다.
+        </p>
+      </div>
+    </section>
+    
+  </main>
+
+  <!-- Main View 2: 4-Episode Full Slides (20p each, total 80p PDF Viewer & Downloads) -->
+  <main id="view-slides" class="flex-1 overflow-y-auto p-4 hidden bg-slate-950">
+    <div class="max-w-2xl mx-auto space-y-4">
+      <div class="text-center py-2">
+        <h2 class="text-lg font-black text-white">제미나이 CLI & IT 인프라 4부작 특강 슬라이드</h2>
+        <p class="text-xs text-slate-400 mt-1">순백색 화이트보드 2색 도식화 규격 · 총 80페이지 완결본</p>
+      </div>
+
+      
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 hover:border-blue-500/50 transition">
+        <div class="flex items-start justify-between">
+          <div class="space-y-1">
+            <div class="flex items-center space-x-2">
+              <span class="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded">
+                제01편 (20p)
+              </span>
+              <span class="text-xs text-slate-400">6.8 MB</span>
+            </div>
+            <h3 class="text-sm font-bold text-white pt-1">제미나이 CLI와의 첫 만남: CMD창, 파워쉘 관리자, 워크스페이스</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">까만 창이 두려운 초보자를 위한 CLI 첫걸음과 나만의 작업 공간 구축</p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center space-x-2 pt-2 border-t border-slate-800/80">
+          <a href="./gemini-cli-study/제미나이CLI_01화_제미나이CLI와의첫만남_CMD창_파워쉘관리자_워크스페이스.pdf" target="_blank" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 px-3 rounded-xl text-center shadow-lg shadow-blue-600/20 transition flex items-center justify-center">
+            <i class="fa-solid fa-eye mr-1.5"></i>PDF 슬라이드 바로보기
+          </a>
+          <a href="./gemini-cli-study/제미나이CLI_01화_제미나이CLI와의첫만남_CMD창_파워쉘관리자_워크스페이스.pdf" download class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs py-2 px-3 rounded-xl transition flex items-center justify-center">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 hover:border-blue-500/50 transition">
+        <div class="flex items-start justify-between">
+          <div class="space-y-1">
+            <div class="flex items-center space-x-2">
+              <span class="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded">
+                제02편 (20p)
+              </span>
+              <span class="text-xs text-slate-400">13.0 MB</span>
+            </div>
+            <h3 class="text-sm font-bold text-white pt-1">내 컴퓨터에 웹서버 띄우기: 아이피와 포트와 방화벽의 비밀</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">웹서버의 본질(자판기), IP 주소와 포트, 방화벽 문지기, 파이썬 10초 웹서버 실습</p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center space-x-2 pt-2 border-t border-slate-800/80">
+          <a href="./gemini-cli-study/제미나이CLI_02화_내컴퓨터에웹서버띄우기_아이피와포트와방화벽의비밀.pdf" target="_blank" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 px-3 rounded-xl text-center shadow-lg shadow-blue-600/20 transition flex items-center justify-center">
+            <i class="fa-solid fa-eye mr-1.5"></i>PDF 슬라이드 바로보기
+          </a>
+          <a href="./gemini-cli-study/제미나이CLI_02화_내컴퓨터에웹서버띄우기_아이피와포트와방화벽의비밀.pdf" download class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs py-2 px-3 rounded-xl transition flex items-center justify-center">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 hover:border-blue-500/50 transition">
+        <div class="flex items-start justify-between">
+          <div class="space-y-1">
+            <div class="flex items-center space-x-2">
+              <span class="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded">
+                제03편 (20p)
+              </span>
+              <span class="text-xs text-slate-400">9.7 MB</span>
+            </div>
+            <h3 class="text-sm font-bold text-white pt-1">웹앱의 뼈대와 살: 기술 스택과 API의 세계</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">HTML/CSS/JS 프론트엔드와 백엔드의 분업, API 웨이터, JSON 표준, 사내 Todo 웹앱 완성</p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center space-x-2 pt-2 border-t border-slate-800/80">
+          <a href="./gemini-cli-study/제미나이CLI_03화_웹앱의뼈대와살_기술스택과API의세계.pdf" target="_blank" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 px-3 rounded-xl text-center shadow-lg shadow-blue-600/20 transition flex items-center justify-center">
+            <i class="fa-solid fa-eye mr-1.5"></i>PDF 슬라이드 바로보기
+          </a>
+          <a href="./gemini-cli-study/제미나이CLI_03화_웹앱의뼈대와살_기술스택과API의세계.pdf" download class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs py-2 px-3 rounded-xl transition flex items-center justify-center">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 hover:border-blue-500/50 transition">
+        <div class="flex items-start justify-between">
+          <div class="space-y-1">
+            <div class="flex items-center space-x-2">
+              <span class="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded">
+                제04편 (20p)
+              </span>
+              <span class="text-xs text-slate-400">14.0 MB</span>
+            </div>
+            <h3 class="text-sm font-bold text-white pt-1">데이터를 영원히 지키는 법: DB 기초와 윈도우 서비스 자동실행</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">SQLite 데이터베이스 금고, SQL 질의, 윈도우 서비스(NSSM) 무인 자동실행 및 전사 AX 로드맵</p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center space-x-2 pt-2 border-t border-slate-800/80">
+          <a href="./gemini-cli-study/제미나이CLI_04화_데이터를영원히지키는법_DB기초와윈도우서비스자동실행.pdf" target="_blank" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 px-3 rounded-xl text-center shadow-lg shadow-blue-600/20 transition flex items-center justify-center">
+            <i class="fa-solid fa-eye mr-1.5"></i>PDF 슬라이드 바로보기
+          </a>
+          <a href="./gemini-cli-study/제미나이CLI_04화_데이터를영원히지키는법_DB기초와윈도우서비스자동실행.pdf" download class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs py-2 px-3 rounded-xl transition flex items-center justify-center">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+      </div>
+      
+    </div>
+  </main>
+
+  <script>
+    function toggleView(view) {
+      const vCards = document.getElementById('view-cards');
+      const vSlides = document.getElementById('view-slides');
+      const btnCards = document.getElementById('btn-cards');
+      const btnSlides = document.getElementById('btn-slides');
+
+      if (view === 'cards') {
+        vCards.classList.remove('hidden');
+        vSlides.classList.add('hidden');
+        btnCards.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition";
+        btnSlides.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+      } else {
+        vCards.classList.add('hidden');
+        vSlides.classList.remove('hidden');
+        btnCards.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+        btnSlides.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition";
+      }
+    }
+  </script>
+</body>
+</html>
