@@ -215,6 +215,111 @@ def index():
     prefix = '/dashboard26' if request.path.startswith('/dashboard26') or request.headers.get('X-Forwarded-Prefix') == '/dashboard26' else ''
     return render_template('index.html', prefix=prefix)
 
+
+# -------------------------------------------------------------
+# 제미나이 CLI & IT 인프라 마스터 카드북 / 슬라이드 뷰
+# -------------------------------------------------------------
+@app.route('/gemini-cli-study')
+@app.route('/dashboard26/gemini-cli-study')
+def gemini_cli_study():
+    prefix = '/dashboard26' if request.path.startswith('/dashboard26') or request.headers.get('X-Forwarded-Prefix') == '/dashboard26' else ''
+    
+    cards = [
+        {
+            "category": "작업 환경",
+            "title": "CMD창 & 워크스페이스 (나만의 작업 책상)",
+            "desc": "명령 프롬프트(CMD)는 컴퓨터와 직접 대화하는 가장 오래된 창입니다. 전용 워크스페이스 폴더 안에서 제미나이 CLI를 호출해 첫 작업을 시작합니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/01_card_01_cmd_workspace.png"
+        },
+        {
+            "category": "권한 & 보안",
+            "title": "파워쉘 & 관리자 권한 (시스템 마스터키)",
+            "desc": "시스템 설정이나 서버 프로그램을 설치할 때 꼭 필요한 '관리자 권한으로 실행'. 권한 부족 에러를 해결하는 황금 열쇠입니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/02_card_02_powershell_admin.png"
+        },
+        {
+            "category": "네트워크",
+            "title": "아이피(IP) 주소 (디지털 우리 집 좌표)",
+            "desc": "인터넷에 연결된 모든 기기가 부여받는 고유한 주소. 사설 IP(공유기 안)와 공인 IP의 차이 및 localhost(나 자신)를 완벽 이해합니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/03_card_03_ip_address.png"
+        },
+        {
+            "category": "네트워크 보안",
+            "title": "포트 & 방화벽 (아파트 출입문과 경비원)",
+            "desc": "IP가 아파트 건물이라면 포트(Port 8080)는 동호수 출입문! 수상한 손님을 차단하는 방화벽의 문을 여는 인바운드 규칙을 배웁니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/04_card_04_port_firewall.png"
+        },
+        {
+            "category": "웹 통신",
+            "title": "API & JSON (식당의 친절한 웨이터)",
+            "desc": "손님(프론트엔드)과 주방(백엔드) 사이에서 JSON 주문서를 나르는 웨이터! GET, POST 요청으로 데이터를 실시간 교환합니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/05_card_05_api_json.png"
+        },
+        {
+            "category": "소프트웨어",
+            "title": "웹앱의 기술 스택 (레고 블록 조립)",
+            "desc": "HTML/CSS/JS(화면) + FastAPI(서버) + SQLite(DB). 레고 블록처럼 쌓아 올려 내 손으로 완성하는 풀스택 아키텍처.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/06_card_06_tech_stack.png"
+        },
+        {
+            "category": "데이터",
+            "title": "데이터베이스 DB (초고속 전자 금고)",
+            "desc": "서버를 껐다 켜도 데이터가 영원히 보존되는 SQLite 금고! 파일 하나로 복잡한 서버 설치 없이 ACID 무결성을 보장합니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/07_card_07_database_sqlite.png"
+        },
+        {
+            "category": "무인 운영",
+            "title": "윈도우 서비스 자동실행 (보이지 않는 그림자 일꾼)",
+            "desc": "퇴근해도 컴퓨터 전원만 켜지면 스스로 작동하는 윈도우 백그라운드 서비스(NSSM). 장애 시 자동 재기동(Self-Healing)을 갖춥니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/08_card_08_windows_service.png"
+        },
+        {
+            "category": "실시간 학습",
+            "title": "제미나이 화면공유 실시간 질의 (스마트폰 학습 현장)",
+            "desc": "스마트폰에서 이 자료를 열어두고 제미나이 화면공유를 켠 채 '이 다이어그램에서 포트가 무슨 뜻이야?'라고 실시간 음성/화면으로 묻고 배웁니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/09_card_09_gemini_screenshare_ask.png"
+        },
+        {
+            "category": "AX 혁신",
+            "title": "사내 AX 혁신 완성 (작은 웹앱이 만드는 미래)",
+            "desc": "내가 만든 작은 웹앱으로 팀의 반복 업무를 없애고, 소스코드와 지식을 공유하며 사내 AI 전환의 진정한 주역이 됩니다.",
+            "img_url": f"{prefix}/static/gemini_cli_study/cards/10_card_10_ax_transformation.png"
+        }
+    ]
+
+    episodes = [
+        {
+            "num": "01",
+            "title": "제미나이 CLI와의 첫 만남: CMD창, 파워쉘 관리자, 워크스페이스",
+            "filesize": "6.8 MB",
+            "summary": "까만 창이 두려운 초보자를 위한 CLI 첫걸음과 나만의 작업 공간 구축",
+            "pdf_url": f"{prefix}/static/gemini_cli_study/제미나이CLI_01화_제미나이CLI와의첫만남_CMD창_파워쉘관리자_워크스페이스.pdf"
+        },
+        {
+            "num": "02",
+            "title": "내 컴퓨터에 웹서버 띄우기: 아이피와 포트와 방화벽의 비밀",
+            "filesize": "13.0 MB",
+            "summary": "웹서버의 본질(자판기), IP 주소와 포트, 방화벽 문지기, 파이썬 10초 웹서버 실습",
+            "pdf_url": f"{prefix}/static/gemini_cli_study/제미나이CLI_02화_내컴퓨터에웹서버띄우기_아이피와포트와방화벽의비밀.pdf"
+        },
+        {
+            "num": "03",
+            "title": "웹앱의 뼈대와 살: 기술 스택과 API의 세계",
+            "filesize": "9.7 MB",
+            "summary": "HTML/CSS/JS 프론트엔드와 백엔드의 분업, API 웨이터, JSON 표준, 사내 Todo 웹앱 완성",
+            "pdf_url": f"{prefix}/static/gemini_cli_study/제미나이CLI_03화_웹앱의뼈대와살_기술스택과API의세계.pdf"
+        },
+        {
+            "num": "04",
+            "title": "데이터를 영원히 지키는 법: DB 기초와 윈도우 서비스 자동실행",
+            "filesize": "14.0 MB",
+            "summary": "SQLite 데이터베이스 금고, SQL 질의, 윈도우 서비스(NSSM) 무인 자동실행 및 전사 AX 로드맵",
+            "pdf_url": f"{prefix}/static/gemini_cli_study/제미나이CLI_04화_데이터를영원히지키는법_DB기초와윈도우서비스자동실행.pdf"
+        }
+    ]
+
+    return render_template('gemini_cli_study.html', cards=cards, episodes=episodes, prefix=prefix)
+
 @app.route('/dashboard26/static/<path:filename>')
 def serve_dashboard26_static(filename):
     return send_from_directory(app.static_folder, filename)
