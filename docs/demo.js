@@ -1483,11 +1483,13 @@ function renderSeriesLibrary() {
     vibe: data.vibe.filter(filterItem),
     coder: data.coder.filter(filterItem),
     worker: data.worker.filter(filterItem),
-    gemini: data.gemini.filter(filterItem)
+    gemini: data.gemini.filter(filterItem),
+    cli_infra: (data.cli_infra || []).filter(filterItem),
+    agy: (data.agy || []).filter(filterItem)
   };
 
-  const totalVisible = filteredData.vibe.length + filteredData.coder.length + filteredData.worker.length + filteredData.gemini.length;
-  const totalAll = data.vibe.length + data.coder.length + data.worker.length + data.gemini.length;
+  const totalVisible = filteredData.vibe.length + filteredData.coder.length + filteredData.worker.length + filteredData.gemini.length + filteredData.cli_infra.length + filteredData.agy.length;
+  const totalAll = data.vibe.length + data.coder.length + data.worker.length + data.gemini.length + (data.cli_infra || []).length + (data.agy || []).length;
   const totalSlides = data.totalSlides;
 
   const statBooks = document.getElementById('lib-stat-books');
